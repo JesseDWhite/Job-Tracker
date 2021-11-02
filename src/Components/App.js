@@ -1,11 +1,16 @@
 import '../App.css';
 import React, { useState, useEffect } from 'react';
 import Home from './Home';
+import { Grid } from '@mui/material';
 
 function App() {
   return (
     <>
-      <Home />
+      <Grid
+        container
+      >
+        <Home />
+      </Grid>
     </>
   );
 }
