@@ -47,19 +47,26 @@ const NewJob = (props) => {
       status: formValues.status,
       jobPosting: formValues.jobPosting,
       ats: formValues.ats,
-      coverLetter: formValues.coverLetter,
-      resume: formValues.resume,
+      coverLetter: readFile(formValues.coverLetter, 'coverLetter'),
+      resume: readFile(formValues.resume, 'resume'),
       notes: formValues.notes,
     });
     getJobs();
+    // readFile();
     setFormvalues(initialValues);
   };
+
+  const readFile = (file, id) => {
+    file = document.getElementById(id).files[0];
+    const URLObject = URL.createObjectURL(file);
+    return URLObject
+  }
 
   return (
     <>
       <h3>New Job</h3>
       <Grid>
-        <form>
+        <form method='post'>
           <TextField sx={{
             mb: 2
           }}
@@ -95,11 +102,12 @@ const NewJob = (props) => {
           >
             <input
               type="file"
-              accept='text/pdf'
+              accept='application/pdf'
               ref={fileInput}
               name='coverLetter'
               onChange={handleInputChange}
               value={formValues.coverLetter}
+              id='coverLetter'
             />
             Cover Letter
           </Button>
@@ -110,11 +118,12 @@ const NewJob = (props) => {
           >
             <input
               type="file"
-              accept='text/pdf'
+              accept='application/pdf'
               ref={fileInput}
               name='resume'
               onChange={handleInputChange}
               value={formValues.resume}
+              id='resume'
             />
             Resume
           </Button>

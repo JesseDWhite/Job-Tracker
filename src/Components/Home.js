@@ -38,6 +38,7 @@ const Home = () => {
 
   return (
     <>
+      {console.log(jobs)}
       <Typography variant='h2'>JOB TRACKING SYSTEM</Typography>
       <Grid
         sm='4'
@@ -69,8 +70,8 @@ const Home = () => {
                 <li>{job.status}</li>
                 <li>{job.jobPosting}</li>
                 <li>{job.ats}</li>
-                <li>{job.coverLetter}</li>
-                <li>{job.resume}</li>
+                <li><a href={job.coverLetter} download='Cover Letter'>Cover Letter</a></li>
+                <li><a href={job.resume} download='Resume'>Resume</a></li>
                 <li>{job.notes}</li>
               </ul>
               <Button
