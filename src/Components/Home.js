@@ -14,6 +14,7 @@ import {
   Paper,
   IconButton,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -34,11 +35,20 @@ const Home = () => {
 
   const getJobs = async () => {
     const data = await getDocs(jobsReference);
+    setSearchJobs(data.docs.map((doc) =>
+    ({
+      ...doc.data(), id: doc.id
+    })));
     setJobs(data.docs.map((doc) =>
     ({
       ...doc.data(), id: doc.id
     })));
-    setSearchJobs(jobs);
+  }
+
+  const deleteJob = async (id) => {
+    const jobDoc = doc(db, 'jobs', id);
+    await deleteDoc(jobDoc);
+    getJobs();
   }
 
   const handleSearch = (e) => {
@@ -109,12 +119,6 @@ const Home = () => {
     handleSearch(searchString);
   }, [searchString])
 
-  const deleteJob = async (id) => {
-    const jobDoc = doc(db, 'jobs', id);
-    await deleteDoc(jobDoc);
-    getJobs();
-  }
-
   return (
     <>
       <Grid
@@ -133,53 +137,105 @@ const Home = () => {
             }}
           >
             JOB TRACKING SYSTEM
-            <Grid
-              container
-              direction="row"
-              justifyContent="space-around"
-            >
-              <Button variant='text' onClick={() => sortByStatus()}>SORT BY STATUS</Button>
-              <Button variant='text' onClick={() => sortByDate()}>SORT BY DATE</Button>
-              <Button variant='text' onClick={() => sortByName()}>SORT BY NAME</Button>
-            </Grid>
-            <TextField variant='standard' id='searchBar' onChange={handleInputChange} value={searchString} />
           </Typography>
-          {searchJobs.map(job => {
-            return (
-              <Grid>
-                <Paper
-                  elevation={3}
-                  sx={{
-                    m: 3,
-                    p: 3
-                  }}
-                >
-                  <Typography variant='h4'>{job.company}
-                    <IconButton
-                      component='span'
-                      variant='contained'
-                      color='error'
-                      onClick={() => deleteJob(job.id)}>
-                      <DeleteForeverTwoTone />
-                    </IconButton>
-                  </Typography>
-                  <Typography variant='h5'>{job.jobTitle}</Typography>
-                  <Typography>{job.dateApplied}</Typography>
-                  <Typography>{job.status}</Typography>
-                  <IconButton component='span' href={job.jobPosting}><WorkTwoTone /></IconButton>
-                  <IconButton href={job.ats}><InsertChartTwoTone /></IconButton>
-                  <IconButton href={job.coverLetter} download='Cover Letter'><DescriptionTwoTone /></IconButton>
-                  <IconButton href={job.resume} download='Resume'><DescriptionTwoTone /></IconButton>
-                  <Typography>{job.notes}</Typography>
-                </Paper>
-              </Grid>
-            )
-          })}
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+          >
+            <TextField
+              sx={{
+                width: '90%',
+                height: 50,
+              }}
+              placeholder='SEARCH COMPANIES'
+              variant='standard'
+              id='searchBar'
+              onChange={handleInputChange}
+              value={searchString}
+            />
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-around"
+          >
+            <Button variant='text' color='warning' onClick={() => sortByStatus()}>SORT BY STATUS</Button>
+            <Button variant='text' color='warning' onClick={() => sortByDate()}>SORT BY DATE</Button>
+            <Button variant='text' color='warning' onClick={() => sortByName()}>SORT BY NAME</Button>
+          </Grid>
+          <Grid
+            container
+            direction='row'
+            justifyContent='start'
+          >
+            {searchJobs.length === 0 ? 'DAMNIT BOBBY' :
+              searchJobs.map(job => {
+                return (
+                  <Grid
+                    sm={4}
+                  >
+                    <Paper
+                      elevation={3}
+                      sx={{
+                        m: 3,
+                        p: 3,
+                        minHeight: 250
+                      }}
+                    >
+                      <Grid>
+                        <Typography variant='h4'>{job.company}</Typography>
+                        <Grid
+                          container
+                          direction="row"
+                          justifyContent='start'
+                        >
+                          <Tooltip
+                            title='Job Posting'
+                          >
+                            <IconButton href={job.jobPosting} disabled={!job.jobPosting ? true : false} ><WorkTwoTone /></IconButton>
+                          </Tooltip>
+                          <Tooltip
+                            title='Application Tracking System'
+                          >
+                            <IconButton href={job.ats} disabled={!job.ats ? true : false}><InsertChartTwoTone /></IconButton>
+                          </Tooltip>
+                          <Tooltip
+                            title='Cover Letter'
+                          >
+                            <IconButton href={job.coverLetter} disabled={!job.coverLetter ? true : false} download='Cover Letter' ><DescriptionTwoTone /></IconButton>
+                          </Tooltip>
+                          <Tooltip
+                            title='Resume'
+                          >
+                            <IconButton href={job.resume} disabled={!job.resume ? true : false} download='Resume'><DescriptionTwoTone /></IconButton>
+                          </Tooltip>
+                          <Tooltip
+                            title='Delete'
+                          >
+                            <IconButton
+                              color='error'
+                              onClick={() => deleteJob(job.id)}>
+                              <DeleteForeverTwoTone />
+                            </IconButton>
+                          </Tooltip>
+                        </Grid>
+                      </Grid>
+                      <Typography variant='h5'>{job.jobTitle}</Typography>
+                      <Typography>{job.dateApplied}</Typography>
+                      <Typography>{job.status}</Typography>
+                      <Typography>{job.notes}</Typography>
+                    </Paper>
+                  </Grid>
+                );
+              })}
+          </Grid>
         </Grid>
         <Grid
           sm={4}
           sx={{
-            m: 3
+            mr: 3,
+            mt: 3
           }}
         >
           <Paper
