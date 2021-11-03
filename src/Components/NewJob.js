@@ -3,12 +3,21 @@ import { addDoc } from 'firebase/firestore';
 import {
   TextField,
   Button,
-  Grid
+  Grid,
+  Typography,
 } from '@mui/material';
+
+const getTodaysDate = () => {
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+  return `${mm}-${dd}-${yyyy}`;
+}
 
 const initialValues = {
   company: '',
-  dateApplied: '',
+  dateApplied: getTodaysDate(),
   jobDescription: '',
   jobTitle: '',
   status: '',
@@ -19,10 +28,11 @@ const initialValues = {
   notes: ''
 }
 
+console.log(initialValues);
+
 const NewJob = (props) => {
 
   const { jobsReference, getJobs } = props;
-
 
   const [formValues, setFormvalues] = useState(initialValues);
 
@@ -47,12 +57,11 @@ const NewJob = (props) => {
       status: formValues.status,
       jobPosting: formValues.jobPosting,
       ats: formValues.ats,
-      coverLetter: readFile(formValues.coverLetter, 'coverLetter'),
-      resume: readFile(formValues.resume, 'resume'),
+      coverLetter: formValues.coverLetter ? readFile(formValues.coverLetter, 'coverLetter') : null,
+      resume: formValues.resume ? readFile(formValues.resume, 'resume') : null,
       notes: formValues.notes,
     });
     getJobs();
-    // readFile();
     setFormvalues(initialValues);
   };
 
@@ -64,69 +73,85 @@ const NewJob = (props) => {
 
   return (
     <>
-      <h3>New Job</h3>
+      <Typography
+        variant='h3'
+        sx={{
+          textAlign: 'center'
+        }}
+      >
+        NEW JOB
+      </Typography>
       <Grid>
         <form method='post'>
-          <TextField sx={{
-            mb: 2
-          }}
+          <TextField
+            sx={{
+              mb: 2
+            }}
             type="text" name='company' label='Company' onChange={handleInputChange} value={formValues.company} fullWidth />
-          <TextField sx={{
-            mb: 2
-          }}
-            type="date" name='dateApplied' label='Date Applied' onChange={handleInputChange} value={formValues.dateApplied} fullWidth />
-          <TextField sx={{
-            mb: 2
-          }}
+          <TextField
+            sx={{
+              mb: 2
+            }}
+            type="date" name='dateApplied' initialValues='today' onChange={handleInputChange} value={formValues.dateApplied} fullWidth />
+          <TextField
+            sx={{
+              mb: 2
+            }}
             type="text" name='jobTitle' label='Job Title' onChange={handleInputChange} value={formValues.jobTitle} fullWidth />
-          <TextField sx={{
-            mb: 2
-          }}
+          <TextField
+            sx={{
+              mb: 2
+            }}
             type="text" name='status' label='Status' onChange={handleInputChange} value={formValues.status} fullWidth />
-          <TextField sx={{
-            mb: 2
-          }}
+          <TextField
+            sx={{
+              mb: 2
+            }}
             type="text" name='jobDescription' label='Job Description' onChange={handleInputChange} value={formValues.jobDescription} fullWidth />
-          <TextField sx={{
-            mb: 2
-          }}
+          <TextField
+            sx={{
+              mb: 2
+            }}
             type="text" name='jobPosting' label='Link To Job Posting' onChange={handleInputChange} value={formValues.jobPosting} fullWidth />
-          <TextField sx={{
-            mb: 2
-          }}
+          <TextField
+            sx={{
+              mb: 2
+            }}
             type="text" name='ats' label='Application Tracking System' onChange={handleInputChange} value={formValues.ats} fullWidth />
-          <Button
+          {/* <Button
             variant='outlined'
             color='secondary'
             compnent='label'
-          >
-            <input
-              type="file"
-              accept='application/pdf'
-              ref={fileInput}
-              name='coverLetter'
-              onChange={handleInputChange}
-              value={formValues.coverLetter}
-              id='coverLetter'
-            />
-            Cover Letter
-          </Button>
-          <Button
+          > */}
+          <Typography>CoverLetter</Typography>
+          <input
+            type="file"
+            accept='application/pdf'
+            ref={fileInput}
+            name='coverLetter'
+            onChange={handleInputChange}
+            value={formValues.coverLetter}
+            id='coverLetter'
+          />
+          {/* Cover Letter */}
+          {/* </Button> */}
+          {/* <Button
             variant='outlined'
             color='secondary'
             compnent='label'
-          >
-            <input
-              type="file"
-              accept='application/pdf'
-              ref={fileInput}
-              name='resume'
-              onChange={handleInputChange}
-              value={formValues.resume}
-              id='resume'
-            />
-            Resume
-          </Button>
+          > */}
+          <Typography>Resume</Typography>
+          <input
+            type="file"
+            accept='application/pdf'
+            ref={fileInput}
+            name='resume'
+            onChange={handleInputChange}
+            value={formValues.resume}
+            id='resume'
+          />
+          {/* Resume */}
+          {/* </Button> */}
           <TextField sx={{
             mb: 2
           }}

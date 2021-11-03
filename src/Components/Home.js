@@ -11,7 +11,15 @@ import {
   Typography,
   Grid,
   Button,
+  Paper,
+  IconButton
 } from '@mui/material';
+import {
+  WorkTwoTone,
+  InsertChartTwoTone,
+  DescriptionTwoTone,
+  DeleteForeverTwoTone,
+} from '@mui/icons-material';
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
@@ -24,6 +32,54 @@ const Home = () => {
     ({
       ...doc.data(), id: doc.id
     })));
+  }
+
+  const sortByStatus = () => {
+    const newJobs = [...jobs];
+    const sortedByStatus = newJobs.sort((a, b) => {
+      const newA = a.status.toUpperCase();
+      const newB = b.status.toUpperCase();
+      if (newA < newB) {
+        return -1;
+      }
+      if (newA > newB) {
+        return 1;
+      }
+      return 0;
+    })
+    setJobs(sortedByStatus);
+  }
+
+  const sortByDate = () => {
+    const newJobs = [...jobs];
+    const sortedByStatus = newJobs.sort((a, b) => {
+      const newA = a.dateApplied;
+      const newB = b.dateApplied;
+      if (newA < newB) {
+        return 1;
+      }
+      if (newA > newB) {
+        return -1;
+      }
+      return 0;
+    })
+    setJobs(sortedByStatus);
+  }
+
+  const sortByName = () => {
+    const newJobs = [...jobs];
+    const sortedByStatus = newJobs.sort((a, b) => {
+      const newA = a.company.toUpperCase();
+      const newB = b.company.toUpperCase();
+      if (newA < newB) {
+        return -1;
+      }
+      if (newA > newB) {
+        return 1;
+      }
+      return 0;
+    })
+    setJobs(sortedByStatus);
   }
 
   useEffect(() => {
@@ -39,50 +95,82 @@ const Home = () => {
   return (
     <>
       {console.log(jobs)}
-      <Typography variant='h2'>JOB TRACKING SYSTEM</Typography>
       <Grid
-        sm='4'
-        sx={{
-          position: 'absolute',
-          right: 0,
-          m: 3
-        }}
+        display='flex'
       >
-        <NewJob
-          jobsReference={jobsReference}
-          getJobs={getJobs}
-        />
-      </Grid>
-      <Grid
-        sm='8'
-        sx={{
-          m: 3
-        }}
-      >
-        {jobs.map(job => {
-          return (
-            <Grid>
-              <Typography>{job.company}</Typography>
-              <ul>
-                <li>{job.jobTitle}</li>
-                <li>{job.dateApplied}</li>
-                <li>{job.jobDescription}</li>
-                <li>{job.status}</li>
-                <li>{job.jobPosting}</li>
-                <li>{job.ats}</li>
-                <li><a href={job.coverLetter} download='Cover Letter'>Cover Letter</a></li>
-                <li><a href={job.resume} download='Resume'>Resume</a></li>
-                <li>{job.notes}</li>
-              </ul>
-              <Button
-                variant='contained'
-                color='error'
-                onClick={() => deleteJob(job.id)}>
-                Delete Job
-              </Button>
+        <Grid
+          sm={8}
+          sx={{
+            m: 3,
+          }}
+        >
+          <Typography
+            variant='h3'
+            sx={{
+              textAlign: 'center'
+            }}
+          >
+            JOB TRACKING SYSTEM
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-around"
+            >
+              <Button variant='outlined' onClick={() => sortByStatus()}>SORT BY STATUS</Button>
+              <Button variant='outlined' onClick={() => sortByDate()}>SORT BY DATE</Button>
+              <Button variant='outlined' onClick={() => sortByName()}>SORT BY NAME</Button>
             </Grid>
-          )
-        })}
+          </Typography>
+          {jobs.map(job => {
+            return (
+              <Grid>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    m: 3,
+                    p: 3
+                  }}
+                >
+                  <Typography variant='h4'>{job.company}
+                    <IconButton
+                      component='span'
+                      variant='contained'
+                      color='error'
+                      onClick={() => deleteJob(job.id)}>
+                      <DeleteForeverTwoTone />
+                    </IconButton>
+                  </Typography>
+                  <Typography variant='h5'>{job.jobTitle}</Typography>
+                  <Typography>{job.dateApplied}</Typography>
+                  <Typography>{job.status}</Typography>
+                  <IconButton component='span' href={job.jobPosting}><WorkTwoTone /></IconButton>
+                  <IconButton href={job.ats}><InsertChartTwoTone /></IconButton>
+                  <IconButton href={job.coverLetter} download='Cover Letter'><DescriptionTwoTone /></IconButton>
+                  <IconButton href={job.resume} download='Resume'><DescriptionTwoTone /></IconButton>
+                  <Typography>{job.notes}</Typography>
+                </Paper>
+              </Grid>
+            )
+          })}
+        </Grid>
+        <Grid
+          sm={4}
+          sx={{
+            m: 3
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              p: 3,
+            }}
+          >
+            <NewJob
+              jobsReference={jobsReference}
+              getJobs={getJobs}
+            />
+          </Paper>
+        </Grid>
       </Grid>
     </>
   );
