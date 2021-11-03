@@ -136,7 +136,7 @@ const Home = () => {
               textAlign: 'center'
             }}
           >
-            JOB TRACKING SYSTEM
+            ALL JOB APPLICATIONS
           </Typography>
           <Grid
             container
@@ -160,16 +160,35 @@ const Home = () => {
             direction="row"
             justifyContent="space-around"
           >
-            <Button variant='text' color='warning' onClick={() => sortByStatus()}>SORT BY STATUS</Button>
-            <Button variant='text' color='warning' onClick={() => sortByDate()}>SORT BY DATE</Button>
-            <Button variant='text' color='warning' onClick={() => sortByName()}>SORT BY NAME</Button>
+            <Button
+              variant='text'
+              color='warning'
+              onClick={() => sortByStatus()}>
+              SORT BY STATUS
+            </Button>
+            <Button
+              variant='text'
+              color='warning'
+              onClick={() => sortByDate()}>
+              SORT BY DATE
+            </Button>
+            <Button
+              variant='text'
+              color='warning'
+              onClick={() => sortByName()}>
+              SORT BY NAME A-Z
+            </Button>
           </Grid>
           <Grid
             container
             direction='row'
             justifyContent='start'
           >
-            {searchJobs.length === 0 ? 'DAMNIT BOBBY' :
+            {searchJobs.length === 0 ? <img
+              src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
+              alt="nothing found"
+              style={{ width: 500 }}
+            /> :
               searchJobs.map(job => {
                 return (
                   <Grid
@@ -193,22 +212,52 @@ const Home = () => {
                           <Tooltip
                             title='Job Posting'
                           >
-                            <IconButton href={job.jobPosting} disabled={!job.jobPosting ? true : false} ><WorkTwoTone /></IconButton>
+                            <IconButton
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              href={job.jobPosting}
+                              disabled={!job.jobPosting ? true : false}
+                              color='primary'
+                            >
+                              <WorkTwoTone />
+                            </IconButton>
                           </Tooltip>
                           <Tooltip
                             title='Application Tracking System'
                           >
-                            <IconButton href={job.ats} disabled={!job.ats ? true : false}><InsertChartTwoTone /></IconButton>
+                            <IconButton
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              href={job.ats}
+                              disabled={!job.ats ? true : false}
+                              color='primary'
+                            >
+                              <InsertChartTwoTone />
+                            </IconButton>
                           </Tooltip>
                           <Tooltip
                             title='Cover Letter'
                           >
-                            <IconButton href={job.coverLetter} disabled={!job.coverLetter ? true : false} download='Cover Letter' ><DescriptionTwoTone /></IconButton>
+                            <IconButton
+                              href={job.coverLetter}
+                              disabled={!job.coverLetter ? true : false}
+                              download='Cover Letter'
+                              color='primary'
+                            >
+                              <DescriptionTwoTone />
+                            </IconButton>
                           </Tooltip>
                           <Tooltip
                             title='Resume'
                           >
-                            <IconButton href={job.resume} disabled={!job.resume ? true : false} download='Resume'><DescriptionTwoTone /></IconButton>
+                            <IconButton
+                              href={job.resume}
+                              disabled={!job.resume ? true : false}
+                              download='Resume'
+                              color='primary'
+                            >
+                              <DescriptionTwoTone />
+                            </IconButton>
                           </Tooltip>
                           <Tooltip
                             title='Delete'
