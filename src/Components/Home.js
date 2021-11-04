@@ -111,6 +111,18 @@ const Home = () => {
     setSearchJobs(sortedByStatus);
   }
 
+  const gradeApplication = (score) => {
+    if (score < 20) {
+      return 'F'
+    } else if (score >= 20 && score < 40) {
+      return 'D'
+    } else if (score >= 40 && score < 60) {
+      return 'C'
+    } else if (score >= 60 && score < 80) {
+      return 'B'
+    } else return 'A'
+  }
+
   useEffect(() => {
     getJobs();
   }, []);
@@ -203,7 +215,7 @@ const Home = () => {
                       }}
                     >
                       <Grid>
-                        <Typography variant='h4'>{job.company}</Typography>
+                        <Typography variant='h4'>{job.company}: {gradeApplication(job.score)} {job.score}% </Typography>
                         <Grid
                           container
                           direction="row"
