@@ -123,6 +123,16 @@ const Home = () => {
     } else return 'A'
   }
 
+  const getStatus = (status) => {
+    if (status === 'Active') {
+      return 'green';
+    } else if (status === 'Interview Scheduled') {
+      return 'blue';
+    } else if (status === 'Closed') {
+      return 'red';
+    }
+  };
+
   useEffect(() => {
     getJobs();
   }, []);
@@ -211,7 +221,9 @@ const Home = () => {
                       sx={{
                         m: 3,
                         p: 3,
-                        minHeight: 250
+                        minHeight: 250,
+                        border: 'solid 5px',
+                        borderColor: getStatus(job.status)
                       }}
                     >
                       <Grid>
