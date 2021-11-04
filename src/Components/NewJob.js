@@ -5,10 +5,11 @@ import {
   Button,
   Grid,
   Typography,
-  Select,
-  MenuItem,
-  InputLabel,
   FormControl,
+  RadioGroup,
+  Radio,
+  FormLabel,
+  FormControlLabel
 } from '@mui/material';
 import { KEYWORDS } from '../Constants/Keywords';
 
@@ -151,36 +152,48 @@ const NewJob = (props) => {
             onChange={handleInputChange}
             value={formValues.jobTitle}
             fullWidth />
-          <FormControl fullWidth>
-            <InputLabel id='test'>Status</InputLabel>
-            <Select
-              sx={{
-                mb: 2
-              }}
-              labelId='test'
-              type="text"
-              name='status'
-              label='Status'
-              onChange={handleInputChange}
-              value={formValues.status}
-            >
-              <MenuItem
-                value='Active'
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-around"
+            sx={{
+              mb: 2
+            }}
+          >
+            <FormControl component='fieldset'>
+              <FormLabel
+                component='legend'
+                sx={{
+                  textAlign: 'center'
+                }}
               >
-                Active
-              </MenuItem>
-              <MenuItem
-                value='Closed'
+                Status
+              </FormLabel>
+              <RadioGroup
+                row
+                name='status'
+                value={formValues.status}
+                onChange={handleInputChange}
               >
-                Closed
-              </MenuItem>
-              <MenuItem
-                value='Interview Scheduled'
-              >
-                Interview Scheduled
-              </MenuItem>
-            </Select>
-          </FormControl>
+                <FormControlLabel
+                  value='Active'
+                  control={<Radio color='primary' />}
+                  label='Active'
+                />
+                <FormControlLabel
+                  value='Closed'
+                  control={<Radio color='error' />}
+                  label='Closed'
+                />
+                <FormControlLabel
+                  value='Interview Scheduled'
+                  control={<Radio color='success' />}
+                  label='Interview Scheduled'
+                  color='success'
+                />
+              </RadioGroup>
+            </FormControl>
+          </Grid>
           <TextField
             sx={{
               mb: 2

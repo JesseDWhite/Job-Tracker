@@ -15,6 +15,7 @@ import {
   IconButton,
   TextField,
   Tooltip,
+  Rating,
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -113,23 +114,23 @@ const Home = () => {
 
   const gradeApplication = (score) => {
     if (score < 20) {
-      return 'F'
+      return 1
     } else if (score >= 20 && score < 40) {
-      return 'D'
+      return 2
     } else if (score >= 40 && score < 60) {
-      return 'C'
+      return 3
     } else if (score >= 60 && score < 80) {
-      return 'B'
-    } else return 'A'
+      return 4
+    } else return 5
   }
 
   const getStatus = (status) => {
     if (status === 'Active') {
-      return 'green';
+      return '#673AB7';
     } else if (status === 'Interview Scheduled') {
-      return 'blue';
+      return '#4CAF50';
     } else if (status === 'Closed') {
-      return 'red';
+      return '#F44336';
     }
   };
 
@@ -227,7 +228,19 @@ const Home = () => {
                       }}
                     >
                       <Grid>
-                        <Typography variant='h4'>{job.company}: {gradeApplication(job.score)} {job.score}% </Typography>
+                        <Typography
+                          variant='h4'>
+                          {job.company}
+                          <Rating
+                            readOnly
+                            value={gradeApplication(job.score)}
+                            size='large'
+                            sx={{
+                              float: 'right',
+                              mt: 0.75
+                            }}
+                          />
+                        </Typography>
                         <Grid
                           container
                           direction="row"
