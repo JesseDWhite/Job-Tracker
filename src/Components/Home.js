@@ -28,6 +28,8 @@ import {
   DescriptionTwoTone,
   DeleteForeverTwoTone,
 } from '@mui/icons-material';
+import CardView from './CardView';
+import ListView from './ListView';
 
 const Home = () => {
 
@@ -38,6 +40,8 @@ const Home = () => {
   const [searchJobs, setSearchJobs] = useState(jobs);
 
   const [searchString, setSearchString] = useState();
+
+  const [view, setView] = useState('card');
 
   const fileInput = useRef();
 
@@ -58,6 +62,7 @@ const Home = () => {
     const newStatus = document.querySelector(`input[name='status']:checked`).value;
     const updateStatus = { status: newStatus };
     await updateDoc(jobDoc, updateStatus);
+    getJobs();
   }
 
   const deleteJob = async (id) => {
@@ -76,6 +81,15 @@ const Home = () => {
   const handleInputChange = () => {
     const search = document.getElementById('searchBar').value;
     setSearchString(search);
+  }
+
+  const changeView = () => {
+    let newView = view;
+    newView === 'card' ?
+      newView = 'list' :
+      newView = 'card'
+    setView(newView);
+    console.log(view);
   }
 
   const sortByStatus = () => {
@@ -162,6 +176,10 @@ const Home = () => {
     handleSearch(searchString);
   }, [searchString]);
 
+  useEffect(() => {
+    console.log(view)
+  }, [view])
+
   return (
     <>
       <Grid
@@ -188,6 +206,7 @@ const Home = () => {
             id='coverLetter'
             onChange={readFile}
           />
+          <Button onClick={() => changeView()}>{view}</Button>
           <Grid
             container
             direction="row"
@@ -242,130 +261,22 @@ const Home = () => {
               searchJobs.map(job => {
                 return (
                   <Grid
-                    sm={4}
+                    sm={view === 'card' ? 4 : 8}
                   >
-                    <Paper
-                      elevation={3}
-                      sx={{
-                        m: 3,
-                        p: 3,
-                        minHeight: 250,
-                        border: 'solid 5px',
-                        borderColor: getStatus(job.status),
-                        background: job.score > 85 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
-                      }}
-                    >
-                      <Grid>
-                        <Typography
-                          variant='h4'>
-                          {job.company}
-                          <Rating
-                            readOnly
-                            value={gradeApplication(job.score)}
-                            size='large'
-                            sx={{
-                              float: 'right',
-                              mt: 0.75
-                            }}
-                          />
-                        </Typography>
-                        <Grid
-                          container
-                          direction="row"
-                          justifyContent='start'
-                        >
-                          <Tooltip
-                            title='Job Posting'
-                          >
-                            <IconButton
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              href={job.jobPosting}
-                              disabled={!job.jobPosting ? true : false}
-                              color='primary'
-                            >
-                              <WorkTwoTone />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip
-                            title='Application Tracking System'
-                          >
-                            <IconButton
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              href={job.ats}
-                              disabled={!job.ats ? true : false}
-                              color='primary'
-                            >
-                              <InsertChartTwoTone />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip
-                            title='Cover Letter'
-                          >
-                            <IconButton
-                              href={job.coverLetter}
-                              disabled={!job.coverLetter ? true : false}
-                              download='Cover Letter'
-                              color='primary'
-                            >
-                              <DescriptionTwoTone />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip
-                            title='Resume'
-                          >
-                            <IconButton
-                              href={job.resume}
-                              disabled={!job.resume ? true : false}
-                              download='Resume'
-                              color='primary'
-                            >
-                              <DescriptionTwoTone />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip
-                            title='Delete'
-                          >
-                            <IconButton
-                              color='error'
-                              onClick={() => deleteJob(job.id)}>
-                              <DeleteForeverTwoTone />
-                            </IconButton>
-                          </Tooltip>
-                        </Grid>
-                      </Grid>
-                      <Typography variant='h5'>{job.jobTitle}</Typography>
-                      <Typography>{job.dateApplied}</Typography>
-                      <FormControl component='fieldset'>
-                        <RadioGroup
-                          row
-                          id='status'
-                          name='status'
-                          value={job.status}
-                          onChange={() => updateJob(job.id)}
-                        >
-                          <FormControlLabel
-                            value='Active'
-                            control={<Radio color='success' />}
-                            label='Active'
-                          />
-                          <FormControlLabel
-                            value='Closed'
-                            control={<Radio color='error' />}
-                            label='Closed'
-                          />
-                          <FormControlLabel
-                            value='Interview Scheduled'
-                            control={<Radio color='primary' />}
-                            label='Interview Scheduled'
-                            color='success'
-                          />
-                        </RadioGroup>
-                      </FormControl>
-                      <Typography>{job.status}</Typography>
-                      <Typography>{job.notes}</Typography>
-                    </Paper>
+                    {view === 'card' ?
+                      <CardView
+                        job={job}
+                        getStatus={getStatus}
+                        gradeApplication={gradeApplication}
+                        deleteJob={deleteJob}
+                        updateJob={updateJob}
+                      /> : <ListView
+                        job={job}
+                        getStatus={getStatus}
+                        gradeApplication={gradeApplication}
+                        deleteJob={deleteJob}
+                        updateJob={updateJob}
+                      />}
                   </Grid>
                 );
               })}
