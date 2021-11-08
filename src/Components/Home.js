@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../firebase';
 import {
   collection,
   getDocs,
   doc,
-  deleteDoc
+  deleteDoc,
+  updateDoc
 } from 'firebase/firestore';
 import NewJob from './NewJob';
 import {
@@ -16,6 +17,10 @@ import {
   TextField,
   Tooltip,
   Rating,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -34,6 +39,8 @@ const Home = () => {
 
   const [searchString, setSearchString] = useState();
 
+  const fileInput = useRef();
+
   const getJobs = async () => {
     const data = await getDocs(jobsReference);
     setSearchJobs(data.docs.map((doc) =>
@@ -44,6 +51,13 @@ const Home = () => {
     ({
       ...doc.data(), id: doc.id
     })));
+  }
+
+  const updateJob = async (id) => {
+    const jobDoc = doc(db, 'jobs', id);
+    const newStatus = document.querySelector(`input[name='status']:checked`).value;
+    const updateStatus = { status: newStatus };
+    await updateDoc(jobDoc, updateStatus);
   }
 
   const deleteJob = async (id) => {
@@ -126,13 +140,19 @@ const Home = () => {
 
   const getStatus = (status) => {
     if (status === 'Active') {
-      return '#673AB7';
-    } else if (status === 'Interview Scheduled') {
       return '#4CAF50';
+    } else if (status === 'Interview Scheduled') {
+      return '#673AB7';
     } else if (status === 'Closed') {
       return '#F44336';
     }
   };
+
+  const readFile = (file) => {
+    file = document.getElementById('coverLetter').files[0];
+    // const URLObject = URL.createObjectURL(file);
+    return console.log(file.text());
+  }
 
   useEffect(() => {
     getJobs();
@@ -140,7 +160,7 @@ const Home = () => {
 
   useEffect(() => {
     handleSearch(searchString);
-  }, [searchString])
+  }, [searchString]);
 
   return (
     <>
@@ -161,6 +181,13 @@ const Home = () => {
           >
             ALL JOB APPLICATIONS
           </Typography>
+          <input
+            type="file"
+            accept='application/pdf'
+            name='coverLetter'
+            id='coverLetter'
+            onChange={readFile}
+          />
           <Grid
             container
             direction="row"
@@ -224,7 +251,8 @@ const Home = () => {
                         p: 3,
                         minHeight: 250,
                         border: 'solid 5px',
-                        borderColor: getStatus(job.status)
+                        borderColor: getStatus(job.status),
+                        background: job.score > 85 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
                       }}
                     >
                       <Grid>
@@ -309,6 +337,32 @@ const Home = () => {
                       </Grid>
                       <Typography variant='h5'>{job.jobTitle}</Typography>
                       <Typography>{job.dateApplied}</Typography>
+                      <FormControl component='fieldset'>
+                        <RadioGroup
+                          row
+                          id='status'
+                          name='status'
+                          value={job.status}
+                          onChange={() => updateJob(job.id)}
+                        >
+                          <FormControlLabel
+                            value='Active'
+                            control={<Radio color='success' />}
+                            label='Active'
+                          />
+                          <FormControlLabel
+                            value='Closed'
+                            control={<Radio color='error' />}
+                            label='Closed'
+                          />
+                          <FormControlLabel
+                            value='Interview Scheduled'
+                            control={<Radio color='primary' />}
+                            label='Interview Scheduled'
+                            color='success'
+                          />
+                        </RadioGroup>
+                      </FormControl>
                       <Typography>{job.status}</Typography>
                       <Typography>{job.notes}</Typography>
                     </Paper>

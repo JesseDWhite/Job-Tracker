@@ -18,7 +18,7 @@ const initialValues = {
   dateApplied: '',
   jobDescription: '',
   jobTitle: '',
-  status: '',
+  status: 'Active',
   jobPosting: '',
   ats: '',
   coverLetter: '',
@@ -172,12 +172,13 @@ const NewJob = (props) => {
               <RadioGroup
                 row
                 name='status'
+                defaultValue='Active'
                 value={formValues.status}
                 onChange={handleInputChange}
               >
                 <FormControlLabel
                   value='Active'
-                  control={<Radio color='primary' />}
+                  control={<Radio color='success' />}
                   label='Active'
                 />
                 <FormControlLabel
@@ -187,7 +188,7 @@ const NewJob = (props) => {
                 />
                 <FormControlLabel
                   value='Interview Scheduled'
-                  control={<Radio color='success' />}
+                  control={<Radio color='primary' />}
                   label='Interview Scheduled'
                   color='success'
                 />
@@ -275,6 +276,9 @@ const NewJob = (props) => {
             fullWidth
           />
           <Button
+            sx={{
+              width: '100%'
+            }}
             type='button'
             variant='contained'
             color='success'
