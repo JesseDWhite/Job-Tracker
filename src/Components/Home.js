@@ -13,6 +13,7 @@ import {
   Button,
   Paper,
   TextField,
+  Typography,
 } from '@mui/material';
 import CardView from './CardView';
 import ListView from './ListView';
@@ -33,17 +34,26 @@ const Home = () => {
 
   const getJobs = async () => {
     const data = await getDocs(jobsReference);
-    setSearchJobs(data.docs.map((doc) =>
+    const newSearchJobs = data.docs.map((doc) =>
     ({
       ...doc.data(), id: doc.id
-    })));
-    setJobs(data.docs.map((doc) =>
-    ({
-      ...doc.data(), id: doc.id
-    })));
+    }));
+    newSearchJobs.sort((a, b) => {
+      const newA = a.dateApplied;
+      const newB = b.dateApplied;
+      if (newA < newB) {
+        return 1;
+      }
+      if (newA > newB) {
+        return -1;
+      }
+      return 0;
+    })
+    setSearchJobs(newSearchJobs);
+    setJobs(newSearchJobs);
   }
 
-  const updateJob = async (id, e) => {
+  const updateJobStatus = async (id, e) => {
     const jobDoc = doc(db, 'jobs', id);
     const newStatus = e.target.value;
     const updateStatus = { status: newStatus };
@@ -60,12 +70,12 @@ const Home = () => {
   const handleSearch = (e) => {
     const newJobs = [...jobs];
     const filteredJobs = newJobs.filter(job =>
-      job.company.toLowerCase().includes(e));
+      job.company.toLowerCase().includes(e.toLowerCase()));
     setSearchJobs(filteredJobs);
   }
 
-  const handleInputChange = () => {
-    const search = document.getElementById('searchBar').value;
+  const handleInputChange = (e) => {
+    const search = e.target.value;
     setSearchString(search);
   }
 
@@ -75,7 +85,6 @@ const Home = () => {
       newView = 'list' :
       newView = 'card'
     setView(newView);
-    console.log(view);
   }
 
   const sortByStatus = () => {
@@ -163,7 +172,6 @@ const Home = () => {
   }, [searchString]);
 
   useEffect(() => {
-    console.log(view)
   }, [view])
 
   return (
@@ -190,7 +198,7 @@ const Home = () => {
               placeholder='SEARCH COMPANIES'
               variant='standard'
               id='searchBar'
-              onChange={handleInputChange}
+              onChange={(e) => handleInputChange(e)}
               value={searchString}
             />
           </Grid>
@@ -215,12 +223,6 @@ const Home = () => {
             <Button
               variant='text'
               color='warning'
-              onClick={() => sortByStatus()}>
-              SORT BY STATUS
-            </Button>
-            <Button
-              variant='text'
-              color='warning'
               onClick={() => sortByDate()}>
               SORT BY DATE
             </Button>
@@ -231,10 +233,114 @@ const Home = () => {
               SORT BY NAME A-Z
             </Button>
           </Grid>
+          <Grid>
+            <Typography
+              variant='h4'
+              sx={{
+                mt: 3,
+                ml: 2
+              }}
+            >
+              Upcoming Interviews
+            </Typography>
+            <Grid
+              container
+              direction='row'
+              justifyContent='start'
+            >
+              {searchJobs.length === 0 ? <img
+                src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
+                alt="nothing found"
+                style={{ width: 500 }}
+              /> :
+                searchJobs.map(job => {
+                  return (
+                    job.status === 'Interview' ?
+                      <Grid
+                        sm={view === 'card' ? 4 : 8}
+                        md={view === 'card' ? 6 : 11}
+                      >
+                        {view === 'card' ?
+                          <CardView
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                          /> : <ListView
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                          />}
+                      </Grid>
+                      : null
+                  );
+                })}
+            </Grid>
+          </Grid>
+          <Grid>
+            <Typography
+              variant='h4'
+              sx={{
+                mt: 3,
+                ml: 2
+              }}
+            >
+              Active Applications
+            </Typography>
+            <Grid
+              container
+              direction='row'
+              justifyContent='start'
+            >
+              {searchJobs.length === 0 ? <img
+                src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
+                alt="nothing found"
+                style={{ width: 500 }}
+              /> :
+                searchJobs.map(job => {
+                  return (
+                    job.status === 'Active' ?
+                      <Grid
+                        sm={view === 'card' ? 4 : 8}
+                        md={view === 'card' ? 6 : 11}
+                      >
+                        {view === 'card' ?
+                          <CardView
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                          /> : <ListView
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                          />}
+                      </Grid>
+                      : null
+                  );
+                })}
+            </Grid>
+          </Grid>
+          <Typography
+            variant='h4'
+            sx={{
+              mt: 3,
+              ml: 2
+            }}
+          >
+            Closed Applications
+
+          </Typography>
           <Grid
             container
             direction='row'
-            justifyContent='center'
+            justifyContent='start'
           >
             {searchJobs.length === 0 ? <img
               src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
@@ -243,25 +349,27 @@ const Home = () => {
             /> :
               searchJobs.map(job => {
                 return (
-                  <Grid
-                    sm={view === 'card' ? 4 : 8}
-                    md={view === 'card' ? 6 : 10}
-                  >
-                    {view === 'card' ?
-                      <CardView
-                        job={job}
-                        getStatus={getStatus}
-                        gradeApplication={gradeApplication}
-                        deleteJob={deleteJob}
-                        updateJob={updateJob}
-                      /> : <ListView
-                        job={job}
-                        getStatus={getStatus}
-                        gradeApplication={gradeApplication}
-                        deleteJob={deleteJob}
-                        updateJob={updateJob}
-                      />}
-                  </Grid>
+                  job.status === 'Closed' ?
+                    <Grid
+                      sm={view === 'card' ? 4 : 8}
+                      md={view === 'card' ? 6 : 11}
+                    >
+                      {view === 'card' ?
+                        <CardView
+                          job={job}
+                          getStatus={getStatus}
+                          gradeApplication={gradeApplication}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                        /> : <ListView
+                          job={job}
+                          getStatus={getStatus}
+                          gradeApplication={gradeApplication}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                        />}
+                    </Grid>
+                    : null
                 );
               })}
           </Grid>
@@ -275,7 +383,6 @@ const Home = () => {
               p: 3,
               mt: 3,
               mr: 3,
-              position: 'fixed',
             }}
           >
             <NewJob

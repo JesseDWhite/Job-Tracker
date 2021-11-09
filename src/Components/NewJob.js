@@ -151,7 +151,8 @@ const NewJob = (props) => {
             label='Job Title'
             onChange={handleInputChange}
             value={formValues.jobTitle}
-            fullWidth />
+            fullWidth
+          />
           <Grid
             container
             direction="row"

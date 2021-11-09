@@ -25,7 +25,7 @@ const ListView = (props) => {
     getStatus,
     gradeApplication,
     deleteJob,
-    updateJob
+    updateJobStatus
   } = props;
 
   return (
@@ -65,7 +65,7 @@ const ListView = (props) => {
               id='status'
               name='status'
               value={job.status}
-              onChange={(e) => updateJob(job.id, e)}
+              onChange={(e) => updateJobStatus(job.id, e)}
             >
               <FormControlLabel
                 value='Active'
