@@ -11,10 +11,18 @@ import {
   FormLabel,
   FormControlLabel
 } from '@mui/material';
+import { db } from '../firebase';
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  updateDoc
+} from 'firebase/firestore';
 import { KEYWORDS } from '../Constants/Keywords';
 
 const initialValues = {
-  company: 'test',
+  company: '',
   dateApplied: '',
   jobDescription: '',
   jobTitle: '',
@@ -29,7 +37,14 @@ const initialValues = {
 
 const EditJob = (props) => {
 
-  const { jobsReference, getJobs, formValues = initialValues, setFormValues } = props;
+  const {
+    jobsReference,
+    getJobs,
+    formValues = initialValues,
+    setFormValues,
+    editing,
+    setEditing
+  } = props;
 
   const fileInput = useRef();
 
@@ -43,19 +58,20 @@ const EditJob = (props) => {
     });
   };
 
-  const validateFormFields = () => {
+  const validateFormFields = (id) => {
     if (formValues.company === '' ||
       formValues.dateApplied === '' ||
       formValues.jobTitle === '' ||
       formValues.status === '') {
       console.log('gotta fill that bad boy out');
     } else {
-      createJob();
+      updateJob(id);
     }
   }
 
-  const createJob = async () => {
-    await addDoc(jobsReference, {
+  const updateJob = async (id) => {
+    const jobDoc = doc(db, 'jobs', id);
+    const propertiesToUpdate = {
       company: formValues.company,
       dateApplied: formValues.dateApplied,
       jobDescription: formValues.jobDescription,
@@ -67,9 +83,10 @@ const EditJob = (props) => {
       resume: formValues.resume,
       notes: formValues.notes,
       score: extractKeyWords(formValues.coverLetter, formValues.jobDescription)
-    });
+    }
+    await updateDoc(jobDoc, propertiesToUpdate);
     getJobs();
-    setFormValues(initialValues);
+    setEditing(!editing);
   };
 
   const extractKeyWords = (myDoc, jobDescription) => {

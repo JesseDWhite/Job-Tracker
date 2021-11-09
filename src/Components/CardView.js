@@ -55,7 +55,6 @@ const CardView = (props) => {
           <Typography
             variant='h4'>
             {job.company}
-            <Button onClick={() => setEditing(!editing)}>EDIT</Button>
           </Typography>
           <Grid
             sm={6}

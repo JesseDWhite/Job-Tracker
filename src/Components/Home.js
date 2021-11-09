@@ -73,12 +73,10 @@ const Home = () => {
   }
 
   const handleSearch = (e) => {
-    if (searchString) {
-      const newJobs = [...jobs];
-      const filteredJobs = newJobs.filter(job =>
-        job.company.toLowerCase().includes(e.toLowerCase()));
-      setSearchJobs(filteredJobs);
-    }
+    const newJobs = [...jobs];
+    const filteredJobs = newJobs.filter(job =>
+      job.company.toLowerCase().includes(e.toLowerCase()));
+    setSearchJobs(filteredJobs);
   }
 
   const handleInputChange = (e) => {
@@ -334,7 +332,6 @@ const Home = () => {
             }}
           >
             Closed Applications
-
           </Typography>
           <Grid
             container
