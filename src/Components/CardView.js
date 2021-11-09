@@ -33,27 +33,39 @@ const CardView = (props) => {
       elevation={3}
       sx={{
         m: 3,
-        p: 3,
+        p: 2,
         minHeight: 250,
         border: 'solid 5px',
         borderColor: getStatus(job.status),
-        background: job.score > 85 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
+        background: job.score > 80 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
       }}
     >
-      <Grid>
-        <Typography
-          variant='h4'>
-          {job.company}
-          <Rating
-            readOnly
-            value={gradeApplication(job.score)}
-            size='large'
-            sx={{
-              float: 'right',
-              mt: 0.75
-            }}
-          />
-        </Typography>
+      <Grid
+        container
+        direction="row"
+        justifyContent='space-between'
+      >
+        <Grid
+          sm={12}
+        >
+          <Typography
+            variant='h4'>
+            {job.company}
+          </Typography>
+          <Grid
+            sm={6}
+          >
+            <Rating
+              readOnly
+              value={gradeApplication(job.score)}
+              size='large'
+              sx={{
+                // float: 'right',
+                mt: 0.75
+              }}
+            />
+          </Grid>
+        </Grid>
         <Grid
           container
           direction="row"
@@ -128,7 +140,7 @@ const CardView = (props) => {
           id='status'
           name='status'
           value={job.status}
-          onChange={() => updateJob(job.id)}
+          onChange={(e) => updateJob(job.id, e)}
         >
           <FormControlLabel
             value='Active'
@@ -141,15 +153,15 @@ const CardView = (props) => {
             label='Closed'
           />
           <FormControlLabel
-            value='Interview Scheduled'
+            value='Interview'
             control={<Radio color='primary' />}
-            label='Interview Scheduled'
+            label='Interview'
             color='success'
           />
         </RadioGroup>
       </FormControl>
       <Typography>{job.notes}</Typography>
-    </Paper>
+    </Paper >
   )
 }
 

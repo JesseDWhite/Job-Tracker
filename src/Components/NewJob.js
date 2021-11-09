@@ -187,9 +187,9 @@ const NewJob = (props) => {
                   label='Closed'
                 />
                 <FormControlLabel
-                  value='Interview Scheduled'
+                  value='Interview'
                   control={<Radio color='primary' />}
-                  label='Interview Scheduled'
+                  label='Interview'
                   color='success'
                 />
               </RadioGroup>

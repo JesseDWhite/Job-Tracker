@@ -9,25 +9,11 @@ import {
 } from 'firebase/firestore';
 import NewJob from './NewJob';
 import {
-  Typography,
   Grid,
   Button,
   Paper,
-  IconButton,
   TextField,
-  Tooltip,
-  Rating,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormControl
 } from '@mui/material';
-import {
-  WorkTwoTone,
-  InsertChartTwoTone,
-  DescriptionTwoTone,
-  DeleteForeverTwoTone,
-} from '@mui/icons-material';
 import CardView from './CardView';
 import ListView from './ListView';
 
@@ -57,9 +43,9 @@ const Home = () => {
     })));
   }
 
-  const updateJob = async (id) => {
+  const updateJob = async (id, e) => {
     const jobDoc = doc(db, 'jobs', id);
-    const newStatus = document.querySelector(`input[name='status']:checked`).value;
+    const newStatus = e.target.value;
     const updateStatus = { status: newStatus };
     await updateDoc(jobDoc, updateStatus);
     getJobs();
@@ -155,7 +141,7 @@ const Home = () => {
   const getStatus = (status) => {
     if (status === 'Active') {
       return '#4CAF50';
-    } else if (status === 'Interview Scheduled') {
+    } else if (status === 'Interview') {
       return '#673AB7';
     } else if (status === 'Closed') {
       return '#F44336';
@@ -191,22 +177,6 @@ const Home = () => {
             m: 3,
           }}
         >
-          <Typography
-            variant='h3'
-            sx={{
-              textAlign: 'center'
-            }}
-          >
-            ALL JOB APPLICATIONS
-          </Typography>
-          <input
-            type="file"
-            accept='application/pdf'
-            name='coverLetter'
-            id='coverLetter'
-            onChange={readFile}
-          />
-          <Button onClick={() => changeView()}>{view}</Button>
           <Grid
             container
             direction="row"
@@ -229,6 +199,19 @@ const Home = () => {
             direction="row"
             justifyContent="space-around"
           >
+            {/* <input
+              type="file"
+              accept='application/pdf'
+              name='coverLetter'
+              id='coverLetter'
+              onChange={readFile}
+            /> */}
+            <Button
+              variant='text'
+              color='warning'
+              onClick={() => changeView()}>
+              View By: {view}
+            </Button>
             <Button
               variant='text'
               color='warning'
@@ -251,7 +234,7 @@ const Home = () => {
           <Grid
             container
             direction='row'
-            justifyContent='start'
+            justifyContent='center'
           >
             {searchJobs.length === 0 ? <img
               src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
@@ -262,6 +245,7 @@ const Home = () => {
                 return (
                   <Grid
                     sm={view === 'card' ? 4 : 8}
+                    md={view === 'card' ? 6 : 10}
                   >
                     {view === 'card' ?
                       <CardView
@@ -284,15 +268,14 @@ const Home = () => {
         </Grid>
         <Grid
           sm={4}
-          sx={{
-            mr: 3,
-            mt: 3
-          }}
         >
           <Paper
             elevation={3}
             sx={{
               p: 3,
+              mt: 3,
+              mr: 3,
+              position: 'fixed',
             }}
           >
             <NewJob

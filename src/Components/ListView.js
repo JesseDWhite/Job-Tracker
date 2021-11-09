@@ -32,13 +32,12 @@ const ListView = (props) => {
     <Paper
       elevation={3}
       sx={{
-        m: 3,
-        p: 3,
-        // maxHeight: 60,
-        width: '130%',
+        mt: 3,
+        p: 1.50,
+        width: '100%',
         border: 'solid 5px',
         borderColor: getStatus(job.status),
-        background: job.score > 85 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
+        background: job.score > 80 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
       }}
     >
       <Grid>
@@ -66,7 +65,7 @@ const ListView = (props) => {
               id='status'
               name='status'
               value={job.status}
-              onChange={() => updateJob(job.id)}
+              onChange={(e) => updateJob(job.id, e)}
             >
               <FormControlLabel
                 value='Active'
@@ -79,9 +78,9 @@ const ListView = (props) => {
                 label='Closed'
               />
               <FormControlLabel
-                value='Interview Scheduled'
+                value='Interview'
                 control={<Radio color='primary' />}
-                label='Interview Scheduled'
+                label='Interview'
                 color='success'
               />
             </RadioGroup>
