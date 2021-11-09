@@ -14,6 +14,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "datamuse": "^1.0.5",
+    "date-fns": "^2.25.0",
     "firebase": "^9.2.0",
     "firebase-config": "^0.0.2",
     "firebaseui": "^6.0.0",

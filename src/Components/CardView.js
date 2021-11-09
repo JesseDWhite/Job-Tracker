@@ -9,7 +9,8 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormControl
+  FormControl,
+  Button
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -17,6 +18,7 @@ import {
   DescriptionTwoTone,
   DeleteForeverTwoTone,
 } from '@mui/icons-material';
+import format from 'date-fns/format';
 
 const CardView = (props) => {
 
@@ -25,7 +27,9 @@ const CardView = (props) => {
     getStatus,
     gradeApplication,
     deleteJob,
-    updateJobStatus
+    updateJobStatus,
+    editing,
+    setEditing
   } = props;
 
   return (
@@ -51,6 +55,7 @@ const CardView = (props) => {
           <Typography
             variant='h4'>
             {job.company}
+            <Button onClick={() => setEditing(!editing)}>EDIT</Button>
           </Typography>
           <Grid
             sm={6}
@@ -133,7 +138,7 @@ const CardView = (props) => {
         </Grid>
       </Grid>
       <Typography variant='h5'>{job.jobTitle}</Typography>
-      <Typography>{job.dateApplied}</Typography>
+      <Typography>{format(new Date(job.dateApplied), 'MM/dd/yyyy')}</Typography>
       <FormControl component='fieldset'>
         <RadioGroup
           row

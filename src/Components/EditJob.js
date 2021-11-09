@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { addDoc } from 'firebase/firestore';
 import {
   TextField,
@@ -14,7 +14,7 @@ import {
 import { KEYWORDS } from '../Constants/Keywords';
 
 const initialValues = {
-  company: '',
+  company: 'test',
   dateApplied: '',
   jobDescription: '',
   jobTitle: '',
@@ -27,7 +27,7 @@ const initialValues = {
   score: 0,
 }
 
-const NewJob = (props) => {
+const EditJob = (props) => {
 
   const { jobsReference, getJobs, formValues = initialValues, setFormValues } = props;
 
@@ -114,7 +114,7 @@ const NewJob = (props) => {
           textAlign: 'center'
         }}
       >
-        NEW JOB
+        EDIT JOB
       </Typography>
       <Grid>
         <form method='post'>
@@ -290,4 +290,4 @@ const NewJob = (props) => {
   );
 };
 
-export default NewJob;
+export default EditJob;

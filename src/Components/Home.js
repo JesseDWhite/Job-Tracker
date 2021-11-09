@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import CardView from './CardView';
 import ListView from './ListView';
+import EditJob from './EditJob';
 
 const Home = () => {
 
@@ -29,6 +30,10 @@ const Home = () => {
   const [searchString, setSearchString] = useState();
 
   const [view, setView] = useState('card');
+
+  const [formValues, setFormValues] = useState();
+
+  const [editing, setEditing] = useState(false);
 
   const fileInput = useRef();
 
@@ -68,10 +73,12 @@ const Home = () => {
   }
 
   const handleSearch = (e) => {
-    const newJobs = [...jobs];
-    const filteredJobs = newJobs.filter(job =>
-      job.company.toLowerCase().includes(e.toLowerCase()));
-    setSearchJobs(filteredJobs);
+    if (searchString) {
+      const newJobs = [...jobs];
+      const filteredJobs = newJobs.filter(job =>
+        job.company.toLowerCase().includes(e.toLowerCase()));
+      setSearchJobs(filteredJobs);
+    }
   }
 
   const handleInputChange = (e) => {
@@ -85,22 +92,6 @@ const Home = () => {
       newView = 'list' :
       newView = 'card'
     setView(newView);
-  }
-
-  const sortByStatus = () => {
-    const newJobs = [...searchJobs];
-    const sortedByStatus = newJobs.sort((a, b) => {
-      const newA = a.status.toUpperCase();
-      const newB = b.status.toUpperCase();
-      if (newA < newB) {
-        return -1;
-      }
-      if (newA > newB) {
-        return 1;
-      }
-      return 0;
-    })
-    setSearchJobs(sortedByStatus);
   }
 
   const sortByDate = () => {
@@ -262,12 +253,16 @@ const Home = () => {
                       >
                         {view === 'card' ?
                           <CardView
+                            editing={editing}
+                            setEditing={setEditing}
                             job={job}
                             getStatus={getStatus}
                             gradeApplication={gradeApplication}
                             deleteJob={deleteJob}
                             updateJobStatus={updateJobStatus}
                           /> : <ListView
+                            editing={editing}
+                            setEditing={setEditing}
                             job={job}
                             getStatus={getStatus}
                             gradeApplication={gradeApplication}
@@ -309,12 +304,16 @@ const Home = () => {
                       >
                         {view === 'card' ?
                           <CardView
+                            editing={editing}
+                            setEditing={setEditing}
                             job={job}
                             getStatus={getStatus}
                             gradeApplication={gradeApplication}
                             deleteJob={deleteJob}
                             updateJobStatus={updateJobStatus}
                           /> : <ListView
+                            editing={editing}
+                            setEditing={setEditing}
                             job={job}
                             getStatus={getStatus}
                             gradeApplication={gradeApplication}
@@ -356,12 +355,16 @@ const Home = () => {
                     >
                       {view === 'card' ?
                         <CardView
+                          editing={editing}
+                          setEditing={setEditing}
                           job={job}
                           getStatus={getStatus}
                           gradeApplication={gradeApplication}
                           deleteJob={deleteJob}
                           updateJobStatus={updateJobStatus}
                         /> : <ListView
+                          editing={editing}
+                          setEditing={setEditing}
                           job={job}
                           getStatus={getStatus}
                           gradeApplication={gradeApplication}
@@ -383,12 +386,27 @@ const Home = () => {
               p: 3,
               mt: 3,
               mr: 3,
+              maxHeight: '100vh'
             }}
           >
-            <NewJob
-              jobsReference={jobsReference}
-              getJobs={getJobs}
-            />
+            {!editing ?
+              <NewJob
+                jobsReference={jobsReference}
+                getJobs={getJobs}
+                editing={editing}
+                setEditing={setEditing}
+                formValues={formValues}
+                setFormValues={setFormValues}
+              /> : <EditJob
+                jobsReference={jobsReference}
+                getJobs={getJobs}
+                editing={editing}
+                setEditing={setEditing}
+                formValues={formValues}
+                setFormValues={setFormValues}
+              />
+            }
+
           </Paper>
         </Grid>
       </Grid>

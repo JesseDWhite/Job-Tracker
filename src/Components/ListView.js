@@ -25,7 +25,9 @@ const ListView = (props) => {
     getStatus,
     gradeApplication,
     deleteJob,
-    updateJobStatus
+    updateJobStatus,
+    editing,
+    setEditing
   } = props;
 
   return (
@@ -33,6 +35,7 @@ const ListView = (props) => {
       elevation={3}
       sx={{
         mt: 3,
+        ml: 3,
         p: 1.50,
         width: '100%',
         border: 'solid 5px',
