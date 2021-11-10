@@ -22,7 +22,7 @@ const Home = () => {
 
   const [searchJobs, setSearchJobs] = useState(jobs);
 
-  const [view, setView] = useState('card');
+  const [cardView, setCardView] = useState(true);
 
   const [formValues, setFormValues] = useState();
 
@@ -49,14 +49,6 @@ const Home = () => {
     })
     setSearchJobs(newSearchJobs);
     setJobs(newSearchJobs);
-  }
-
-  const changeView = () => {
-    let newView = view;
-    newView === 'card' ?
-      newView = 'list' :
-      newView = 'card'
-    setView(newView);
   }
 
   const sortByDate = () => {
@@ -102,7 +94,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-  }, [view])
+  }, [cardView])
 
   return (
     <>
@@ -140,8 +132,8 @@ const Home = () => {
             <Button
               variant='text'
               color='warning'
-              onClick={() => changeView()}>
-              View By: {view}
+              onClick={() => setCardView(!cardView)}>
+              View By: {cardView ? 'CARD' : 'LIST'}
             </Button>
             <Button
               variant='text'
@@ -158,7 +150,7 @@ const Home = () => {
           </Grid>
           <Grid>
             <MasterList
-              view={view}
+              cardView={cardView}
               editing={editing}
               setEditing={setEditing}
               jobs={jobs}

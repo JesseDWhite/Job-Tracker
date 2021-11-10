@@ -45,7 +45,7 @@ const ListView = (props) => {
     >
       <Grid>
         <Typography
-          variant='h4'>
+          variant='h5'>
           {job.company} - {job.jobTitle}
           <Rating
             readOnly

@@ -18,7 +18,7 @@ const MasterList = (props) => {
     editing,
     setEditing,
     searchJobs,
-    view,
+    cardView,
     getJobs,
   } = props;
 
@@ -85,10 +85,10 @@ const MasterList = (props) => {
                 return (
                   job.status === 'Interview' ?
                     <Grid
-                      sm={view === 'card' ? 4 : 8}
-                      md={view === 'card' ? 6 : 11}
+                      sm={cardView ? 4 : 8}
+                      md={cardView ? 6 : 11}
                     >
-                      {view === 'card' ?
+                      {cardView ?
                         <CardView
                           editing={editing}
                           setEditing={setEditing}
@@ -136,10 +136,10 @@ const MasterList = (props) => {
                 return (
                   job.status === 'Active' ?
                     <Grid
-                      sm={view === 'card' ? 4 : 8}
-                      md={view === 'card' ? 6 : 11}
+                      sm={cardView ? 4 : 8}
+                      md={cardView ? 6 : 11}
                     >
-                      {view === 'card' ?
+                      {cardView ?
                         <CardView
                           editing={editing}
                           setEditing={setEditing}
@@ -186,10 +186,10 @@ const MasterList = (props) => {
               return (
                 job.status === 'Closed' ?
                   <Grid
-                    sm={view === 'card' ? 4 : 8}
-                    md={view === 'card' ? 6 : 11}
+                    sm={cardView ? 4 : 8}
+                    md={cardView ? 6 : 11}
                   >
-                    {view === 'card' ?
+                    {cardView ?
                       <CardView
                         editing={editing}
                         setEditing={setEditing}

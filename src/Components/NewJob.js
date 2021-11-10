@@ -70,53 +70,37 @@ const NewJob = (props) => {
       coverLetter: formValues.coverLetter,
       resume: formValues.resume,
       notes: formValues.notes,
+      jobPostingKeyWords: extractKeyWords(formValues.jobDescription),
+      coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
+      resumeKeyWords: extractKeyWords(formValues.resume),
       score: formValues.coverLetter === ''
         && formValues.resume === ''
         && formValues.jobDescription === '' ? 0
-        : extractKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
-      jobPostingKeyWords: formValues.jobPostingKeyWords,
-      coverLetterKeyWords: formValues.coverLetterKeyWords,
-      resumeKeyWords: formValues.resumeKeyWords
+        : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
     });
     getJobs();
     setFormValues(initialValues);
   };
 
-  const extractKeyWords = (coverLetter, resume, jobDescription) => {
-    const removeNonLetterFromCoverLetter = coverLetter.replace(/[.,\/!$%\^&\*;:{}=\_`~()]/g, '')
+  const extractKeyWords = (doc) => {
+    const removeNonLetters = doc.replace(/[.,\/!$%\^&\*;:{}=\_`~()]/g, '')
       .replace(/\s+/g, ' ')
       .toLowerCase();
-    const removeNonLetterFromResume = resume.replace(/[.,\/!$%\^&\*;:{}=\_`~()]/g, '')
-      .replace(/\s+/g, ' ')
-      .toLowerCase();
-    const removeNonLetterFromJobPosting = jobDescription.replace(/[.,\/!$%\^&\*;:{}=\_`~()]/g, '')
-      .replace(/\s+/g, ' ')
-      .toLowerCase();
-    const extractMatchingWordsCoverLetter = removeNonLetterFromCoverLetter.split(' ')
+
+    const extractMatchingWords = removeNonLetters.split(' ')
       .sort()
       .filter(e => KEYWORDS.includes(e));
-    const extractMatchingWordsResume = removeNonLetterFromResume.split(' ')
-      .sort()
-      .filter(e => KEYWORDS.includes(e));
-    const extractMatchingWordsJobPosting = removeNonLetterFromJobPosting.split(' ')
-      .sort()
-      .filter(e => KEYWORDS.includes(e));
-    const coverLetterKeyWordsNoDups = [...new Set(extractMatchingWordsCoverLetter)];
-    const resumeKeyWordsNoDups = [...new Set(extractMatchingWordsResume)];
-    const jobPostingKeyWordsNoDups = [...new Set(extractMatchingWordsJobPosting)];
-    console.log('Cover Letter', coverLetterKeyWordsNoDups);
-    console.log('Resume', resumeKeyWordsNoDups)
-    console.log('Job Description', jobPostingKeyWordsNoDups);
-    setFormValues({
-      ...formValues,
-      jobPostingKeyWords: jobPostingKeyWordsNoDups,
-      coverLetterKeyWords: coverLetterKeyWordsNoDups,
-      resumeKeyWords: resumeKeyWordsNoDups
-    })
-    return getScore(coverLetterKeyWordsNoDups, resumeKeyWordsNoDups, jobPostingKeyWordsNoDups)
+
+    const docKeyWordsNoDups = [...new Set(extractMatchingWords)];
+
+    return docKeyWordsNoDups;
   }
 
   const getScore = (coverLetter, resume, jobDescription) => {
+    coverLetter = extractKeyWords(coverLetter);
+    resume = extractKeyWords(resume);
+    jobDescription = extractKeyWords(jobDescription);
+
     const newTotalScore = jobDescription.length;
     const combinedDocuments = coverLetter.concat(resume);
     const removeDuplicates = [...new Set(combinedDocuments)];
@@ -125,6 +109,9 @@ const NewJob = (props) => {
     const percentage = newYourScore / newTotalScore * 100;
     console.log('percentage', percentage);
     console.log(`${newYourScore}/${newTotalScore}`);
+    console.log(coverLetter);
+    console.log(resume);
+    console.log(jobDescription);
 
     return percentage.toFixed(0);
   }
