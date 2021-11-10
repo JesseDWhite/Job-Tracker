@@ -3,21 +3,16 @@ import { db } from '../firebase';
 import {
   collection,
   getDocs,
-  doc,
-  deleteDoc,
-  updateDoc
 } from 'firebase/firestore';
 import NewJob from './NewJob';
 import {
   Grid,
   Button,
   Paper,
-  TextField,
   Typography,
 } from '@mui/material';
-import CardView from './CardView';
-import ListView from './ListView';
-import EditJob from './EditJob';
+import SearchBar from './SearchBar';
+import MasterList from './MasterList';
 
 const Home = () => {
 
@@ -26,8 +21,6 @@ const Home = () => {
   const [jobs, setJobs] = useState([]);
 
   const [searchJobs, setSearchJobs] = useState(jobs);
-
-  const [searchString, setSearchString] = useState();
 
   const [view, setView] = useState('card');
 
@@ -56,32 +49,6 @@ const Home = () => {
     })
     setSearchJobs(newSearchJobs);
     setJobs(newSearchJobs);
-  }
-
-  const updateJobStatus = async (id, e) => {
-    const jobDoc = doc(db, 'jobs', id);
-    const newStatus = e.target.value;
-    const updateStatus = { status: newStatus };
-    await updateDoc(jobDoc, updateStatus);
-    getJobs();
-  }
-
-  const deleteJob = async (id) => {
-    const jobDoc = doc(db, 'jobs', id);
-    await deleteDoc(jobDoc);
-    getJobs();
-  }
-
-  const handleSearch = (e) => {
-    const newJobs = [...jobs];
-    const filteredJobs = newJobs.filter(job =>
-      job.company.toLowerCase().includes(e.toLowerCase()));
-    setSearchJobs(filteredJobs);
-  }
-
-  const handleInputChange = (e) => {
-    const search = e.target.value;
-    setSearchString(search);
   }
 
   const changeView = () => {
@@ -124,28 +91,6 @@ const Home = () => {
     setSearchJobs(sortedByStatus);
   }
 
-  const gradeApplication = (score) => {
-    if (score < 20) {
-      return 1
-    } else if (score >= 20 && score < 40) {
-      return 2
-    } else if (score >= 40 && score < 60) {
-      return 3
-    } else if (score >= 60 && score < 80) {
-      return 4
-    } else return 5
-  }
-
-  const getStatus = (status) => {
-    if (status === 'Active') {
-      return '#4CAF50';
-    } else if (status === 'Interview') {
-      return '#673AB7';
-    } else if (status === 'Closed') {
-      return '#F44336';
-    }
-  };
-
   const readFile = (file) => {
     file = document.getElementById('coverLetter').files[0];
     // const URLObject = URL.createObjectURL(file);
@@ -155,10 +100,6 @@ const Home = () => {
   useEffect(() => {
     getJobs();
   }, []);
-
-  useEffect(() => {
-    handleSearch(searchString);
-  }, [searchString]);
 
   useEffect(() => {
   }, [view])
@@ -179,16 +120,9 @@ const Home = () => {
             direction="row"
             justifyContent="center"
           >
-            <TextField
-              sx={{
-                width: '90%',
-                height: 50,
-              }}
-              placeholder='SEARCH COMPANIES'
-              variant='standard'
-              id='searchBar'
-              onChange={(e) => handleInputChange(e)}
-              value={searchString}
+            <SearchBar
+              jobs={jobs}
+              setSearchJobs={setSearchJobs}
             />
           </Grid>
           <Grid
@@ -223,155 +157,14 @@ const Home = () => {
             </Button>
           </Grid>
           <Grid>
-            <Typography
-              variant='h4'
-              sx={{
-                mt: 3,
-                ml: 2
-              }}
-            >
-              Upcoming Interviews
-            </Typography>
-            <Grid
-              container
-              direction='row'
-              justifyContent='start'
-            >
-              {searchJobs.length === 0 ? <img
-                src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
-                alt="nothing found"
-                style={{ width: 500 }}
-              /> :
-                searchJobs.map(job => {
-                  return (
-                    job.status === 'Interview' ?
-                      <Grid
-                        sm={view === 'card' ? 4 : 8}
-                        md={view === 'card' ? 6 : 11}
-                      >
-                        {view === 'card' ?
-                          <CardView
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                          /> : <ListView
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                          />}
-                      </Grid>
-                      : null
-                  );
-                })}
-            </Grid>
-          </Grid>
-          <Grid>
-            <Typography
-              variant='h4'
-              sx={{
-                mt: 3,
-                ml: 2
-              }}
-            >
-              Active Applications
-            </Typography>
-            <Grid
-              container
-              direction='row'
-              justifyContent='start'
-            >
-              {searchJobs.length === 0 ? <img
-                src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
-                alt="nothing found"
-                style={{ width: 500 }}
-              /> :
-                searchJobs.map(job => {
-                  return (
-                    job.status === 'Active' ?
-                      <Grid
-                        sm={view === 'card' ? 4 : 8}
-                        md={view === 'card' ? 6 : 11}
-                      >
-                        {view === 'card' ?
-                          <CardView
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                          /> : <ListView
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                          />}
-                      </Grid>
-                      : null
-                  );
-                })}
-            </Grid>
-          </Grid>
-          <Typography
-            variant='h4'
-            sx={{
-              mt: 3,
-              ml: 2
-            }}
-          >
-            Closed Applications
-          </Typography>
-          <Grid
-            container
-            direction='row'
-            justifyContent='start'
-          >
-            {searchJobs.length === 0 ? <img
-              src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
-              alt="nothing found"
-              style={{ width: 500 }}
-            /> :
-              searchJobs.map(job => {
-                return (
-                  job.status === 'Closed' ?
-                    <Grid
-                      sm={view === 'card' ? 4 : 8}
-                      md={view === 'card' ? 6 : 11}
-                    >
-                      {view === 'card' ?
-                        <CardView
-                          editing={editing}
-                          setEditing={setEditing}
-                          job={job}
-                          getStatus={getStatus}
-                          gradeApplication={gradeApplication}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                        /> : <ListView
-                          editing={editing}
-                          setEditing={setEditing}
-                          job={job}
-                          getStatus={getStatus}
-                          gradeApplication={gradeApplication}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                        />}
-                    </Grid>
-                    : null
-                );
-              })}
+            <MasterList
+              view={view}
+              editing={editing}
+              setEditing={setEditing}
+              jobs={jobs}
+              searchJobs={searchJobs}
+              getJobs={getJobs}
+            />
           </Grid>
         </Grid>
         <Grid
@@ -383,7 +176,9 @@ const Home = () => {
               p: 3,
               mt: 3,
               mr: 3,
-              maxHeight: '100vh'
+              // maxHeight: '100vh',
+              // maxWidth: '30vw',
+              // position: 'fixed',
             }}
           >
             {!editing ?
@@ -394,16 +189,9 @@ const Home = () => {
                 setEditing={setEditing}
                 formValues={formValues}
                 setFormValues={setFormValues}
-              /> : <EditJob
-                jobsReference={jobsReference}
-                getJobs={getJobs}
-                editing={editing}
-                setEditing={setEditing}
-                formValues={formValues}
-                setFormValues={setFormValues}
-              />
+              /> :
+              <Typography>EDIT</Typography>
             }
-
           </Paper>
         </Grid>
       </Grid>

@@ -41,7 +41,7 @@ const CardView = (props) => {
         minHeight: 250,
         border: 'solid 5px',
         borderColor: getStatus(job.status),
-        background: job.score > 80 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
+        background: job.score > 89 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
       }}
     >
       <Grid
@@ -64,7 +64,6 @@ const CardView = (props) => {
               value={gradeApplication(job.score)}
               size='large'
               sx={{
-                // float: 'right',
                 mt: 0.75
               }}
             />
@@ -137,7 +136,9 @@ const CardView = (props) => {
         </Grid>
       </Grid>
       <Typography variant='h5'>{job.jobTitle}</Typography>
-      <Typography>{format(new Date(job.dateApplied), 'MM/dd/yyyy')}</Typography>
+      <Typography>
+        {format(new Date(job.dateApplied.replace(/-/g, '\/')), 'PPP')}
+      </Typography>
       <FormControl component='fieldset'>
         <RadioGroup
           row

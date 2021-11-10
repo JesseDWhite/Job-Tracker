@@ -12,10 +12,11 @@ import {
   FormControlLabel
 } from '@mui/material';
 import { KEYWORDS } from '../Constants/Keywords';
+import format from 'date-fns/format';
 
 const initialValues = {
   company: '',
-  dateApplied: '',
+  dateApplied: format(new Date(), 'yyyy-MM-dd'),
   jobDescription: '',
   jobTitle: '',
   status: 'Active',
@@ -24,6 +25,9 @@ const initialValues = {
   coverLetter: '',
   resume: '',
   notes: '',
+  jobPostingKeyWords: [],
+  coverLetterKeyWords: [],
+  resumeKeyWords: [],
   score: 0,
 }
 
@@ -66,7 +70,13 @@ const NewJob = (props) => {
       coverLetter: formValues.coverLetter,
       resume: formValues.resume,
       notes: formValues.notes,
-      score: extractKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription)
+      score: formValues.coverLetter === ''
+        && formValues.resume === ''
+        && formValues.jobDescription === '' ? 0
+        : extractKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+      jobPostingKeyWords: formValues.jobPostingKeyWords,
+      coverLetterKeyWords: formValues.coverLetterKeyWords,
+      resumeKeyWords: formValues.resumeKeyWords
     });
     getJobs();
     setFormValues(initialValues);
@@ -97,17 +107,25 @@ const NewJob = (props) => {
     console.log('Cover Letter', coverLetterKeyWordsNoDups);
     console.log('Resume', resumeKeyWordsNoDups)
     console.log('Job Description', jobPostingKeyWordsNoDups);
+    setFormValues({
+      ...formValues,
+      jobPostingKeyWords: jobPostingKeyWordsNoDups,
+      coverLetterKeyWords: coverLetterKeyWordsNoDups,
+      resumeKeyWords: resumeKeyWordsNoDups
+    })
     return getScore(coverLetterKeyWordsNoDups, resumeKeyWordsNoDups, jobPostingKeyWordsNoDups)
   }
 
   const getScore = (coverLetter, resume, jobDescription) => {
     const newTotalScore = jobDescription.length;
-    const newCoverLetterScoreArray = coverLetter.filter(e => jobDescription.includes(e));
-    const newResumeScoreArray = resume.filter(e => jobDescription.includes(e));
-    const newYourScore = newCoverLetterScoreArray.length + newResumeScoreArray.length;
+    const combinedDocuments = coverLetter.concat(resume);
+    const removeDuplicates = [...new Set(combinedDocuments)];
+    const newScoreArray = removeDuplicates.filter(e => jobDescription.includes(e));
+    const newYourScore = newScoreArray.length;
     const percentage = newYourScore / newTotalScore * 100;
     console.log('percentage', percentage);
-    console.log('myScore', newYourScore);
+    console.log(`${newYourScore}/${newTotalScore}`);
+
     return percentage.toFixed(0);
   }
 
@@ -146,7 +164,6 @@ const NewJob = (props) => {
             }}
             type="date"
             name='dateApplied'
-            initialValues='today'
             onChange={handleInputChange}
             value={formValues.dateApplied}
             fullWidth

@@ -40,7 +40,7 @@ const ListView = (props) => {
         width: '100%',
         border: 'solid 5px',
         borderColor: getStatus(job.status),
-        background: job.score > 80 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
+        background: job.score > 89 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
       }}
     >
       <Grid>
