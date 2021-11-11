@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { addDoc } from 'firebase/firestore';
 import {
   TextField,
@@ -34,7 +34,12 @@ const initialValues = {
 
 const NewJob = (props) => {
 
-  const { jobsReference, getJobs, formValues = initialValues, setFormValues } = props;
+  const {
+    jobsReference,
+    getJobs,
+    formValues = initialValues,
+    setFormValues,
+  } = props;
 
   const fileInput = useRef();
 
@@ -109,11 +114,6 @@ const NewJob = (props) => {
     const newScoreArray = removeDuplicates.filter(e => jobDescription.includes(e));
     const newYourScore = newScoreArray.length;
     const percentage = newYourScore / newTotalScore * 100;
-    console.log('percentage', percentage);
-    console.log(`${newYourScore}/${newTotalScore}`);
-    console.log(coverLetter);
-    console.log(resume);
-    console.log(jobDescription);
 
     return percentage.toFixed(0);
   }
@@ -190,6 +190,7 @@ const NewJob = (props) => {
                 }}
                 type='date'
                 name='dateApplied'
+                label='Date Applied'
                 onChange={handleInputChange}
                 value={formValues.dateApplied}
               />
@@ -225,15 +226,14 @@ const NewJob = (props) => {
                   label='Active'
                 />
                 <FormControlLabel
-                  value='Closed'
-                  control={<Radio color='error' />}
-                  label='Closed'
-                />
-                <FormControlLabel
                   value='Interview'
                   control={<Radio color='primary' />}
                   label='Interview'
-                  color='success'
+                />
+                <FormControlLabel
+                  value='Closed'
+                  control={<Radio color='error' />}
+                  label='Closed'
                 />
               </RadioGroup>
             </FormControl>

@@ -18,22 +18,42 @@ const MasterList = (props) => {
     editing,
     setEditing,
     searchJobs,
+    setSearchJobs,
     cardView,
     getJobs,
+    jobs,
+    setJobs,
   } = props;
 
-  const deleteJob = async (id) => {
+  const deleteJob = async (id, jobidx) => {
+    const newJobs = [...jobs];
+    newJobs.splice(jobidx, 1);
     const jobDoc = doc(db, 'jobs', id);
+    setSearchJobs(newJobs);
+    setJobs(newJobs);
     await deleteDoc(jobDoc);
-    getJobs();
   }
 
-  const updateJobStatus = async (id, e) => {
-    const jobDoc = doc(db, 'jobs', id);
+  const updateJobStatus = async (id, jobidx, e) => {
     const newStatus = e.target.value;
+    const newJobs = [...jobs];
+    newJobs[jobidx].status = newStatus;
+    const jobDoc = doc(db, 'jobs', id);
     const updateStatus = { status: newStatus };
+    setJobs(newJobs);
+    setSearchJobs(newJobs);
     await updateDoc(jobDoc, updateStatus);
-    getJobs();
+  }
+
+  const updateInterviewDate = async (id, jobidx, e) => {
+    const newInterviewDate = e.target.value;
+    const newJobs = [...jobs];
+    newJobs[jobidx].interviewDate = newInterviewDate;
+    const jobDoc = doc(db, 'jobs', id);
+    const updateInterviewDate = { interviewDate: newInterviewDate }
+    setJobs(newJobs);
+    setSearchJobs(newJobs);
+    await updateDoc(jobDoc, updateInterviewDate);
   }
 
   const gradeApplication = (score) => {
@@ -76,12 +96,10 @@ const MasterList = (props) => {
             direction='row'
             justifyContent='start'
           >
-            {searchJobs.length === 0 ? <img
-              src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
-              alt="nothing found"
-              style={{ width: 500 }}
-            /> :
-              searchJobs.map(job => {
+            {searchJobs.length === 0 ?
+              <Typography>NO RESULTS</Typography>
+              :
+              searchJobs.map((job, jobidx) => {
                 return (
                   job.status === 'Interview' ?
                     <Grid
@@ -97,6 +115,8 @@ const MasterList = (props) => {
                           gradeApplication={gradeApplication}
                           deleteJob={deleteJob}
                           updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
+                          updateInterviewDate={updateInterviewDate}
                         /> : <ListView
                           editing={editing}
                           setEditing={setEditing}
@@ -105,6 +125,7 @@ const MasterList = (props) => {
                           gradeApplication={gradeApplication}
                           deleteJob={deleteJob}
                           updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
                         />}
                     </Grid>
                     : null
@@ -127,12 +148,10 @@ const MasterList = (props) => {
             direction='row'
             justifyContent='start'
           >
-            {searchJobs.length === 0 ? <img
-              src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
-              alt="nothing found"
-              style={{ width: 500 }}
-            /> :
-              searchJobs.map(job => {
+            {searchJobs.length === 0 ?
+              <Typography>NO RESULTS</Typography>
+              :
+              searchJobs.map((job, jobidx) => {
                 return (
                   job.status === 'Active' ?
                     <Grid
@@ -148,6 +167,8 @@ const MasterList = (props) => {
                           gradeApplication={gradeApplication}
                           deleteJob={deleteJob}
                           updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
+                          updateInterviewDate={updateInterviewDate}
                         /> : <ListView
                           editing={editing}
                           setEditing={setEditing}
@@ -156,6 +177,7 @@ const MasterList = (props) => {
                           gradeApplication={gradeApplication}
                           deleteJob={deleteJob}
                           updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
                         />}
                     </Grid>
                     : null
@@ -177,12 +199,10 @@ const MasterList = (props) => {
           direction='row'
           justifyContent='start'
         >
-          {searchJobs.length === 0 ? <img
-            src="https://media.giphy.com/media/jBPMBgFV0kPnftr0Dw/source.gif"
-            alt="nothing found"
-            style={{ width: 500 }}
-          /> :
-            searchJobs.map(job => {
+          {searchJobs.length === 0 ?
+            <Typography>NO RESULTS</Typography>
+            :
+            searchJobs.map((job, jobidx) => {
               return (
                 job.status === 'Closed' ?
                   <Grid
@@ -198,6 +218,7 @@ const MasterList = (props) => {
                         gradeApplication={gradeApplication}
                         deleteJob={deleteJob}
                         updateJobStatus={updateJobStatus}
+                        jobidx={jobidx}
                       /> : <ListView
                         editing={editing}
                         setEditing={setEditing}
@@ -206,6 +227,7 @@ const MasterList = (props) => {
                         gradeApplication={gradeApplication}
                         deleteJob={deleteJob}
                         updateJobStatus={updateJobStatus}
+                        jobidx={jobidx}
                       />}
                   </Grid>
                   : null

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import SearchBar from './SearchBar';
 import MasterList from './MasterList';
+import format from 'date-fns/format';
 
 const Home = () => {
 
@@ -27,6 +28,8 @@ const Home = () => {
   const [formValues, setFormValues] = useState();
 
   const [editing, setEditing] = useState(false);
+
+  const [applicationCount, setApplicationCount] = useState(0);
 
   const fileInput = useRef();
 
@@ -49,11 +52,12 @@ const Home = () => {
     })
     setSearchJobs(newSearchJobs);
     setJobs(newSearchJobs);
+    // getApplicationTotal();
   }
 
   const sortByDate = () => {
     const newJobs = [...searchJobs];
-    const sortedByStatus = newJobs.sort((a, b) => {
+    const sortedByDate = newJobs.sort((a, b) => {
       const newA = a.dateApplied;
       const newB = b.dateApplied;
       if (newA < newB) {
@@ -64,12 +68,12 @@ const Home = () => {
       }
       return 0;
     })
-    setSearchJobs(sortedByStatus);
+    setSearchJobs(sortedByDate);
   }
 
   const sortByName = () => {
     const newJobs = [...searchJobs];
-    const sortedByStatus = newJobs.sort((a, b) => {
+    const sortedByName = newJobs.sort((a, b) => {
       const newA = a.company.toUpperCase();
       const newB = b.company.toUpperCase();
       if (newA < newB) {
@@ -80,7 +84,21 @@ const Home = () => {
       }
       return 0;
     })
-    setSearchJobs(sortedByStatus);
+    setSearchJobs(sortedByName);
+  }
+
+  const getApplicationTotal = () => {
+    const newJobs = [...jobs];
+    setApplicationCount(0);
+    const todaysDate = format(new Date(), 'PPP');
+    console.log('today', todaysDate);
+    newJobs.map(job => {
+      const appDate = format(new Date(job.dateApplied.replace(/-/g, '\/')), 'PPP');
+      console.log('appDate', appDate)
+      if (appDate === todaysDate) {
+        setApplicationCount(prevState => prevState += 1);
+      }
+    });
   }
 
   const readFile = (file) => {
@@ -95,6 +113,10 @@ const Home = () => {
 
   useEffect(() => {
   }, [cardView])
+
+  useEffect(() => {
+    getApplicationTotal();
+  }, [getJobs])
 
   return (
     <>
@@ -153,8 +175,10 @@ const Home = () => {
               cardView={cardView}
               editing={editing}
               setEditing={setEditing}
-              jobs={jobs}
+              jobs={searchJobs}
+              setJobs={setJobs}
               searchJobs={searchJobs}
+              setSearchJobs={setSearchJobs}
               getJobs={getJobs}
             />
           </Grid>
@@ -173,6 +197,14 @@ const Home = () => {
               // position: 'fixed',
             }}
           >
+            <Typography
+              variant='h5'
+              sx={{
+                textAlign: 'center'
+              }}
+            >
+              {applicationCount} Applications Today
+            </Typography>
             {!editing ?
               <NewJob
                 jobsReference={jobsReference}

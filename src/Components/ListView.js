@@ -13,6 +13,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Box,
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -31,7 +32,8 @@ const ListView = (props) => {
     deleteJob,
     updateJobStatus,
     editing,
-    setEditing
+    setEditing,
+    jobidx
   } = props;
 
   return (
@@ -44,7 +46,8 @@ const ListView = (props) => {
         width: '100%',
         border: 'solid 5px',
         borderColor: getStatus(job.status),
-        background: job.score > 89 ? 'linear-gradient(135deg, white 40%, gold)' : 'white'
+        background: job.score > 89 ? 'linear-gradient(135deg, white 40%, gold)' : 'white',
+        borderRadius: 5
       }}
     >
       <Grid>
@@ -72,7 +75,7 @@ const ListView = (props) => {
               id='status'
               name='status'
               value={job.status}
-              onChange={(e) => updateJobStatus(job.id, e)}
+              onChange={(e) => updateJobStatus(job.id, jobidx, e)}
             >
               <FormControlLabel
                 value='Active'
@@ -80,15 +83,14 @@ const ListView = (props) => {
                 label='Active'
               />
               <FormControlLabel
-                value='Closed'
-                control={<Radio color='error' />}
-                label='Closed'
-              />
-              <FormControlLabel
                 value='Interview'
                 control={<Radio color='primary' />}
                 label='Interview'
-                color='success'
+              />
+              <FormControlLabel
+                value='Closed'
+                control={<Radio color='error' />}
+                label='Closed'
               />
             </RadioGroup>
           </FormControl>
@@ -148,30 +150,39 @@ const ListView = (props) => {
             >
               <IconButton
                 color='error'
-                onClick={() => deleteJob(job.id)}>
+                onClick={() => deleteJob(job.id, jobidx)}>
                 <DeleteForeverTwoTone />
               </IconButton>
             </Tooltip>
           </Grid>
         </Grid>
-        <Accordion
-          elevation={0}
+        <Box
+          component='float'
         >
-          <AccordionSummary
-            expandIcon={<ArrowDropDownCircleTwoTone />}
+          <Accordion
+            disableGutters
+            elevation={0}
+            sx={{
+              background: 'rgb(128,128,128, 15%)',
+            }}
           >
-            <Typography>Missing Keywords From Application</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {job.missingKeyWords.length > 0 ?
-              job.missingKeyWords.map(keyWord => {
-                return (
-                  <li>{keyWord}</li>
-                )
-              })
-              : <Typography>None!</Typography>}
-          </AccordionDetails>
-        </Accordion>
+
+            <AccordionSummary
+              expandIcon={<ArrowDropDownCircleTwoTone color='primary' />}
+            >
+              <Typography>{100 - job.score}% of Keywords Missing From Application</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {job.missingKeyWords.length > 0 ?
+                job.missingKeyWords.map(keyWord => {
+                  return (
+                    <li>{keyWord}</li>
+                  )
+                })
+                : <Typography>None!</Typography>}
+            </AccordionDetails>
+          </Accordion>
+        </Box>
       </Grid>
     </Paper>
   )
