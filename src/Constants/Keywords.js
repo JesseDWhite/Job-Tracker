@@ -55,7 +55,6 @@ export const KEYWORDS = [
   'android',
   'apple',
   'visual',
-  'office',
   'git',
   'bash',
   'gitbash',

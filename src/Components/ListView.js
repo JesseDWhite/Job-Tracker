@@ -9,13 +9,17 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormControl
+  FormControl,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from '@mui/material';
 import {
   WorkTwoTone,
   InsertChartTwoTone,
   DescriptionTwoTone,
   DeleteForeverTwoTone,
+  ArrowDropDownCircleTwoTone,
 } from '@mui/icons-material';
 
 const ListView = (props) => {
@@ -150,6 +154,24 @@ const ListView = (props) => {
             </Tooltip>
           </Grid>
         </Grid>
+        <Accordion
+          elevation={0}
+        >
+          <AccordionSummary
+            expandIcon={<ArrowDropDownCircleTwoTone />}
+          >
+            <Typography>Missing Keywords From Application</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {job.missingKeyWords.length > 0 ?
+              job.missingKeyWords.map(keyWord => {
+                return (
+                  <li>{keyWord}</li>
+                )
+              })
+              : <Typography>None!</Typography>}
+          </AccordionDetails>
+        </Accordion>
       </Grid>
     </Paper>
   )

@@ -28,6 +28,7 @@ const initialValues = {
   jobPostingKeyWords: [],
   coverLetterKeyWords: [],
   resumeKeyWords: [],
+  missingKeyWords: [],
   score: 0,
 }
 
@@ -73,6 +74,7 @@ const NewJob = (props) => {
       jobPostingKeyWords: extractKeyWords(formValues.jobDescription),
       coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
       resumeKeyWords: extractKeyWords(formValues.resume),
+      missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
       score: formValues.coverLetter === ''
         && formValues.resume === ''
         && formValues.jobDescription === '' ? 0
@@ -116,6 +118,18 @@ const NewJob = (props) => {
     return percentage.toFixed(0);
   }
 
+  const getMissingKeyWords = (coverLetter, resume, jobDescription) => {
+    coverLetter = extractKeyWords(coverLetter);
+    resume = extractKeyWords(resume);
+    jobDescription = extractKeyWords(jobDescription);
+
+    const combinedDocuments = coverLetter.concat(resume);
+    const removeDuplicates = [...new Set(combinedDocuments)];
+    const missingKeyWords = jobDescription.filter(e => !removeDuplicates.includes(e));
+
+    return missingKeyWords;
+  }
+
   const readFile = (file, id) => {
     file = document.getElementById(id).files[0];
     const URLObject = URL.createObjectURL(file);
@@ -138,38 +152,53 @@ const NewJob = (props) => {
             sx={{
               mb: 2
             }}
-            type="text"
+            type='text'
             name='company'
             label='Company'
             onChange={handleInputChange}
             value={formValues.company}
             fullWidth
           />
-          <TextField
-            sx={{
-              mb: 2
-            }}
-            type="date"
-            name='dateApplied'
-            onChange={handleInputChange}
-            value={formValues.dateApplied}
-            fullWidth
-          />
-          <TextField
-            sx={{
-              mb: 2
-            }}
-            type="text"
-            name='jobTitle'
-            label='Job Title'
-            onChange={handleInputChange}
-            value={formValues.jobTitle}
-            fullWidth
-          />
           <Grid
             container
-            direction="row"
-            justifyContent="space-around"
+            spacing={2}
+          >
+            <Grid
+              item
+              xl={8}
+            >
+              <TextField
+                fullWidth
+                sx={{
+                  mb: 2,
+                }}
+                type='text'
+                name='jobTitle'
+                label='Job Title'
+                onChange={handleInputChange}
+                value={formValues.jobTitle}
+              />
+            </Grid>
+            <Grid
+              item
+              xl={4}
+            >
+              <TextField
+                fullWidth
+                sx={{
+                  mb: 2,
+                }}
+                type='date'
+                name='dateApplied'
+                onChange={handleInputChange}
+                value={formValues.dateApplied}
+              />
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            direction='row'
+            justifyContent='space-around'
             sx={{
               mb: 2
             }}
@@ -213,7 +242,7 @@ const NewJob = (props) => {
             sx={{
               mb: 2
             }}
-            type="text"
+            type='text'
             name='jobDescription'
             label='Job Description'
             onChange={handleInputChange}
@@ -223,7 +252,7 @@ const NewJob = (props) => {
             sx={{
               mb: 2
             }}
-            type="text"
+            type='text'
             name='jobPosting'
             label='Link To Job Posting'
             onChange={handleInputChange}
@@ -233,7 +262,7 @@ const NewJob = (props) => {
             sx={{
               mb: 2
             }}
-            type="text"
+            type='text'
             name='ats'
             label='Application Tracking System'
             onChange={handleInputChange}
@@ -244,14 +273,14 @@ const NewJob = (props) => {
             sx={{
               mb: 2
             }}
-            type="text"
+            type='text'
             name='coverLetter'
             label='Cover Letter Text'
             onChange={handleInputChange}
             value={formValues.coverLetter}
             fullWidth />
           {/* <input
-            type="file"
+            type='file'
             accept='application/pdf'
             ref={fileInput}
             name='coverLetter'
@@ -264,14 +293,14 @@ const NewJob = (props) => {
             sx={{
               mb: 2
             }}
-            type="text"
+            type='text'
             name='resume'
             label='Resume Text'
             onChange={handleInputChange}
             value={formValues.resume}
             fullWidth />
           {/* <input
-            type="file"
+            type='file'
             accept='application/pdf'
             ref={fileInput}
             name='resume'
@@ -282,7 +311,7 @@ const NewJob = (props) => {
           <TextField sx={{
             mb: 2
           }}
-            type="text"
+            type='text'
             name='notes'
             label='Notes'
             onChange={handleInputChange}

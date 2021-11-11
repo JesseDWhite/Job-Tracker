@@ -10,13 +10,16 @@ import {
   FormControlLabel,
   Radio,
   FormControl,
-  Button
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from '@mui/material';
 import {
   WorkTwoTone,
   InsertChartTwoTone,
   DescriptionTwoTone,
   DeleteForeverTwoTone,
+  ArrowDropDownCircleTwoTone,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 
@@ -166,6 +169,24 @@ const CardView = (props) => {
         </RadioGroup>
       </FormControl>
       <Typography>{job.notes}</Typography>
+      <Accordion
+        elevation={0}
+      >
+        <AccordionSummary
+          expandIcon={<ArrowDropDownCircleTwoTone />}
+        >
+          <Typography>Missing Keywords From Application</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {job.missingKeyWords.length > 0 ?
+            job.missingKeyWords.map(keyWord => {
+              return (
+                <li>{keyWord}</li>
+              )
+            })
+            : <Typography>None!</Typography>}
+        </AccordionDetails>
+      </Accordion>
     </Paper >
   )
 }
