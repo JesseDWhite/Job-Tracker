@@ -3,30 +3,23 @@ import {
   Grid,
   Button,
   TextField,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
   signOut
 } from '@firebase/auth';
 import { auth } from '../firebase';
 
-const Auth = (props) => {
-
-  const {
-    user,
-    setUser
-  } = props;
+const Auth = () => {
 
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-
-  // onAuthStateChanged(auth, (currentUser) => {
-  //   setUser(currentUser);
-  // });
+  const [method, setMethod] = useState(false);
 
   const register = async () => {
     try {
@@ -53,52 +46,86 @@ const Auth = (props) => {
     }
   }
 
-  const logout = async () => {
-    await signOut(auth);
-  }
-
   return (
     <>
       <Grid
         container
+        spacing={5}
       >
-        <Grid>
-          <TextField
-            fullWidth
-            label='Email'
-            onChange={(e) => setRegisterEmail(e.target.value)}
-          />
-          <TextField
-            fullWidth
-            label='Password'
-            onChange={(e) => setRegisterPassword(e.target.value)}
-          />
-          <Button
-            fullWidth
-            variant='contained'
-            onClick={register}
-          >
-            Create User
-          </Button>
+        <Grid
+          item
+          sm={12}
+        >
+          {method ?
+            <Grid>
+              <TextField
+                sx={{
+                  mb: 5
+                }}
+                fullWidth
+                label='Email'
+                onChange={(e) => setRegisterEmail(e.target.value)}
+              />
+              <TextField
+                sx={{
+                  mb: 5
+                }}
+                fullWidth
+                label='Password'
+                onChange={(e) => setRegisterPassword(e.target.value)}
+              />
+              <Button
+                fullWidth
+                color='secondary'
+                variant='contained'
+                onClick={register}
+              >
+                Create User
+              </Button>
+            </Grid>
+            :
+            <Grid>
+              <TextField
+                sx={{
+                  mb: 5
+                }}
+                fullWidth
+                label='Email'
+                onChange={(e) => setLoginEmail(e.target.value)}
+              />
+              <TextField
+                sx={{
+                  mb: 5
+                }}
+                fullWidth
+                label='Password'
+                onChange={(e) => setLoginPassword(e.target.value)}
+              />
+              <Button
+                fullWidth
+                variant='contained'
+                onClick={login}
+              >
+                Sign In
+              </Button>
+            </Grid>
+          }
         </Grid>
-        <Grid>
-          <TextField
-            fullWidth
-            label='Email'
-            onChange={(e) => setLoginEmail(e.target.value)}
+        <Grid
+          container
+          item
+        >
+          <FormControlLabel
+            label='Register New Account'
+            control={
+              <Switch
+                fullWidth
+                size='large'
+                color='secondary'
+                onClick={() => setMethod(!method)}
+              />
+            }
           />
-          <TextField
-            fullWidth
-            label='Password'
-            onChange={(e) => setLoginPassword(e.target.value)}
-          />
-          <Button
-            fullWidth
-            variant='contained'
-            onClick={login}
-          >
-            Sign In
-          </Button>
         </Grid>
       </Grid>
     </>

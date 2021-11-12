@@ -157,7 +157,8 @@ const NewJob = (props) => {
         <form method='post'>
           <TextField
             sx={{
-              mb: 2
+              mb: 2,
+              zIndex: 0
             }}
             type='text'
             name='company'
@@ -178,6 +179,7 @@ const NewJob = (props) => {
                 fullWidth
                 sx={{
                   mb: 2,
+                  zIndex: 0
                 }}
                 type='text'
                 name='jobTitle'
@@ -194,6 +196,7 @@ const NewJob = (props) => {
                 fullWidth
                 sx={{
                   mb: 2,
+                  zIndex: 0
                 }}
                 type='date'
                 name='dateApplied'
@@ -247,7 +250,8 @@ const NewJob = (props) => {
           </Grid>
           <TextField
             sx={{
-              mb: 2
+              mb: 2,
+              zIndex: 0
             }}
             type='text'
             name='jobDescription'
@@ -257,7 +261,8 @@ const NewJob = (props) => {
             fullWidth />
           <TextField
             sx={{
-              mb: 2
+              mb: 2,
+              zIndex: 0
             }}
             type='text'
             name='jobPosting'
@@ -267,7 +272,8 @@ const NewJob = (props) => {
             fullWidth />
           <TextField
             sx={{
-              mb: 2
+              mb: 2,
+              zIndex: 0
             }}
             type='text'
             name='ats'
@@ -278,7 +284,8 @@ const NewJob = (props) => {
           {/* <Typography>CoverLetter</Typography> */}
           <TextField
             sx={{
-              mb: 2
+              mb: 2,
+              zIndex: 0
             }}
             type='text'
             name='coverLetter'
@@ -298,7 +305,8 @@ const NewJob = (props) => {
           {/* <Typography>Resume</Typography> */}
           <TextField
             sx={{
-              mb: 2
+              mb: 2,
+              zIndex: 0
             }}
             type='text'
             name='resume'
@@ -316,7 +324,8 @@ const NewJob = (props) => {
             id='resume'
           /> */}
           <TextField sx={{
-            mb: 2
+            mb: 2,
+            zIndex: 0
           }}
             type='text'
             name='notes'

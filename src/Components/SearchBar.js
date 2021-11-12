@@ -10,7 +10,7 @@ const SearchBar = (props) => {
     setSearchJobs
   } = props;
 
-  const [searchString, setSearchString] = useState();
+  const [searchString, setSearchString] = useState('');
 
   const handleSearch = (e) => {
     const newJobs = [...jobs];
@@ -32,11 +32,11 @@ const SearchBar = (props) => {
     <>
       <TextField
         sx={{
-          width: '90%',
-          height: 50,
+          width: '30%',
         }}
         placeholder='SEARCH COMPANIES'
         variant='standard'
+        color='secondary'
         id='searchBar'
         onChange={(e) => handleInputChange(e)}
         value={searchString}

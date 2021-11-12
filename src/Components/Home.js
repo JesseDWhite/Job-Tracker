@@ -20,6 +20,7 @@ import {
   onAuthStateChanged,
 } from '@firebase/auth';
 import { auth } from '../firebase';
+import Header from './Header';
 
 const Home = () => {
 
@@ -38,6 +39,8 @@ const Home = () => {
   const [applicationCount, setApplicationCount] = useState(0);
 
   const [user, setUser] = useState({});
+
+  const [sort, setSort] = useState(false);
 
   const fileInput = useRef();
 
@@ -88,13 +91,14 @@ const Home = () => {
       return 0;
     })
     setSearchJobs(sortedByDate);
+    setSort(!sort);
   }
 
   const sortByName = () => {
     const newJobs = [...searchJobs];
     const sortedByName = newJobs.sort((a, b) => {
-      const newA = a.company.toUpperCase();
-      const newB = b.company.toUpperCase();
+      const newA = a.company.toLowerCase();
+      const newB = b.company.toLowerCase();
       if (newA < newB) {
         return -1;
       }
@@ -104,6 +108,7 @@ const Home = () => {
       return 0;
     })
     setSearchJobs(sortedByName);
+    setSort(!sort);
   }
 
   const getApplicationTotal = () => {
@@ -137,13 +142,11 @@ const Home = () => {
 
   return (
     <>
-      <Button
-        variant='contained'
-        onClick={logout}
-      >Sign Out {user?.email}
-      </Button>
       <Grid
         display='flex'
+        sx={{
+          mt: 10
+        }}
       >
         <Grid
           sm={8}
@@ -151,7 +154,7 @@ const Home = () => {
             m: 3,
           }}
         >
-          <Grid
+          {/* <Grid
             container
             direction="row"
             justifyContent="center"
@@ -160,38 +163,7 @@ const Home = () => {
               jobs={jobs}
               setSearchJobs={setSearchJobs}
             />
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-around"
-          >
-            {/* <input
-              type="file"
-              accept='application/pdf'
-              name='coverLetter'
-              id='coverLetter'
-              onChange={readFile}
-            /> */}
-            <Button
-              variant='contained'
-              color='warning'
-              onClick={() => setCardView(!cardView)}>
-              View By: {cardView ? 'CARD' : 'LIST'}
-            </Button>
-            <Button
-              variant='contained'
-              color='secondary'
-              onClick={() => sortByDate()}>
-              SORT BY DATE
-            </Button>
-            <Button
-              variant='contained'
-              color='secondary'
-              onClick={() => sortByName()}>
-              SORT BY NAME A-Z
-            </Button>
-          </Grid>
+          </Grid> */}
           <Grid>
             <MasterList
               cardView={cardView}
@@ -214,7 +186,6 @@ const Home = () => {
               p: 3,
               mt: 3,
               mr: 3,
-              // maxHeight: '100vh',
               // maxWidth: '30vw',
               // position: 'fixed',
             }}
@@ -228,10 +199,7 @@ const Home = () => {
               {applicationCount} Applications Today
             </Typography>
             {!user?.email ?
-              <Auth
-                user={user}
-                setUser={setUser}
-              />
+              <Auth />
               : <NewJob
                 jobsReference={jobsReference}
                 getJobs={getJobs}
@@ -248,6 +216,18 @@ const Home = () => {
           </Paper>
         </Grid>
       </Grid>
+      <Header
+        user={user}
+        logout={logout}
+        sortByDate={sortByDate}
+        sortByName={sortByName}
+        cardView={cardView}
+        setCardView={setCardView}
+        sort={sort}
+        setSort={setSort}
+        jobs={jobs}
+        setSearchJobs={setSearchJobs}
+      />
     </>
   );
 };
