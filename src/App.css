@@ -1,5 +1,7 @@
 body {
-  background-color: rgba(202, 81, 0, 0.315);
+  background-image: linear-gradient(rgb(230, 148, 255), rgb(116, 78, 187));
+  background-attachment: fixed;
+  height: 100%;
 }
 
 /* body {

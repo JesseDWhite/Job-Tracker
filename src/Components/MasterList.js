@@ -40,8 +40,8 @@ const MasterList = (props) => {
     newJobs[jobidx].status = newStatus;
     const jobDoc = doc(db, 'jobs', id);
     const updateStatus = { status: newStatus };
-    setJobs(newJobs);
     setSearchJobs(newJobs);
+    setJobs(newJobs);
     await updateDoc(jobDoc, updateStatus);
   }
 
@@ -51,8 +51,8 @@ const MasterList = (props) => {
     newJobs[jobidx].interviewDate = newInterviewDate;
     const jobDoc = doc(db, 'jobs', id);
     const updateInterviewDate = { interviewDate: newInterviewDate }
-    setJobs(newJobs);
     setSearchJobs(newJobs);
+    setJobs(newJobs);
     await updateDoc(jobDoc, updateInterviewDate);
   }
 

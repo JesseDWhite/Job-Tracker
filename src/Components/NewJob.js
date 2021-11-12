@@ -39,6 +39,10 @@ const NewJob = (props) => {
     getJobs,
     formValues = initialValues,
     setFormValues,
+    jobs,
+    setJobs,
+    searchJobs,
+    setSearchJobs
   } = props;
 
   const fileInput = useRef();
@@ -47,6 +51,7 @@ const NewJob = (props) => {
     e.preventDefault();
 
     const { name, value } = e.target;
+
     setFormValues({
       ...formValues,
       [name]: value
@@ -85,6 +90,8 @@ const NewJob = (props) => {
         && formValues.jobDescription === '' ? 0
         : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
     });
+    // setSearchJobs(newJobs);
+    // setJobs(newJobs);
     getJobs();
     setFormValues(initialValues);
   };

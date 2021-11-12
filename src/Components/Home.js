@@ -13,7 +13,13 @@ import {
 } from '@mui/material';
 import SearchBar from './SearchBar';
 import MasterList from './MasterList';
-import format from 'date-fns/format';
+import { format } from 'date-fns';
+import Auth from './Auth';
+import {
+  signOut,
+  onAuthStateChanged,
+} from '@firebase/auth';
+import { auth } from '../firebase';
 
 const Home = () => {
 
@@ -30,6 +36,8 @@ const Home = () => {
   const [editing, setEditing] = useState(false);
 
   const [applicationCount, setApplicationCount] = useState(0);
+
+  const [user, setUser] = useState({});
 
   const fileInput = useRef();
 
@@ -52,8 +60,19 @@ const Home = () => {
     })
     setSearchJobs(newSearchJobs);
     setJobs(newSearchJobs);
-    // getApplicationTotal();
   }
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
 
   const sortByDate = () => {
     const newJobs = [...searchJobs];
@@ -90,11 +109,9 @@ const Home = () => {
   const getApplicationTotal = () => {
     const newJobs = [...jobs];
     setApplicationCount(0);
-    const todaysDate = format(new Date(), 'PPP');
-    console.log('today', todaysDate);
+    const todaysDate = format(new Date(), 'yyyy-MM-dd');
     newJobs.map(job => {
-      const appDate = format(new Date(job.dateApplied.replace(/-/g, '\/')), 'PPP');
-      console.log('appDate', appDate)
+      const appDate = format(new Date(job.dateApplied.replace(/-/g, '\/')), 'yyyy-MM-dd');
       if (appDate === todaysDate) {
         setApplicationCount(prevState => prevState += 1);
       }
@@ -120,6 +137,11 @@ const Home = () => {
 
   return (
     <>
+      <Button
+        variant='contained'
+        onClick={logout}
+      >Sign Out {user?.email}
+      </Button>
       <Grid
         display='flex'
       >
@@ -152,20 +174,20 @@ const Home = () => {
               onChange={readFile}
             /> */}
             <Button
-              variant='text'
+              variant='contained'
               color='warning'
               onClick={() => setCardView(!cardView)}>
               View By: {cardView ? 'CARD' : 'LIST'}
             </Button>
             <Button
-              variant='text'
-              color='warning'
+              variant='contained'
+              color='secondary'
               onClick={() => sortByDate()}>
               SORT BY DATE
             </Button>
             <Button
-              variant='text'
-              color='warning'
+              variant='contained'
+              color='secondary'
               onClick={() => sortByName()}>
               SORT BY NAME A-Z
             </Button>
@@ -205,16 +227,23 @@ const Home = () => {
             >
               {applicationCount} Applications Today
             </Typography>
-            {!editing ?
-              <NewJob
+            {!user?.email ?
+              <Auth
+                user={user}
+                setUser={setUser}
+              />
+              : <NewJob
                 jobsReference={jobsReference}
                 getJobs={getJobs}
                 editing={editing}
                 setEditing={setEditing}
                 formValues={formValues}
                 setFormValues={setFormValues}
-              /> :
-              <Typography>EDIT</Typography>
+                jobs={jobs}
+                setJobs={setJobs}
+                searchJobs={searchJobs}
+                setSearchJobs={setSearchJobs}
+              />
             }
           </Paper>
         </Grid>
