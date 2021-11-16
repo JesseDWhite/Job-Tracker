@@ -2,12 +2,9 @@ import React from 'react';
 import '../App.css';
 import Home from './Home';
 
-function App() {
-
+const App = () => {
   return (
-    <>
-      <Home />
-    </>
+    <Home />
   );
 }
 
