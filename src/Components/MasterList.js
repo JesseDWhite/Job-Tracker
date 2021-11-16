@@ -20,9 +20,9 @@ const MasterList = (props) => {
     searchJobs,
     setSearchJobs,
     cardView,
-    getJobs,
     jobs,
     setJobs,
+    getFilteredApplications,
   } = props;
 
   const deleteJob = async (id, jobidx) => {

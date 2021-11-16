@@ -13,18 +13,22 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "axios": "^0.24.0",
     "datamuse": "^1.0.5",
     "date-fns": "^2.25.0",
     "firebase": "^9.2.0",
     "firebase-config": "^0.0.2",
     "firebaseui": "^6.0.0",
     "firestore": "^1.1.6",
+    "mammoth": "^1.4.19",
+    "pdf-parse": "^1.1.1",
     "pdfjs": "^2.4.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "styled-components": "^5.3.3",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "word-extractor": "^1.0.4"
   },
   "scripts": {
     "start": "react-scripts start",

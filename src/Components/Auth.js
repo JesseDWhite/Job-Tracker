@@ -5,11 +5,11 @@ import {
   TextField,
   Switch,
   FormControlLabel,
+  Typography
 } from '@mui/material';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
 } from '@firebase/auth';
 import { auth } from '../firebase';
 
@@ -48,6 +48,14 @@ const Auth = () => {
 
   return (
     <>
+      <Typography
+        variant='h3'
+        sx={{
+          textAlign: 'center'
+        }}
+      >
+        {method ? 'REGISTER' : 'SIGN IN'}
+      </Typography>
       <Grid
         container
         spacing={5}

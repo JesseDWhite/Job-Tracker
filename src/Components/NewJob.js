@@ -30,6 +30,7 @@ const initialValues = {
   resumeKeyWords: [],
   missingKeyWords: [],
   score: 0,
+  user: ''
 }
 
 const NewJob = (props) => {
@@ -42,7 +43,8 @@ const NewJob = (props) => {
     jobs,
     setJobs,
     searchJobs,
-    setSearchJobs
+    setSearchJobs,
+    user
   } = props;
 
   const fileInput = useRef();
@@ -89,6 +91,7 @@ const NewJob = (props) => {
         && formValues.resume === ''
         && formValues.jobDescription === '' ? 0
         : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+      user: user?.uid
     });
     // setSearchJobs(newJobs);
     // setJobs(newJobs);

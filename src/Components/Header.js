@@ -1,25 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../firebase';
-import {
-  collection,
-  getDocs,
-} from 'firebase/firestore';
-import NewJob from './NewJob';
+import React from 'react';
 import {
   Grid,
   Button,
-  Paper,
   Typography,
 } from '@mui/material';
 import SearchBar from './SearchBar';
-import MasterList from './MasterList';
-import { format } from 'date-fns';
-import Auth from './Auth';
-import {
-  signOut,
-  onAuthStateChanged,
-} from '@firebase/auth';
-import { auth } from '../firebase';
 
 const Header = (props) => {
 
@@ -33,6 +18,8 @@ const Header = (props) => {
     sort,
     jobs,
     setSearchJobs,
+    applicationCount,
+    setApplicationCount,
   } = props;
 
   return (
@@ -46,7 +33,7 @@ const Header = (props) => {
           position: 'fixed',
           top: 0,
           p: 2,
-          filter: 'drop-shadow(0px 5px 25px rgba(0, 0, 0, 0.500))'
+          filter: 'drop-shadow(0px 5px 25px rgba(0, 0, 0, 0.300))'
         }}
       > {user?.email ?
         <Grid>
@@ -55,9 +42,14 @@ const Header = (props) => {
             direction="row"
             justifyContent="start"
           >
+            <SearchBar
+              jobs={jobs}
+              setSearchJobs={setSearchJobs}
+            />
             <Button
               sx={{
-                mr: 5
+                mr: 5,
+                ml: 3
               }}
               variant='text'
               color='secondary'
@@ -73,10 +65,15 @@ const Header = (props) => {
               onClick={() => sort ? sortByDate() : sortByName()}>
               SORT BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
             </Button>
-            <SearchBar
-              jobs={jobs}
-              setSearchJobs={setSearchJobs}
-            />
+            <Typography
+              sx={{
+                mt: .85,
+                fontSize: '.90em',
+                color: '#9C27B0'
+              }}
+            >
+              {user?.email ? `APPLLICATIONS TODAY: ${applicationCount}` : null}
+            </Typography>
           </Grid>
           <Grid
             sx={{

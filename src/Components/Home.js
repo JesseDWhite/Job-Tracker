@@ -7,11 +7,9 @@ import {
 import NewJob from './NewJob';
 import {
   Grid,
-  Button,
   Paper,
   Typography,
 } from '@mui/material';
-import SearchBar from './SearchBar';
 import MasterList from './MasterList';
 import { format } from 'date-fns';
 import Auth from './Auth';
@@ -21,6 +19,12 @@ import {
 } from '@firebase/auth';
 import { auth } from '../firebase';
 import Header from './Header';
+import Doc from '../Constants/Test2.docx';
+import Doc2 from '../Constants/Test.pdf';
+import { WordExtractor } from 'word-extractor';
+import axios from 'axios';
+import mammoth from 'mammoth';
+import { Buffer } from 'buffer';
 
 const Home = () => {
 
@@ -42,7 +46,13 @@ const Home = () => {
 
   const [sort, setSort] = useState(false);
 
+  const [test, setTest] = useState('');
+
   const fileInput = useRef();
+
+  onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
 
   const getJobs = async () => {
     const data = await getDocs(jobsReference);
@@ -50,6 +60,7 @@ const Home = () => {
     ({
       ...doc.data(), id: doc.id
     }));
+
     newSearchJobs.sort((a, b) => {
       const newA = a.dateApplied;
       const newB = b.dateApplied;
@@ -65,6 +76,13 @@ const Home = () => {
     setJobs(newSearchJobs);
   }
 
+  const getFilteredApplications = () => {
+    const newJobs = [...jobs];
+    const filteredView = newJobs.filter(job => job.user.includes(user?.uid));
+    console.log(filteredView);
+    return filteredView;
+  }
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -72,10 +90,6 @@ const Home = () => {
       console.log(error.message);
     }
   }
-
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
 
   const sortByDate = () => {
     const newJobs = [...searchJobs];
@@ -117,20 +131,92 @@ const Home = () => {
     const todaysDate = format(new Date(), 'yyyy-MM-dd');
     newJobs.map(job => {
       const appDate = format(new Date(job.dateApplied.replace(/-/g, '\/')), 'yyyy-MM-dd');
-      if (appDate === todaysDate) {
+      if (appDate === todaysDate && job.user === user?.uid) {
         setApplicationCount(prevState => prevState += 1);
       }
     });
+    console.log(user.uid)
   }
 
   const readFile = (file) => {
-    file = document.getElementById('coverLetter').files[0];
-    // const URLObject = URL.createObjectURL(file);
-    return console.log(file.text());
+    if (file) {
+      file = document.getElementById('coverLetter').files[0];
+      // const URLObject = URL.createObjectURL(file);
+      const fileReader = new FileReader();
+      fileReader.readAsText(file);
+      fileReader.onload = () => {
+        const result = fileReader.result;
+        console.log(result);
+        console.log(Buffer.from(result, 'base64').toString('ascii'));
+      }
+      fileReader.onerror = (error) => {
+        console.log('error', error.message)
+      }
+    }
   }
+
+  const readDoc = async (file) => {
+    file = document.getElementById('coverLetter').files[0];
+    // fs.readFileSync(Doc, 'utf8', function (error, data) {
+    //   error ? console.log(error.message) : console.log(data);
+    // });
+    await axios.get(file).then(res => {
+      const converted = res.data;
+      console.log('file successful', res);
+      console.log('CONVERTED', converted);
+      setTest(converted);
+    }).catch(error => {
+      setTest(error.message);
+      console.log('file unsuccessful', error.message);
+    });
+  }
+
+  const readDoc2 = (file) => {
+    file = document.getElementById('coverLetter').files[0];
+    const extractor = new WordExtractor();
+    const extracted = extractor.extract(file);
+    extracted.then(doc => {
+      console.log(doc.getBody())
+    }).catch(error => {
+      console.log(error.message)
+      console.log(extracted)
+    })
+  }
+
+  const readDoc3 = (file) => {
+    file = document.getElementById('coverLetter').files[0];
+    const urlObj = URL.createObjectURL(file);
+    mammoth.extractRawText({ path: urlObj })
+      .then(result => {
+        const text = result.value;
+        const messages = result.messages;
+        console.log('text', text);
+      }).catch(error => {
+        console.log(error.message)
+      });
+    console.log(urlObj)
+  }
+
+  const readTextFile = (file) => {
+    file = document.getElementById('coverLetter').files[0];
+    const rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function () {
+      if (rawFile.readyState === 4) {
+        if (rawFile.status === 200 || rawFile.status === 0) {
+          const allText = rawFile.responseText;
+          console.log(allText);
+        }
+      }
+    }
+    rawFile.send(null);
+  }
+
 
   useEffect(() => {
     getJobs();
+    // readDoc4();
+    // console.log(URL.createObjectURL(Doc2));
   }, []);
 
   useEffect(() => {
@@ -148,33 +234,34 @@ const Home = () => {
           mt: 10
         }}
       >
+        {/* <input
+          type='file'
+          accept='.doc,.docx,application/msword,application/pdf'
+          ref={fileInput}
+          onChange={readTextFile}
+          name='coverLetter'
+          id='coverLetter'
+        /> */}
         <Grid
           sm={8}
           sx={{
             m: 3,
           }}
         >
-          {/* <Grid
-            container
-            direction="row"
-            justifyContent="center"
-          >
-            <SearchBar
-              jobs={jobs}
-              setSearchJobs={setSearchJobs}
-            />
-          </Grid> */}
           <Grid>
-            <MasterList
-              cardView={cardView}
-              editing={editing}
-              setEditing={setEditing}
-              jobs={searchJobs}
-              setJobs={setJobs}
-              searchJobs={searchJobs}
-              setSearchJobs={setSearchJobs}
-              getJobs={getJobs}
-            />
+            {user?.email ?
+              <MasterList
+                cardView={cardView}
+                editing={editing}
+                setEditing={setEditing}
+                jobs={searchJobs}
+                setJobs={setJobs}
+                searchJobs={searchJobs}
+                setSearchJobs={setSearchJobs}
+                getFilteredApplications={getFilteredApplications}
+              />
+              : <h1>NOT SIGNED IN</h1>
+            }
           </Grid>
         </Grid>
         <Grid
@@ -190,14 +277,6 @@ const Home = () => {
               // position: 'fixed',
             }}
           >
-            <Typography
-              variant='h5'
-              sx={{
-                textAlign: 'center'
-              }}
-            >
-              {applicationCount} Applications Today
-            </Typography>
             {!user?.email ?
               <Auth />
               : <NewJob
@@ -211,6 +290,7 @@ const Home = () => {
                 setJobs={setJobs}
                 searchJobs={searchJobs}
                 setSearchJobs={setSearchJobs}
+                user={user}
               />
             }
           </Paper>
@@ -227,6 +307,8 @@ const Home = () => {
         setSort={setSort}
         jobs={jobs}
         setSearchJobs={setSearchJobs}
+        applicationCount={applicationCount}
+        setApplicationCount={setApplicationCount}
       />
     </>
   );
