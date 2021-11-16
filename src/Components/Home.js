@@ -72,13 +72,13 @@ const Home = () => {
       }
       return 0;
     })
-    setSearchJobs(newSearchJobs);
-    setJobs(newSearchJobs);
+    setSearchJobs(getFilteredApplications(newSearchJobs));
+    setJobs(getFilteredApplications(newSearchJobs));
   }
 
-  const getFilteredApplications = () => {
-    const newJobs = [...jobs];
-    const filteredView = newJobs.filter(job => job.user.includes(user?.uid));
+  const getFilteredApplications = (jobs) => {
+    // const newJobs = [...jobs];
+    const filteredView = jobs.filter(job => job.user.includes(user?.uid));
     console.log(filteredView);
     return filteredView;
   }
@@ -135,7 +135,6 @@ const Home = () => {
         setApplicationCount(prevState => prevState += 1);
       }
     });
-    console.log(user.uid)
   }
 
   const readFile = (file) => {
@@ -217,7 +216,7 @@ const Home = () => {
     getJobs();
     // readDoc4();
     // console.log(URL.createObjectURL(Doc2));
-  }, []);
+  }, [user]);
 
   useEffect(() => {
   }, [cardView])

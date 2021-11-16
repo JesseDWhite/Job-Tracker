@@ -11,7 +11,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from '@firebase/auth';
-import { auth } from '../firebase';
+import { auth, signInWithGoogle } from '../firebase';
 
 const Auth = () => {
 
@@ -48,14 +48,14 @@ const Auth = () => {
 
   return (
     <>
-      <Typography
+      {/* <Typography
         variant='h3'
         sx={{
           textAlign: 'center'
         }}
       >
         {method ? 'REGISTER' : 'SIGN IN'}
-      </Typography>
+      </Typography> */}
       <Grid
         container
         spacing={5}
@@ -64,9 +64,9 @@ const Auth = () => {
           item
           sm={12}
         >
-          {method ?
-            <Grid>
-              <TextField
+          {/* {method ? */}
+          <Grid>
+            {/* <TextField
                 sx={{
                   mb: 5
                 }}
@@ -115,11 +115,18 @@ const Auth = () => {
                 onClick={login}
               >
                 Sign In
-              </Button>
-            </Grid>
-          }
+              </Button> */}
+            <Button
+              fullWidth
+              variant='contained'
+              onClick={signInWithGoogle}
+            >
+              Sign In With Google
+            </Button>
+          </Grid>
+          {/* } */}
         </Grid>
-        <Grid
+        {/* <Grid
           container
           item
         >
@@ -134,7 +141,7 @@ const Auth = () => {
               />
             }
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   )

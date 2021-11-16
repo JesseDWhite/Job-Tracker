@@ -3,6 +3,9 @@ import {
   Grid,
   Button,
   Typography,
+  Chip,
+  Avatar,
+  Tooltip,
 } from '@mui/material';
 import SearchBar from './SearchBar';
 
@@ -82,13 +85,19 @@ const Header = (props) => {
               top: 15
             }}
           >
-            <Button
-              variant='text'
-              color='warning'
-              onClick={logout}
+            <Tooltip
+              title='Sign Out'
             >
-              Sign Out {user?.email}
-            </Button>
+              <Chip
+                avatar={
+                  <Avatar
+                    src={localStorage.getItem('profilePic')}
+                  />}
+                label={localStorage.getItem('name')}
+                clickable
+                onClick={logout}
+              />
+            </Tooltip>
           </Grid>
         </Grid>
         : <Typography
