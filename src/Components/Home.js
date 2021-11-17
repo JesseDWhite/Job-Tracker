@@ -77,9 +77,7 @@ const Home = () => {
   }
 
   const getFilteredApplications = (jobs) => {
-    // const newJobs = [...jobs];
     const filteredView = jobs.filter(job => job.user.includes(user?.uid));
-    console.log(filteredView);
     return filteredView;
   }
 
@@ -259,7 +257,7 @@ const Home = () => {
                 setSearchJobs={setSearchJobs}
                 getFilteredApplications={getFilteredApplications}
               />
-              : <h1>NOT SIGNED IN</h1>
+              : null
             }
           </Grid>
         </Grid>
@@ -272,8 +270,6 @@ const Home = () => {
               p: 3,
               mt: 3,
               mr: 3,
-              // maxWidth: '30vw',
-              // position: 'fixed',
             }}
           >
             {!user?.email ?

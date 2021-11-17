@@ -78,6 +78,13 @@ const MasterList = (props) => {
     }
   };
 
+  const getTotalApplicationCount = (status) => {
+    const newJobs = [...jobs];
+    const filteredJobs = newJobs.filter(job => job.status.includes(status));
+    const count = filteredJobs.length;
+    return count;
+  }
+
   return (
     <>
       <Grid>
@@ -89,7 +96,7 @@ const MasterList = (props) => {
               ml: 2
             }}
           >
-            Upcoming Interviews
+            Upcoming Interviews: {getTotalApplicationCount('Interview')}
           </Typography>
           <Grid
             container
@@ -103,8 +110,8 @@ const MasterList = (props) => {
                 return (
                   job.status === 'Interview' ?
                     <Grid
-                      sm={cardView ? 4 : 8}
-                      md={cardView ? 6 : 11}
+                      sm={cardView ? 6 : 8}
+                      xl={cardView ? 4 : 11}
                     >
                       {cardView ?
                         <CardView
@@ -141,7 +148,7 @@ const MasterList = (props) => {
               ml: 2
             }}
           >
-            Active Applications
+            Active Applications: {getTotalApplicationCount('Active')}
           </Typography>
           <Grid
             container
@@ -155,8 +162,8 @@ const MasterList = (props) => {
                 return (
                   job.status === 'Active' ?
                     <Grid
-                      sm={cardView ? 4 : 8}
-                      md={cardView ? 6 : 11}
+                      sm={cardView ? 6 : 8}
+                      xl={cardView ? 4 : 11}
                     >
                       {cardView ?
                         <CardView
@@ -192,7 +199,7 @@ const MasterList = (props) => {
             ml: 2
           }}
         >
-          Closed Applications
+          Closed Applications: {getTotalApplicationCount('Closed')}
         </Typography>
         <Grid
           container
@@ -206,8 +213,8 @@ const MasterList = (props) => {
               return (
                 job.status === 'Closed' ?
                   <Grid
-                    sm={cardView ? 4 : 8}
-                    md={cardView ? 6 : 11}
+                    sm={cardView ? 6 : 8}
+                    xl={cardView ? 4 : 11}
                   >
                     {cardView ?
                       <CardView

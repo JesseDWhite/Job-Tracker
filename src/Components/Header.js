@@ -82,7 +82,7 @@ const Header = (props) => {
             sx={{
               position: 'fixed',
               right: 15,
-              top: 15
+              top: 18
             }}
           >
             <Tooltip
@@ -91,9 +91,9 @@ const Header = (props) => {
               <Chip
                 avatar={
                   <Avatar
-                    src={localStorage.getItem('profilePic')}
+                    src={user?.photoURL}
                   />}
-                label={localStorage.getItem('name')}
+                label={user?.displayName}
                 clickable
                 onClick={logout}
               />
