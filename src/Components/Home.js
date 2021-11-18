@@ -143,79 +143,79 @@ const Home = () => {
     });
   }
 
-  const readFile = (file) => {
-    if (file) {
-      file = document.getElementById('coverLetter').files[0];
-      // const URLObject = URL.createObjectURL(file);
-      const fileReader = new FileReader();
-      fileReader.readAsText(file);
-      fileReader.onload = () => {
-        const result = fileReader.result;
-        console.log(result);
-        console.log(Buffer.from(result, 'base64').toString('ascii'));
-      }
-      fileReader.onerror = (error) => {
-        console.log('error', error.message)
-      }
-    }
-  }
+  // const readFile = (file) => {
+  //   if (file) {
+  //     file = document.getElementById('coverLetter').files[0];
+  //     // const URLObject = URL.createObjectURL(file);
+  //     const fileReader = new FileReader();
+  //     fileReader.readAsText(file);
+  //     fileReader.onload = () => {
+  //       const result = fileReader.result;
+  //       console.log(result);
+  //       console.log(Buffer.from(result, 'base64').toString('ascii'));
+  //     }
+  //     fileReader.onerror = (error) => {
+  //       console.log('error', error.message)
+  //     }
+  //   }
+  // }
 
-  const readDoc = async (file) => {
-    file = document.getElementById('coverLetter').files[0];
-    // fs.readFileSync(Doc, 'utf8', function (error, data) {
-    //   error ? console.log(error.message) : console.log(data);
-    // });
-    await axios.get(file).then(res => {
-      const converted = res.data;
-      console.log('file successful', res);
-      console.log('CONVERTED', converted);
-      setTest(converted);
-    }).catch(error => {
-      setTest(error.message);
-      console.log('file unsuccessful', error.message);
-    });
-  }
+  // const readDoc = async (file) => {
+  //   file = document.getElementById('coverLetter').files[0];
+  //   // fs.readFileSync(Doc, 'utf8', function (error, data) {
+  //   //   error ? console.log(error.message) : console.log(data);
+  //   // });
+  //   await axios.get(file).then(res => {
+  //     const converted = res.data;
+  //     console.log('file successful', res);
+  //     console.log('CONVERTED', converted);
+  //     setTest(converted);
+  //   }).catch(error => {
+  //     setTest(error.message);
+  //     console.log('file unsuccessful', error.message);
+  //   });
+  // }
 
-  const readDoc2 = (file) => {
-    file = document.getElementById('coverLetter').files[0];
-    const extractor = new WordExtractor();
-    const extracted = extractor.extract(file);
-    extracted.then(doc => {
-      console.log(doc.getBody())
-    }).catch(error => {
-      console.log(error.message)
-      console.log(extracted)
-    })
-  }
+  // const readDoc2 = (file) => {
+  //   file = document.getElementById('coverLetter').files[0];
+  //   const extractor = new WordExtractor();
+  //   const extracted = extractor.extract(file);
+  //   extracted.then(doc => {
+  //     console.log(doc.getBody())
+  //   }).catch(error => {
+  //     console.log(error.message)
+  //     console.log(extracted)
+  //   })
+  // }
 
-  const readDoc3 = (file) => {
-    file = document.getElementById('coverLetter').files[0];
-    const urlObj = URL.createObjectURL(file);
-    mammoth.extractRawText({ path: urlObj })
-      .then(result => {
-        const text = result.value;
-        const messages = result.messages;
-        console.log('text', text);
-      }).catch(error => {
-        console.log(error.message)
-      });
-    console.log(urlObj)
-  }
+  // const readDoc3 = (file) => {
+  //   file = document.getElementById('coverLetter').files[0];
+  //   const urlObj = URL.createObjectURL(file);
+  //   mammoth.extractRawText({ path: urlObj })
+  //     .then(result => {
+  //       const text = result.value;
+  //       const messages = result.messages;
+  //       console.log('text', text);
+  //     }).catch(error => {
+  //       console.log(error.message)
+  //     });
+  //   console.log(urlObj)
+  // }
 
-  const readTextFile = (file) => {
-    file = document.getElementById('coverLetter').files[0];
-    const rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function () {
-      if (rawFile.readyState === 4) {
-        if (rawFile.status === 200 || rawFile.status === 0) {
-          const allText = rawFile.responseText;
-          console.log(allText);
-        }
-      }
-    }
-    rawFile.send(null);
-  }
+  // const readTextFile = (file) => {
+  //   file = document.getElementById('coverLetter').files[0];
+  //   const rawFile = new XMLHttpRequest();
+  //   rawFile.open("GET", file, false);
+  //   rawFile.onreadystatechange = function () {
+  //     if (rawFile.readyState === 4) {
+  //       if (rawFile.status === 200 || rawFile.status === 0) {
+  //         const allText = rawFile.responseText;
+  //         console.log(allText);
+  //       }
+  //     }
+  //   }
+  //   rawFile.send(null);
+  // }
 
 
   useEffect(() => {
@@ -228,7 +228,7 @@ const Home = () => {
   }, [cardView])
 
   useEffect(() => {
-    compareWords();
+    // compareWords();
     getApplicationTotal();
   }, [getJobs])
 

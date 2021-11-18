@@ -41,10 +41,6 @@ const NewJob = (props) => {
     getJobs,
     formValues = initialValues,
     setFormValues,
-    jobs,
-    setJobs,
-    searchJobs,
-    setSearchJobs,
     user
   } = props;
 
