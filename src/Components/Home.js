@@ -47,20 +47,9 @@ const Home = () => {
 
   const [sort, setSort] = useState(false);
 
-  const [test, setTest] = useState('');
-
-  const fileInput = useRef();
-
   onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
   });
-
-  const compareWords = () => {
-    const a = 'graph';
-    const b = 'graphql';
-
-    console.log(parseFloat(strCompare.jaro(a, b).toFixed(2)));
-  }
 
   const getJobs = async () => {
     const data = await getDocs(jobsReference);
@@ -143,92 +132,14 @@ const Home = () => {
     });
   }
 
-  // const readFile = (file) => {
-  //   if (file) {
-  //     file = document.getElementById('coverLetter').files[0];
-  //     // const URLObject = URL.createObjectURL(file);
-  //     const fileReader = new FileReader();
-  //     fileReader.readAsText(file);
-  //     fileReader.onload = () => {
-  //       const result = fileReader.result;
-  //       console.log(result);
-  //       console.log(Buffer.from(result, 'base64').toString('ascii'));
-  //     }
-  //     fileReader.onerror = (error) => {
-  //       console.log('error', error.message)
-  //     }
-  //   }
-  // }
-
-  // const readDoc = async (file) => {
-  //   file = document.getElementById('coverLetter').files[0];
-  //   // fs.readFileSync(Doc, 'utf8', function (error, data) {
-  //   //   error ? console.log(error.message) : console.log(data);
-  //   // });
-  //   await axios.get(file).then(res => {
-  //     const converted = res.data;
-  //     console.log('file successful', res);
-  //     console.log('CONVERTED', converted);
-  //     setTest(converted);
-  //   }).catch(error => {
-  //     setTest(error.message);
-  //     console.log('file unsuccessful', error.message);
-  //   });
-  // }
-
-  // const readDoc2 = (file) => {
-  //   file = document.getElementById('coverLetter').files[0];
-  //   const extractor = new WordExtractor();
-  //   const extracted = extractor.extract(file);
-  //   extracted.then(doc => {
-  //     console.log(doc.getBody())
-  //   }).catch(error => {
-  //     console.log(error.message)
-  //     console.log(extracted)
-  //   })
-  // }
-
-  // const readDoc3 = (file) => {
-  //   file = document.getElementById('coverLetter').files[0];
-  //   const urlObj = URL.createObjectURL(file);
-  //   mammoth.extractRawText({ path: urlObj })
-  //     .then(result => {
-  //       const text = result.value;
-  //       const messages = result.messages;
-  //       console.log('text', text);
-  //     }).catch(error => {
-  //       console.log(error.message)
-  //     });
-  //   console.log(urlObj)
-  // }
-
-  // const readTextFile = (file) => {
-  //   file = document.getElementById('coverLetter').files[0];
-  //   const rawFile = new XMLHttpRequest();
-  //   rawFile.open("GET", file, false);
-  //   rawFile.onreadystatechange = function () {
-  //     if (rawFile.readyState === 4) {
-  //       if (rawFile.status === 200 || rawFile.status === 0) {
-  //         const allText = rawFile.responseText;
-  //         console.log(allText);
-  //       }
-  //     }
-  //   }
-  //   rawFile.send(null);
-  // }
-
-
   useEffect(() => {
     getJobs();
-    // readDoc4();
-    // console.log(URL.createObjectURL(Doc2));
   }, [user]);
 
   useEffect(() => {
   }, [cardView])
 
   useEffect(() => {
-    // compareWords();
     getApplicationTotal();
   }, [getJobs])
 
