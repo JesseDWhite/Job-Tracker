@@ -45,10 +45,13 @@ const Header = (props) => {
             direction="row"
             justifyContent="start"
           >
-            <SearchBar
-              jobs={jobs}
-              setSearchJobs={setSearchJobs}
-            />
+            {user?.email ? <Chip
+              color='secondary'
+              variant='contained'
+              label={applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+              avatar={<Avatar>{applicationCount}</Avatar>}
+            /> : null
+            }
             <Button
               sx={{
                 mr: 5,
@@ -68,15 +71,10 @@ const Header = (props) => {
               onClick={() => sort ? sortByDate() : sortByName()}>
               SORT BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
             </Button>
-            <Typography
-              sx={{
-                mt: .85,
-                fontSize: '.90em',
-                color: '#9C27B0'
-              }}
-            >
-              {user?.email ? `APPLLICATIONS TODAY: ${applicationCount}` : null}
-            </Typography>
+            <SearchBar
+              jobs={jobs}
+              setSearchJobs={setSearchJobs}
+            />
           </Grid>
           <Grid
             sx={{

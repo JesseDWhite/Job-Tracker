@@ -25,6 +25,7 @@ import { WordExtractor } from 'word-extractor';
 import axios from 'axios';
 import mammoth from 'mammoth';
 import { Buffer } from 'buffer';
+import strCompare from 'str-compare';
 
 const Home = () => {
 
@@ -53,6 +54,13 @@ const Home = () => {
   onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
   });
+
+  const compareWords = () => {
+    const a = 'graph';
+    const b = 'graphql';
+
+    console.log(parseFloat(strCompare.jaro(a, b).toFixed(2)));
+  }
 
   const getJobs = async () => {
     const data = await getDocs(jobsReference);
@@ -220,6 +228,7 @@ const Home = () => {
   }, [cardView])
 
   useEffect(() => {
+    compareWords();
     getApplicationTotal();
   }, [getJobs])
 

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { KEYWORDS } from '../Constants/Keywords';
 import format from 'date-fns/format';
+import strCompare from 'str-compare';
 
 const initialValues = {
   company: '',
@@ -100,32 +101,24 @@ const NewJob = (props) => {
   };
 
   const extractKeyWords = (doc) => {
+    let matches = [];
     const removeNonLetters = doc.replace(/[.,\/!$%\^&\*;:{}=\_`~()]/g, '')
       .replace(/\s+/g, ' ')
       .toLowerCase();
 
-    const extractMatchingWords = removeNonLetters.split(' ')
-      .sort()
-      .filter(e => KEYWORDS.includes(e));
+    const extractMatchingWords = removeNonLetters.split(' ').sort();
 
-    const docKeyWordsNoDups = [...new Set(extractMatchingWords)];
+    for (let i = 0; i < KEYWORDS.length; i++) {
+      for (let j = 0; j < extractMatchingWords.length; j++) {
+        if (parseFloat(strCompare.jaro(extractMatchingWords[j], KEYWORDS[i]).toFixed(2)) >= 0.85) {
+          matches.push(KEYWORDS[i]);
+        }
+      };
+    };
+
+    const docKeyWordsNoDups = [...new Set(matches)];
 
     return docKeyWordsNoDups;
-  }
-
-  const getScore = (coverLetter, resume, jobDescription) => {
-    coverLetter = extractKeyWords(coverLetter);
-    resume = extractKeyWords(resume);
-    jobDescription = extractKeyWords(jobDescription);
-
-    const newTotalScore = jobDescription.length;
-    const combinedDocuments = coverLetter.concat(resume);
-    const removeDuplicates = [...new Set(combinedDocuments)];
-    const newScoreArray = removeDuplicates.filter(e => jobDescription.includes(e));
-    const newYourScore = newScoreArray.length;
-    const percentage = newYourScore / newTotalScore * 100;
-
-    return percentage.toFixed(0);
   }
 
   const getMissingKeyWords = (coverLetter, resume, jobDescription) => {
@@ -137,7 +130,31 @@ const NewJob = (props) => {
     const removeDuplicates = [...new Set(combinedDocuments)];
     const missingKeyWords = jobDescription.filter(e => !removeDuplicates.includes(e));
 
-    return missingKeyWords;
+    const missingKeyWordsNoDups = [...new Set(missingKeyWords)];
+
+    return missingKeyWordsNoDups;
+  }
+
+  const getScore = (coverLetter, resume, jobDescription) => {
+    let scoreArrray = [];
+    coverLetter = extractKeyWords(coverLetter);
+    resume = extractKeyWords(resume);
+    jobDescription = extractKeyWords(jobDescription);
+
+    const newTotalScore = jobDescription.length;
+    const combinedDocuments = coverLetter.concat(resume);
+    const removeDuplicates = [...new Set(combinedDocuments)];
+    for (let i = 0; i < jobDescription.length; i++) {
+      for (let j = 0; j < removeDuplicates.length; j++) {
+        if (parseFloat(strCompare.jaro(jobDescription[i], removeDuplicates[j]).toFixed(2)) >= 0.85) {
+          scoreArrray.push(jobDescription[i]);
+        }
+      };
+    };
+    const newYourScore = scoreArrray.length;
+    const percentage = newYourScore / newTotalScore * 100;
+
+    return percentage.toFixed(0);
   }
 
   const readFile = (file, id) => {

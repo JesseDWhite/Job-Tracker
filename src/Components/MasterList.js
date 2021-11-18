@@ -8,6 +8,7 @@ import {
 import {
   Grid,
   Typography,
+  Chip,
 } from '@mui/material';
 import CardView from './CardView';
 import ListView from './ListView';
@@ -96,7 +97,7 @@ const MasterList = (props) => {
               ml: 2
             }}
           >
-            Upcoming Interviews: {getTotalApplicationCount('Interview')}
+            Upcoming Interviews <Chip label={getTotalApplicationCount('Interview')} />
           </Typography>
           <Grid
             container
@@ -148,7 +149,7 @@ const MasterList = (props) => {
               ml: 2
             }}
           >
-            Active Applications: {getTotalApplicationCount('Active')}
+            Active Applications <Chip label={getTotalApplicationCount('Active')} />
           </Typography>
           <Grid
             container
@@ -199,7 +200,7 @@ const MasterList = (props) => {
             ml: 2
           }}
         >
-          Closed Applications: {getTotalApplicationCount('Closed')}
+          Closed Applications <Chip label={getTotalApplicationCount('Closed')} />
         </Typography>
         <Grid
           container
