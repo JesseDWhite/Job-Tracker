@@ -9,7 +9,8 @@ import {
   RadioGroup,
   Radio,
   FormLabel,
-  FormControlLabel
+  FormControlLabel,
+  Paper
 } from '@mui/material';
 import { KEYWORDS } from '../Constants/Keywords';
 import format from 'date-fns/format';
@@ -148,7 +149,9 @@ const NewJob = (props) => {
       };
     };
     const newYourScore = scoreArrray.length;
-    const percentage = newYourScore / newTotalScore * 100;
+    const percentage = jobDescription.length > 0
+      ? newYourScore / newTotalScore * 100
+      : 0;
 
     return percentage.toFixed(0);
   }
@@ -270,17 +273,6 @@ const NewJob = (props) => {
               zIndex: 0
             }}
             type='text'
-            name='jobDescription'
-            label='Job Description'
-            onChange={handleInputChange}
-            value={formValues.jobDescription}
-            fullWidth />
-          <TextField
-            sx={{
-              mb: 2,
-              zIndex: 0
-            }}
-            type='text'
             name='jobPosting'
             label='Link To Job Posting'
             onChange={handleInputChange}
@@ -297,19 +289,37 @@ const NewJob = (props) => {
             onChange={handleInputChange}
             value={formValues.ats}
             fullWidth />
-          {/* <Typography>CoverLetter</Typography> */}
-          <TextField
+          <Paper
+            variant='outlined'
             sx={{
+              p: 2,
               mb: 2,
-              zIndex: 0
             }}
-            type='text'
-            name='coverLetter'
-            label='Cover Letter Text'
-            onChange={handleInputChange}
-            value={formValues.coverLetter}
-            fullWidth />
-          {/* <input
+          >
+            <TextField
+              sx={{
+                mb: 2,
+                zIndex: 0
+              }}
+              type='text'
+              name='jobDescription'
+              label='Job Description'
+              onChange={handleInputChange}
+              value={formValues.jobDescription}
+              fullWidth />
+            {/* <Typography>CoverLetter</Typography> */}
+            <TextField
+              sx={{
+                mb: 2,
+                zIndex: 0
+              }}
+              type='text'
+              name='coverLetter'
+              label='Cover Letter Text'
+              onChange={handleInputChange}
+              value={formValues.coverLetter}
+              fullWidth />
+            {/* <input
             type='file'
             accept='application/pdf'
             ref={fileInput}
@@ -318,19 +328,18 @@ const NewJob = (props) => {
             value={formValues.coverLetter}
             id='coverLetter'
           /> */}
-          {/* <Typography>Resume</Typography> */}
-          <TextField
-            sx={{
-              mb: 2,
-              zIndex: 0
-            }}
-            type='text'
-            name='resume'
-            label='Resume Text'
-            onChange={handleInputChange}
-            value={formValues.resume}
-            fullWidth />
-          {/* <input
+            {/* <Typography>Resume</Typography> */}
+            <TextField
+              sx={{
+                zIndex: 0
+              }}
+              type='text'
+              name='resume'
+              label='Resume Text'
+              onChange={handleInputChange}
+              value={formValues.resume}
+              fullWidth />
+            {/* <input
             type='file'
             accept='application/pdf'
             ref={fileInput}
@@ -339,6 +348,7 @@ const NewJob = (props) => {
             value={formValues.resume}
             id='resume'
           /> */}
+          </Paper>
           <TextField sx={{
             mb: 2,
             zIndex: 0
