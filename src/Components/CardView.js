@@ -200,7 +200,7 @@ const CardView = (props) => {
             <AccordionSummary
               expandIcon={<ArrowDropDownCircleTwoTone color='primary' />}
             >
-              <Typography>{job.missingKeyWords.length === 0 && job.score === '0'
+              <Typography>{job.missingKeyWords.length === 0 && job.score === 0
                 ? 'Not enough information for score'
                 : `${100 - job.score} % of Keywords Missing From Application`}
               </Typography>
@@ -212,7 +212,9 @@ const CardView = (props) => {
                     <li>{keyWord}</li>
                   )
                 })
-                : <Typography>{job.missingKeyWords.length === 0 && job.score === '0' ? 'Not enough information for score.' : 'Nice job!'}</Typography>}
+                : <Typography>{job.missingKeyWords.length === 0 && job.score === 0
+                  ? 'Try adding the job description for a list of keywords.'
+                  : 'Nice job!'}</Typography>}
             </AccordionDetails>
           </Accordion>
         </Box>

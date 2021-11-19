@@ -166,11 +166,13 @@ const ListView = (props) => {
               background: 'rgb(128,128,128, 15%)',
             }}
           >
-
             <AccordionSummary
               expandIcon={<ArrowDropDownCircleTwoTone color='primary' />}
             >
-              <Typography>{100 - job.score}% of Keywords Missing From Application</Typography>
+              <Typography>{job.missingKeyWords.length === 0 && job.score === 0
+                ? 'Not enough information for score'
+                : `${100 - job.score} % of Keywords Missing From Application`}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
               {job.missingKeyWords.length > 0 ?
@@ -179,7 +181,9 @@ const ListView = (props) => {
                     <li>{keyWord}</li>
                   )
                 })
-                : <Typography>None!</Typography>}
+                : <Typography>{job.missingKeyWords.length === 0 && job.score === 0
+                  ? 'Try adding the job description for a list of keywords.'
+                  : 'Nice job!'}</Typography>}
             </AccordionDetails>
           </Accordion>
         </Box>

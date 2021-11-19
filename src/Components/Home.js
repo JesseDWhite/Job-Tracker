@@ -26,6 +26,8 @@ import axios from 'axios';
 import mammoth from 'mammoth';
 import { Buffer } from 'buffer';
 import strCompare from 'str-compare';
+import extractor from 'unfluff';
+import Scraper from 'webscrape';
 
 const Home = () => {
 

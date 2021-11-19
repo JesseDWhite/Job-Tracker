@@ -153,7 +153,7 @@ const NewJob = (props) => {
       ? newYourScore / newTotalScore * 100
       : 0;
 
-    return percentage.toFixed(0);
+    return parseInt(percentage.toFixed(0));
   }
 
   const readFile = (file, id) => {
@@ -164,14 +164,6 @@ const NewJob = (props) => {
 
   return (
     <>
-      <Typography
-        variant='h3'
-        sx={{
-          textAlign: 'center'
-        }}
-      >
-        NEW JOB
-      </Typography>
       <Grid>
         <form method='post'>
           <TextField
@@ -362,11 +354,13 @@ const NewJob = (props) => {
           />
           <Button
             sx={{
-              width: '100%'
+              width: '100%',
+              background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
+              borderRadius: 25,
+              fontSize: 18,
             }}
             type='button'
             variant='contained'
-            color='success'
             onClick={validateFormFields}>
             Create New Job
           </Button>
