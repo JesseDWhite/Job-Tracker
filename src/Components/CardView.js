@@ -15,6 +15,7 @@ import {
   AccordionDetails,
   Box,
   TextField,
+  Button
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -33,10 +34,13 @@ const CardView = (props) => {
     gradeApplication,
     deleteJob,
     updateJobStatus,
-    editing,
-    setEditing,
     jobidx,
     updateInterviewDate,
+    editing,
+    setEditing,
+    jobToEdit,
+    setJobToEdit,
+    test
   } = props;
 
   return (

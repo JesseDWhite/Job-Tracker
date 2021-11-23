@@ -19,15 +19,12 @@ import {
 } from '@firebase/auth';
 import { auth } from '../firebase';
 import Header from './Header';
-import Doc from '../Constants/Test2.docx';
-import Doc2 from '../Constants/Test.pdf';
-import { WordExtractor } from 'word-extractor';
 import axios from 'axios';
-import mammoth from 'mammoth';
 import { Buffer } from 'buffer';
 import strCompare from 'str-compare';
 import extractor from 'unfluff';
 import Scraper from 'webscrape';
+import { AnimateKeyframes } from 'react-simple-animate';
 
 const Home = () => {
 
@@ -42,6 +39,8 @@ const Home = () => {
   const [formValues, setFormValues] = useState();
 
   const [editing, setEditing] = useState(false);
+
+  const [jobToEdit, setJobToEdit] = useState({});
 
   const [applicationCount, setApplicationCount] = useState(0);
 
@@ -134,6 +133,16 @@ const Home = () => {
     });
   }
 
+  const showFile = async (e) => {
+    e.preventDefault()
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      const text = (e.target.result)
+      console.log(text)
+    };
+    reader.readAsText(e.target.files[0])
+  }
+
   useEffect(() => {
     getJobs();
   }, [user]);
@@ -156,8 +165,8 @@ const Home = () => {
         {/* <input
           type='file'
           accept='.doc,.docx,application/msword,application/pdf'
-          ref={fileInput}
-          onChange={readTextFile}
+          // ref={fileInput}
+          onChange={(e) => showFile(e)}
           name='coverLetter'
           id='coverLetter'
         /> */}
@@ -170,6 +179,8 @@ const Home = () => {
           <Grid>
             {user?.email ?
               <MasterList
+                jobToEdit={jobToEdit}
+                setJobToEdit={setJobToEdit}
                 cardView={cardView}
                 editing={editing}
                 setEditing={setEditing}
@@ -196,19 +207,26 @@ const Home = () => {
           >
             {!user?.email ?
               <Auth />
-              : <NewJob
-                jobsReference={jobsReference}
-                getJobs={getJobs}
-                editing={editing}
-                setEditing={setEditing}
-                formValues={formValues}
-                setFormValues={setFormValues}
-                jobs={jobs}
-                setJobs={setJobs}
-                searchJobs={searchJobs}
-                setSearchJobs={setSearchJobs}
-                user={user}
-              />
+              :
+              <AnimateKeyframes
+                play
+                iterationCount={1}
+                keyframes={["opacity: 0", "opacity: 1"]}
+              >
+                <NewJob
+                  jobsReference={jobsReference}
+                  getJobs={getJobs}
+                  editing={editing}
+                  setEditing={setEditing}
+                  formValues={formValues}
+                  setFormValues={setFormValues}
+                  jobs={jobs}
+                  setJobs={setJobs}
+                  searchJobs={searchJobs}
+                  setSearchJobs={setSearchJobs}
+                  user={user}
+                />
+              </AnimateKeyframes>
             }
           </Paper>
         </Grid>

@@ -12,18 +12,20 @@ import {
 } from '@mui/material';
 import CardView from './CardView';
 import ListView from './ListView';
+import { AnimateKeyframes } from 'react-simple-animate';
 
 const MasterList = (props) => {
 
   const {
     editing,
     setEditing,
+    jobToEdit,
+    setJobToEdit,
     searchJobs,
     setSearchJobs,
     cardView,
     jobs,
     setJobs,
-    getFilteredApplications,
   } = props;
 
   const deleteJob = async (id, jobidx) => {
@@ -55,6 +57,12 @@ const MasterList = (props) => {
     setSearchJobs(newJobs);
     setJobs(newJobs);
     await updateDoc(jobDoc, updateInterviewDate);
+  }
+
+  const test = (job) => {
+    const newJobToEdit = { ...job };
+    setJobToEdit(newJobToEdit);
+    console.log(jobToEdit);
   }
 
   const gradeApplication = (score) => {
@@ -90,15 +98,21 @@ const MasterList = (props) => {
     <>
       <Grid>
         <Grid>
-          <Typography
-            variant='h4'
-            sx={{
-              mt: 3,
-              ml: 2
-            }}
+          <AnimateKeyframes
+            play
+            iterationCount={1}
+            keyframes={["opacity: 0", "opacity: 1"]}
           >
-            Upcoming Interviews <Chip label={getTotalApplicationCount('Interview')} />
-          </Typography>
+            <Typography
+              variant='h4'
+              sx={{
+                mt: 3,
+                ml: 2
+              }}
+            >
+              Upcoming Interviews <Chip label={getTotalApplicationCount('Interview')} />
+            </Typography>
+          </AnimateKeyframes>
           <Grid
             container
             direction='row'
@@ -115,26 +129,45 @@ const MasterList = (props) => {
                       xl={cardView ? 4 : 11}
                     >
                       {cardView ?
-                        <CardView
-                          editing={editing}
-                          setEditing={setEditing}
-                          job={job}
-                          getStatus={getStatus}
-                          gradeApplication={gradeApplication}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                          jobidx={jobidx}
-                          updateInterviewDate={updateInterviewDate}
-                        /> : <ListView
-                          editing={editing}
-                          setEditing={setEditing}
-                          job={job}
-                          getStatus={getStatus}
-                          gradeApplication={gradeApplication}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                          jobidx={jobidx}
-                        />}
+                        <AnimateKeyframes
+                          play
+                          iterationCount={1}
+                          keyframes={["opacity: 0", "opacity: 1"]}
+                        >
+                          <CardView
+                            test={test}
+                            jobToEdit={jobToEdit}
+                            setJobToEdit={setJobToEdit}
+                            editing={editing}
+                            setEditing={setEditing}
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                            jobidx={jobidx}
+                            updateInterviewDate={updateInterviewDate}
+                          />
+                        </AnimateKeyframes>
+                        :
+                        <AnimateKeyframes
+                          play
+                          iterationCount={1}
+                          keyframes={["opacity: 0", "opacity: 1"]}
+                        >
+                          <ListView
+                            editing={editing}
+                            setEditing={setEditing}
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                            jobidx={jobidx}
+                          />
+                        </AnimateKeyframes>
+
+                      }
                     </Grid>
                     : null
                 );
@@ -142,15 +175,21 @@ const MasterList = (props) => {
           </Grid>
         </Grid>
         <Grid>
-          <Typography
-            variant='h4'
-            sx={{
-              mt: 3,
-              ml: 2
-            }}
+          <AnimateKeyframes
+            play
+            iterationCount={1}
+            keyframes={["opacity: 0", "opacity: 1"]}
           >
-            Active Applications <Chip label={getTotalApplicationCount('Active')} />
-          </Typography>
+            <Typography
+              variant='h4'
+              sx={{
+                mt: 3,
+                ml: 2
+              }}
+            >
+              Active Applications <Chip label={getTotalApplicationCount('Active')} />
+            </Typography>
+          </AnimateKeyframes>
           <Grid
             container
             direction='row'
@@ -167,41 +206,65 @@ const MasterList = (props) => {
                       xl={cardView ? 4 : 11}
                     >
                       {cardView ?
-                        <CardView
-                          editing={editing}
-                          setEditing={setEditing}
-                          job={job}
-                          getStatus={getStatus}
-                          gradeApplication={gradeApplication}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                          jobidx={jobidx}
-                          updateInterviewDate={updateInterviewDate}
-                        /> : <ListView
-                          editing={editing}
-                          setEditing={setEditing}
-                          job={job}
-                          getStatus={getStatus}
-                          gradeApplication={gradeApplication}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                          jobidx={jobidx}
-                        />}
+                        <AnimateKeyframes
+                          play
+                          iterationCount={1}
+                          keyframes={["opacity: 0", "opacity: 1"]}
+                        >
+                          <CardView
+                            test={test}
+                            jobToEdit={jobToEdit}
+                            setJobToEdit={setJobToEdit}
+                            editing={editing}
+                            setEditing={setEditing}
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                            jobidx={jobidx}
+                            updateInterviewDate={updateInterviewDate}
+                          />
+                        </AnimateKeyframes>
+                        :
+                        <AnimateKeyframes
+                          play
+                          iterationCount={1}
+                          keyframes={["opacity: 0", "opacity: 1"]}
+                        >
+                          <ListView
+                            editing={editing}
+                            setEditing={setEditing}
+                            job={job}
+                            getStatus={getStatus}
+                            gradeApplication={gradeApplication}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                            jobidx={jobidx}
+                          />
+                        </AnimateKeyframes>
+                      }
                     </Grid>
                     : null
                 );
               })}
           </Grid>
         </Grid>
-        <Typography
-          variant='h4'
-          sx={{
-            mt: 3,
-            ml: 2
-          }}
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={["opacity: 0", "opacity: 1"]}
         >
-          Closed Applications <Chip label={getTotalApplicationCount('Closed')} />
-        </Typography>
+          <Typography
+            variant='h4'
+            sx={{
+              mt: 3,
+              ml: 2
+            }}
+          >
+            Closed Applications <Chip label={getTotalApplicationCount('Closed')} />
+          </Typography>
+        </AnimateKeyframes>
         <Grid
           container
           direction='row'
@@ -218,25 +281,44 @@ const MasterList = (props) => {
                     xl={cardView ? 4 : 11}
                   >
                     {cardView ?
-                      <CardView
-                        editing={editing}
-                        setEditing={setEditing}
-                        job={job}
-                        getStatus={getStatus}
-                        gradeApplication={gradeApplication}
-                        deleteJob={deleteJob}
-                        updateJobStatus={updateJobStatus}
-                        jobidx={jobidx}
-                      /> : <ListView
-                        editing={editing}
-                        setEditing={setEditing}
-                        job={job}
-                        getStatus={getStatus}
-                        gradeApplication={gradeApplication}
-                        deleteJob={deleteJob}
-                        updateJobStatus={updateJobStatus}
-                        jobidx={jobidx}
-                      />}
+                      <AnimateKeyframes
+                        play
+                        iterationCount={1}
+                        keyframes={["opacity: 0", "opacity: 1"]}
+                      >
+                        <CardView
+                          test={test}
+                          jobToEdit={jobToEdit}
+                          setJobToEdit={setJobToEdit}
+                          editing={editing}
+                          setEditing={setEditing}
+                          job={job}
+                          getStatus={getStatus}
+                          gradeApplication={gradeApplication}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
+                          updateInterviewDate={updateInterviewDate}
+                        />
+                      </AnimateKeyframes>
+                      :
+                      <AnimateKeyframes
+                        play
+                        iterationCount={1}
+                        keyframes={["opacity: 0", "opacity: 1"]}
+                      >
+                        <ListView
+                          editing={editing}
+                          setEditing={setEditing}
+                          job={job}
+                          getStatus={getStatus}
+                          gradeApplication={gradeApplication}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
+                        />
+                      </AnimateKeyframes>
+                    }
                   </Grid>
                   : null
               );

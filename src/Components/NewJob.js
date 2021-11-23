@@ -42,7 +42,9 @@ const NewJob = (props) => {
     getJobs,
     formValues = initialValues,
     setFormValues,
-    user
+    user,
+    editing,
+    setEditing
   } = props;
 
   const fileInput = useRef();
@@ -356,7 +358,6 @@ const NewJob = (props) => {
             sx={{
               width: '100%',
               background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
-              borderRadius: 25,
               fontSize: 18,
             }}
             type='button'
