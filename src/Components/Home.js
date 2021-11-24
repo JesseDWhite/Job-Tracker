@@ -25,6 +25,7 @@ import strCompare from 'str-compare';
 import extractor from 'unfluff';
 import Scraper from 'webscrape';
 import { AnimateKeyframes } from 'react-simple-animate';
+import { createWorker } from 'tesseract.js';
 
 const Home = () => {
 
@@ -138,10 +139,23 @@ const Home = () => {
     const reader = new FileReader()
     reader.onload = async (e) => {
       const text = (e.target.result)
-      console.log(text)
+      console.log(text.toString())
     };
     reader.readAsText(e.target.files[0])
   }
+
+  // const worker = createWorker({
+  //   logger: m => console.log(m),
+  // });
+
+  // (async () => {
+  //   await worker.load();
+  //   await worker.loadLanguage('eng');
+  //   await worker.initialize('eng');
+  //   const { data: { text } } = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
+  //   console.log(text);
+  //   await worker.terminate();
+  // })();
 
   useEffect(() => {
     getJobs();

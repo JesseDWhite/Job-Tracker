@@ -171,7 +171,7 @@ const ListView = (props) => {
             >
               <Typography>{job.missingKeyWords.length === 0 && job.score === 0
                 ? 'Not enough information for score'
-                : `${100 - job.score} % of Keywords Missing From Application`}
+                : `${100 - job.score}% of Keywords Missing From Application`}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>

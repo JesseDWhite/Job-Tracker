@@ -101,77 +101,84 @@ const MasterList = (props) => {
           <AnimateKeyframes
             play
             iterationCount={1}
-            keyframes={["opacity: 0", "opacity: 1"]}
+            keyframes={[
+              "opacity: 0",
+              "opacity: 1",
+            ]}
           >
-            <Typography
-              variant='h4'
-              sx={{
-                mt: 3,
-                ml: 2
-              }}
-            >
-              Upcoming Interviews <Chip label={getTotalApplicationCount('Interview')} />
-            </Typography>
+            {searchJobs.every(job => job.status !== 'Interview')
+              ? null
+              :
+              <Typography
+                variant='h4'
+                sx={{
+                  mt: 3,
+                  ml: 2
+                }}
+              >
+                Upcoming Interviews <Chip label={getTotalApplicationCount('Interview')} />
+              </Typography>
+            }
           </AnimateKeyframes>
           <Grid
             container
             direction='row'
             justifyContent='start'
           >
-            {searchJobs.length === 0 ?
-              <Typography>NO RESULTS</Typography>
-              :
-              searchJobs.map((job, jobidx) => {
-                return (
-                  job.status === 'Interview' ?
-                    <Grid
-                      sm={cardView ? 6 : 8}
-                      xl={cardView ? 4 : 11}
-                    >
-                      {cardView ?
-                        <AnimateKeyframes
-                          play
-                          iterationCount={1}
-                          keyframes={["opacity: 0", "opacity: 1"]}
-                        >
-                          <CardView
-                            test={test}
-                            jobToEdit={jobToEdit}
-                            setJobToEdit={setJobToEdit}
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                            jobidx={jobidx}
-                            updateInterviewDate={updateInterviewDate}
-                          />
-                        </AnimateKeyframes>
-                        :
-                        <AnimateKeyframes
-                          play
-                          iterationCount={1}
-                          keyframes={["opacity: 0", "opacity: 1"]}
-                        >
-                          <ListView
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                            jobidx={jobidx}
-                          />
-                        </AnimateKeyframes>
+            {searchJobs.map((job, jobidx) => {
+              return (
+                job.status === 'Interview' ?
+                  <Grid
+                    sm={cardView ? 6 : 8}
+                    xl={cardView ? 4 : 11}
+                  >
+                    {cardView ?
+                      <AnimateKeyframes
+                        play
+                        iterationCount={1}
+                        keyframes={[
+                          "opacity: 0",
+                          "opacity: 1",
+                        ]}
+                      >
+                        <CardView
+                          test={test}
+                          jobToEdit={jobToEdit}
+                          setJobToEdit={setJobToEdit}
+                          editing={editing}
+                          setEditing={setEditing}
+                          job={job}
+                          getStatus={getStatus}
+                          gradeApplication={gradeApplication}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
+                          updateInterviewDate={updateInterviewDate}
+                        />
+                      </AnimateKeyframes>
+                      :
+                      <AnimateKeyframes
+                        play
+                        iterationCount={1}
+                        keyframes={["opacity: 0", "opacity: 1"]}
+                      >
+                        <ListView
+                          editing={editing}
+                          setEditing={setEditing}
+                          job={job}
+                          getStatus={getStatus}
+                          gradeApplication={gradeApplication}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                          jobidx={jobidx}
+                        />
+                      </AnimateKeyframes>
 
-                      }
-                    </Grid>
-                    : null
-                );
-              })}
+                    }
+                  </Grid>
+                  : null
+              );
+            })}
           </Grid>
         </Grid>
         <Grid>
@@ -180,102 +187,28 @@ const MasterList = (props) => {
             iterationCount={1}
             keyframes={["opacity: 0", "opacity: 1"]}
           >
-            <Typography
-              variant='h4'
-              sx={{
-                mt: 3,
-                ml: 2
-              }}
-            >
-              Active Applications <Chip label={getTotalApplicationCount('Active')} />
-            </Typography>
+            {searchJobs.every(job => job.status !== 'Active')
+              ? null
+              :
+              <Typography
+                variant='h4'
+                sx={{
+                  mt: 3,
+                  ml: 2
+                }}
+              >
+                Active Applications <Chip label={getTotalApplicationCount('Active')} />
+              </Typography>
+            }
           </AnimateKeyframes>
           <Grid
             container
             direction='row'
             justifyContent='start'
           >
-            {searchJobs.length === 0 ?
-              <Typography>NO RESULTS</Typography>
-              :
-              searchJobs.map((job, jobidx) => {
-                return (
-                  job.status === 'Active' ?
-                    <Grid
-                      sm={cardView ? 6 : 8}
-                      xl={cardView ? 4 : 11}
-                    >
-                      {cardView ?
-                        <AnimateKeyframes
-                          play
-                          iterationCount={1}
-                          keyframes={["opacity: 0", "opacity: 1"]}
-                        >
-                          <CardView
-                            test={test}
-                            jobToEdit={jobToEdit}
-                            setJobToEdit={setJobToEdit}
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                            jobidx={jobidx}
-                            updateInterviewDate={updateInterviewDate}
-                          />
-                        </AnimateKeyframes>
-                        :
-                        <AnimateKeyframes
-                          play
-                          iterationCount={1}
-                          keyframes={["opacity: 0", "opacity: 1"]}
-                        >
-                          <ListView
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            gradeApplication={gradeApplication}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                            jobidx={jobidx}
-                          />
-                        </AnimateKeyframes>
-                      }
-                    </Grid>
-                    : null
-                );
-              })}
-          </Grid>
-        </Grid>
-        <AnimateKeyframes
-          play
-          iterationCount={1}
-          keyframes={["opacity: 0", "opacity: 1"]}
-        >
-          <Typography
-            variant='h4'
-            sx={{
-              mt: 3,
-              ml: 2
-            }}
-          >
-            Closed Applications <Chip label={getTotalApplicationCount('Closed')} />
-          </Typography>
-        </AnimateKeyframes>
-        <Grid
-          container
-          direction='row'
-          justifyContent='start'
-        >
-          {searchJobs.length === 0 ?
-            <Typography>NO RESULTS</Typography>
-            :
-            searchJobs.map((job, jobidx) => {
+            {searchJobs.map((job, jobidx) => {
               return (
-                job.status === 'Closed' ?
+                job.status === 'Active' ?
                   <Grid
                     sm={cardView ? 6 : 8}
                     xl={cardView ? 4 : 11}
@@ -323,6 +256,82 @@ const MasterList = (props) => {
                   : null
               );
             })}
+          </Grid>
+        </Grid>
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={["opacity: 0", "opacity: 1"]}
+        >
+          {searchJobs.every(job => job.status !== 'Closed')
+            ? null
+            :
+            <Typography
+              variant='h4'
+              sx={{
+                mt: 3,
+                ml: 2
+              }}
+            >
+              Closed Applications <Chip label={getTotalApplicationCount('Closed')} />
+            </Typography>
+          }
+        </AnimateKeyframes>
+        <Grid
+          container
+          direction='row'
+          justifyContent='start'
+        >
+          {searchJobs.map((job, jobidx) => {
+            return (
+              job.status === 'Closed' ?
+                <Grid
+                  sm={cardView ? 6 : 8}
+                  xl={cardView ? 4 : 11}
+                >
+                  {cardView ?
+                    <AnimateKeyframes
+                      play
+                      iterationCount={1}
+                      keyframes={["opacity: 0", "opacity: 1"]}
+                    >
+                      <CardView
+                        test={test}
+                        jobToEdit={jobToEdit}
+                        setJobToEdit={setJobToEdit}
+                        editing={editing}
+                        setEditing={setEditing}
+                        job={job}
+                        getStatus={getStatus}
+                        gradeApplication={gradeApplication}
+                        deleteJob={deleteJob}
+                        updateJobStatus={updateJobStatus}
+                        jobidx={jobidx}
+                        updateInterviewDate={updateInterviewDate}
+                      />
+                    </AnimateKeyframes>
+                    :
+                    <AnimateKeyframes
+                      play
+                      iterationCount={1}
+                      keyframes={["opacity: 0", "opacity: 1"]}
+                    >
+                      <ListView
+                        editing={editing}
+                        setEditing={setEditing}
+                        job={job}
+                        getStatus={getStatus}
+                        gradeApplication={gradeApplication}
+                        deleteJob={deleteJob}
+                        updateJobStatus={updateJobStatus}
+                        jobidx={jobidx}
+                      />
+                    </AnimateKeyframes>
+                  }
+                </Grid>
+                : null
+            );
+          })}
         </Grid>
       </Grid>
     </>
