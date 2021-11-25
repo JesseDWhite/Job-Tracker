@@ -46,6 +46,9 @@ const Header = (props) => {
             justifyContent="start"
           >
             {user?.email ? <Chip
+              sx={{
+                background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
+              }}
               color='secondary'
               variant='contained'
               label={applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}

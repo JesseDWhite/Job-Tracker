@@ -45,6 +45,9 @@ const CardView = (props) => {
 
   return (
     <>
+      <span>
+        {job.score > 89 ? <img src="https://media.giphy.com/media/YTJYm96ivBVIlHNRq7/source.gif" alt="sparkles" style={{ position: 'absolute', width: 100, }} /> : null}
+      </span>
       <Paper
         elevation={3}
         sx={{

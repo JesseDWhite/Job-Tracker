@@ -9,6 +9,7 @@ import {
   Grid,
   Typography,
   Chip,
+  Pagination,
 } from '@mui/material';
 import CardView from './CardView';
 import ListView from './ListView';
@@ -142,6 +143,7 @@ const MasterList = (props) => {
                         ]}
                       >
                         <CardView
+                          key={job.id}
                           test={test}
                           jobToEdit={jobToEdit}
                           setJobToEdit={setJobToEdit}
@@ -163,6 +165,7 @@ const MasterList = (props) => {
                         keyframes={["opacity: 0", "opacity: 1"]}
                       >
                         <ListView
+                          key={job.id}
                           editing={editing}
                           setEditing={setEditing}
                           job={job}
@@ -198,6 +201,7 @@ const MasterList = (props) => {
                 }}
               >
                 Active Applications <Chip label={getTotalApplicationCount('Active')} />
+                {/* <Pagination color='primary' variant='outlined' count={10} /> */}
               </Typography>
             }
           </AnimateKeyframes>
@@ -220,6 +224,7 @@ const MasterList = (props) => {
                         keyframes={["opacity: 0", "opacity: 1"]}
                       >
                         <CardView
+                          key={job.id}
                           test={test}
                           jobToEdit={jobToEdit}
                           setJobToEdit={setJobToEdit}
@@ -241,6 +246,7 @@ const MasterList = (props) => {
                         keyframes={["opacity: 0", "opacity: 1"]}
                       >
                         <ListView
+                          key={job.id}
                           editing={editing}
                           setEditing={setEditing}
                           job={job}
@@ -296,6 +302,7 @@ const MasterList = (props) => {
                       keyframes={["opacity: 0", "opacity: 1"]}
                     >
                       <CardView
+                        key={job.id}
                         test={test}
                         jobToEdit={jobToEdit}
                         setJobToEdit={setJobToEdit}
@@ -317,6 +324,7 @@ const MasterList = (props) => {
                       keyframes={["opacity: 0", "opacity: 1"]}
                     >
                       <ListView
+                        key={job.id}
                         editing={editing}
                         setEditing={setEditing}
                         job={job}
