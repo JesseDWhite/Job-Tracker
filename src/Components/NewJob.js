@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { addDoc } from 'firebase/firestore';
 import {
   TextField,
@@ -10,7 +10,11 @@ import {
   Radio,
   FormLabel,
   FormControlLabel,
-  Paper
+  Paper,
+  Modal,
+  Fade,
+  Backdrop,
+  Box
 } from '@mui/material';
 import { KEYWORDS } from '../Constants/Keywords';
 import format from 'date-fns/format';
@@ -35,6 +39,18 @@ const initialValues = {
   user: ''
 }
 
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
 const NewJob = (props) => {
 
   const {
@@ -43,9 +59,11 @@ const NewJob = (props) => {
     formValues = initialValues,
     setFormValues,
     user,
-    editing,
-    setEditing
   } = props;
+
+  const [modalKeyWords, setModalKeyWords] = useState([]);
+
+  const [open, setOpen] = useState(false);
 
   const fileInput = useRef();
 
@@ -167,6 +185,41 @@ const NewJob = (props) => {
   return (
     <>
       <Grid>
+        <Modal
+          open={open}
+          onClose={() => setOpen(!open)}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={open}>
+            <Box sx={modalStyle}>
+              <Typography variant='h6' component='h2'>
+                {extractKeyWords(formValues.jobDescription).length === 0
+                  ? 'No Keywords Found'
+                  : 'We Found Some Keywords For You'
+                }
+              </Typography>
+              <Typography component='h3'>
+                {extractKeyWords(formValues.jobDescription).length === 0
+                  ? null
+                  : <em>try writing to these points in your resume/cover letter</em>
+                }
+              </Typography>
+              <Typography sx={{ mt: 2 }}>
+                {extractKeyWords(formValues.jobDescription).length === 0
+                  ? 'Try adding the entire job description.'
+                  : extractKeyWords(formValues.jobDescription).map(keyword => {
+                    return (
+                      <li>{keyword[0].toUpperCase() + keyword.slice(1)}</li>
+                    )
+                  })}
+              </Typography>
+            </Box>
+          </Fade>
+        </Modal>
         <form method='post'>
           <TextField
             sx={{
@@ -187,6 +240,7 @@ const NewJob = (props) => {
             <Grid
               item
               xl={8}
+              sm={12}
             >
               <TextField
                 fullWidth
@@ -204,6 +258,7 @@ const NewJob = (props) => {
             <Grid
               item
               xl={4}
+              sm={12}
             >
               <TextField
                 fullWidth
@@ -290,17 +345,48 @@ const NewJob = (props) => {
               mb: 2,
             }}
           >
-            <TextField
+            <Grid
               sx={{
                 mb: 2,
-                zIndex: 0
               }}
-              type='text'
-              name='jobDescription'
-              label='Job Description'
-              onChange={handleInputChange}
-              value={formValues.jobDescription}
-              fullWidth />
+              container
+              spacing={2}
+            >
+              <Grid
+                item
+                xl={8}
+                sm={12}
+              >
+                <TextField
+                  sx={{
+                    zIndex: 0
+                  }}
+                  type='text'
+                  name='jobDescription'
+                  label='Job Description'
+                  onChange={handleInputChange}
+                  value={formValues.jobDescription}
+                  fullWidth />
+              </Grid>
+              <Grid
+                item
+                xl={4}
+                sm={12}
+              >
+                <Button
+                  sx={{
+                    height: '100%'
+                  }}
+                  fullWidth
+                  variant='contained'
+                  color='success'
+                  onClick={() => setOpen(true)}
+                  disabled={!formValues.jobDescription ? true : false}
+                >
+                  Get Keywords
+                </Button>
+              </Grid>
+            </Grid>
             {/* <Typography>CoverLetter</Typography> */}
             <TextField
               sx={{

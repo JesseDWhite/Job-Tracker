@@ -214,9 +214,9 @@ const CardView = (props) => {
             </AccordionSummary>
             <AccordionDetails>
               {job.missingKeyWords.length > 0 ?
-                job.missingKeyWords.map(keyWord => {
+                job.missingKeyWords.map(keyword => {
                   return (
-                    <li>{keyWord}</li>
+                    <li>{keyword[0].toUpperCase() + keyword.slice(1)}</li>
                   )
                 })
                 : <Typography>{job.missingKeyWords.length === 0 && job.score === 0
