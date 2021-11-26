@@ -40,7 +40,7 @@ const CardView = (props) => {
     setEditing,
     jobToEdit,
     setJobToEdit,
-    test
+    updateJobApplication
   } = props;
 
   return (
@@ -60,6 +60,7 @@ const CardView = (props) => {
           borderRadius: 5
         }}
       >
+        <Button onClick={() => updateJobApplication(job)}>EDIT</Button>
         <Grid
           container
           direction="row"

@@ -1,5 +1,4 @@
-import React, { useRef, useState } from 'react';
-import { addDoc } from 'firebase/firestore';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -16,28 +15,15 @@ import {
   Backdrop,
   Box
 } from '@mui/material';
+import { db } from '../firebase';
+import {
+  updateDoc,
+  addDoc,
+  doc
+} from 'firebase/firestore';
 import { KEYWORDS } from '../Constants/Keywords';
 import format from 'date-fns/format';
 import strCompare from 'str-compare';
-
-const initialValues = {
-  company: '',
-  dateApplied: format(new Date(), 'yyyy-MM-dd'),
-  jobDescription: '',
-  jobTitle: '',
-  status: 'Active',
-  jobPosting: '',
-  ats: '',
-  coverLetter: '',
-  resume: '',
-  notes: '',
-  jobPostingKeyWords: [],
-  coverLetterKeyWords: [],
-  resumeKeyWords: [],
-  missingKeyWords: [],
-  score: 0,
-  user: ''
-}
 
 const modalStyle = {
   position: 'absolute',
@@ -56,16 +42,45 @@ const NewJob = (props) => {
   const {
     jobsReference,
     getJobs,
-    formValues = initialValues,
-    setFormValues,
     user,
+    editing,
+    setEditing,
+    jobToEdit
   } = props;
 
-  const [modalKeyWords, setModalKeyWords] = useState([]);
+  console.log(jobToEdit);
+
+  const initialValues = {
+    company: editing ? jobToEdit.company : '',
+    dateApplied: editing ? format(new Date(jobToEdit.dateApplied), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+    jobDescription: editing ? jobToEdit.jobDescription : '',
+    jobTitle: editing ? jobToEdit.jobTitle : '',
+    status: editing ? jobToEdit.status : 'Active',
+    jobPosting: editing ? jobToEdit.jobPosting : '',
+    ats: editing ? jobToEdit.ats : '',
+    coverLetter: editing ? jobToEdit.coverLetter : '',
+    resume: editing ? jobToEdit.resume : '',
+    notes: editing ? jobToEdit.notes : '',
+    jobPostingKeyWords: editing ? jobToEdit.jobPostingKeyWords : [],
+    coverLetterKeyWords: editing ? jobToEdit.coverLetterKeyWords : [],
+    resumeKeyWords: editing ? jobToEdit.resumeKeyWords : [],
+    missingKeyWords: editing ? jobToEdit.missingKeyWords : [],
+    score: editing ? jobToEdit.score : 0,
+    user: editing ? jobToEdit.user : ''
+  }
+
+  const [formValues, setFormValues] = useState(initialValues);
 
   const [open, setOpen] = useState(false);
 
-  const fileInput = useRef();
+  useEffect(() => {
+    const newFormValues = { ...initialValues };
+    setFormValues(newFormValues);
+  }, [editing])
+
+  console.log(initialValues);
+
+  console.log('formValues', formValues);
 
   const handleInputChange = (e) => {
     e.preventDefault();
@@ -90,30 +105,52 @@ const NewJob = (props) => {
   }
 
   const createJob = async () => {
-    await addDoc(jobsReference, {
-      company: formValues.company,
-      dateApplied: formValues.dateApplied,
-      jobDescription: formValues.jobDescription,
-      jobTitle: formValues.jobTitle,
-      status: formValues.status,
-      jobPosting: formValues.jobPosting,
-      ats: formValues.ats,
-      coverLetter: formValues.coverLetter,
-      resume: formValues.resume,
-      notes: formValues.notes,
-      jobPostingKeyWords: extractKeyWords(formValues.jobDescription),
-      coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
-      resumeKeyWords: extractKeyWords(formValues.resume),
-      missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
-      score: formValues.coverLetter === ''
-        && formValues.resume === ''
-        && formValues.jobDescription === '' ? 0
-        : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
-      user: user?.uid
-    });
-    // setSearchJobs(newJobs);
-    // setJobs(newJobs);
+    !editing
+      ? await addDoc(jobsReference, {
+        company: formValues.company,
+        dateApplied: formValues.dateApplied,
+        jobDescription: formValues.jobDescription,
+        jobTitle: formValues.jobTitle,
+        status: formValues.status,
+        jobPosting: formValues.jobPosting,
+        ats: formValues.ats,
+        coverLetter: formValues.coverLetter,
+        resume: formValues.resume,
+        notes: formValues.notes,
+        jobPostingKeyWords: extractKeyWords(formValues.jobDescription),
+        coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
+        resumeKeyWords: extractKeyWords(formValues.resume),
+        missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+        score: formValues.coverLetter === ''
+          && formValues.resume === ''
+          && formValues.jobDescription === '' ? 0
+          : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+        user: user?.uid
+      })
+      : await updateDoc(doc(db, 'jobs', jobToEdit.id), {
+        company: formValues.company,
+        dateApplied: formValues.dateApplied,
+        jobDescription: formValues.jobDescription,
+        jobTitle: formValues.jobTitle,
+        status: formValues.status,
+        jobPosting: formValues.jobPosting,
+        ats: formValues.ats,
+        coverLetter: formValues.coverLetter,
+        resume: formValues.resume,
+        notes: formValues.notes,
+        jobPostingKeyWords: extractKeyWords(formValues.jobDescription),
+        coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
+        resumeKeyWords: extractKeyWords(formValues.resume),
+        missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+        score: formValues.coverLetter === ''
+          && formValues.resume === ''
+          && formValues.jobDescription === '' ? 0
+          : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+        user: user?.uid,
+        id: jobToEdit.id
+      })
     getJobs();
+    setEditing(false);
     setFormValues(initialValues);
   };
 
@@ -442,15 +479,31 @@ const NewJob = (props) => {
           />
           <Button
             sx={{
-              width: '100%',
               background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
               fontSize: 18,
             }}
             type='button'
             variant='contained'
-            onClick={validateFormFields}>
-            Create New Job
+            onClick={validateFormFields}
+            fullWidth
+          >
+            {editing ? 'Update Application' : 'Create New Job'}
           </Button>
+          {editing
+            ? <Button
+              sx={{
+                mt: 2
+              }}
+              type='button'
+              variant='text'
+              color='error'
+              fullWidth
+              onClick={() => setEditing(!editing)}
+            >
+              Cancel
+            </Button>
+            : null
+          }
         </form>
       </Grid>
     </>
