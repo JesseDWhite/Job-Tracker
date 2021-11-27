@@ -491,18 +491,6 @@ const Home = () => {
                   })}
                 </Grid>
               </Grid>
-              // <MasterList
-              //   jobToEdit={jobToEdit}
-              //   setJobToEdit={setJobToEdit}
-              //   cardView={cardView}
-              //   editing={editing}
-              //   setEditing={setEditing}
-              //   jobs={searchJobs}
-              //   setJobs={setJobs}
-              //   searchJobs={searchJobs}
-              //   setSearchJobs={setSearchJobs}
-              //   getFilteredApplications={getFilteredApplications}
-              // />
               : null
             }
           </Grid>

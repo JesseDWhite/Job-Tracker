@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -13,7 +13,8 @@ import {
   Modal,
   Fade,
   Backdrop,
-  Box
+  Box,
+  Tooltip,
 } from '@mui/material';
 import { db } from '../firebase';
 import {
@@ -32,7 +33,7 @@ const modalStyle = {
   transform: 'translate(-50%, -50%)',
   width: 400,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  borderRadius: 5,
   boxShadow: 24,
   p: 4,
 };
@@ -47,8 +48,6 @@ const NewJob = (props) => {
     setEditing,
     jobToEdit
   } = props;
-
-  console.log(jobToEdit);
 
   const initialValues = {
     company: editing ? jobToEdit.company : '',
@@ -79,11 +78,7 @@ const NewJob = (props) => {
       ...formValues,
       ...newFormValues
     });
-  }, [editing])
-
-  console.log('initialValues', initialValues);
-
-  console.log('formValues', formValues);
+  }, [editing]);
 
   const handleInputChange = (e) => {
     e.preventDefault();
@@ -397,16 +392,22 @@ const NewJob = (props) => {
                 xl={8}
                 sm={12}
               >
-                <TextField
-                  sx={{
-                    zIndex: 0
-                  }}
-                  type='text'
-                  name='jobDescription'
-                  label='Job Description'
-                  onChange={handleInputChange}
-                  value={formValues.jobDescription}
-                  fullWidth />
+                <Tooltip
+                  placement='left'
+                  title='Insert the entire job description text'
+                  arrow
+                >
+                  <TextField
+                    sx={{
+                      zIndex: 0
+                    }}
+                    type='text'
+                    name='jobDescription'
+                    label='Job Description'
+                    onChange={handleInputChange}
+                    value={formValues.jobDescription}
+                    fullWidth />
+                </Tooltip>
               </Grid>
               <Grid
                 item
@@ -427,18 +428,6 @@ const NewJob = (props) => {
                 </Button>
               </Grid>
             </Grid>
-            {/* <Typography>CoverLetter</Typography> */}
-            <TextField
-              sx={{
-                mb: 2,
-                zIndex: 0
-              }}
-              type='text'
-              name='coverLetter'
-              label='Cover Letter Text'
-              onChange={handleInputChange}
-              value={formValues.coverLetter}
-              fullWidth />
             {/* <input
             type='file'
             accept='application/pdf'
@@ -449,16 +438,40 @@ const NewJob = (props) => {
             id='coverLetter'
           /> */}
             {/* <Typography>Resume</Typography> */}
-            <TextField
-              sx={{
-                zIndex: 0
-              }}
-              type='text'
-              name='resume'
-              label='Resume Text'
-              onChange={handleInputChange}
-              value={formValues.resume}
-              fullWidth />
+            <Tooltip
+              placement='left'
+              title='Insert the entire resume text'
+              arrow
+            >
+              <TextField
+                sx={{
+                  mb: 2,
+                  zIndex: 0
+                }}
+                type='text'
+                name='resume'
+                label='Resume'
+                onChange={handleInputChange}
+                value={formValues.resume}
+                fullWidth />
+            </Tooltip>
+            {/* <Typography>CoverLetter</Typography> */}
+            <Tooltip
+              placement='left'
+              title='Insert the entire cover letter text'
+              arrow
+            >
+              <TextField
+                sx={{
+                  zIndex: 0
+                }}
+                type='text'
+                name='coverLetter'
+                label='Cover Letter'
+                onChange={handleInputChange}
+                value={formValues.coverLetter}
+                fullWidth />
+            </Tooltip>
             {/* <input
             type='file'
             accept='application/pdf'
