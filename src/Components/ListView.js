@@ -21,6 +21,7 @@ import {
   DescriptionTwoTone,
   DeleteForeverTwoTone,
   ArrowDropDownCircleTwoTone,
+  CreateTwoTone,
 } from '@mui/icons-material';
 
 const ListView = (props) => {
@@ -31,8 +32,7 @@ const ListView = (props) => {
     gradeApplication,
     deleteJob,
     updateJobStatus,
-    editing,
-    setEditing,
+    updateJobApplication,
     jobidx
   } = props;
 
@@ -147,6 +147,15 @@ const ListView = (props) => {
                   color='primary'
                 >
                   <DescriptionTwoTone />
+                </IconButton>
+              </Tooltip>
+              <Tooltip
+                title='Edit'
+              >
+                <IconButton
+                  color='warning'
+                  onClick={() => updateJobApplication(job)}>
+                  <CreateTwoTone />
                 </IconButton>
               </Tooltip>
               <Tooltip

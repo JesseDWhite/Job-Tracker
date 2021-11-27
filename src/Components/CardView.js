@@ -23,6 +23,7 @@ import {
   DescriptionTwoTone,
   DeleteForeverTwoTone,
   ArrowDropDownCircleTwoTone,
+  CreateTwoTone,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 
@@ -36,10 +37,6 @@ const CardView = (props) => {
     updateJobStatus,
     jobidx,
     updateInterviewDate,
-    editing,
-    setEditing,
-    jobToEdit,
-    setJobToEdit,
     updateJobApplication
   } = props;
 
@@ -60,7 +57,6 @@ const CardView = (props) => {
           borderRadius: 5
         }}
       >
-        <Button onClick={() => updateJobApplication(job)}>EDIT</Button>
         <Grid
           container
           direction="row"
@@ -139,6 +135,15 @@ const CardView = (props) => {
                 color='primary'
               >
                 <DescriptionTwoTone />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title='Edit'
+            >
+              <IconButton
+                color='warning'
+                onClick={() => updateJobApplication(job)}>
+                <CreateTwoTone />
               </IconButton>
             </Tooltip>
             <Tooltip

@@ -310,6 +310,8 @@ const Home = () => {
                               >
                                 <ListView
                                   key={job.id}
+                                  updateJobApplication={updateJobApplication}
+                                  jobToEdit={jobToEdit}
                                   editing={editing}
                                   setEditing={setEditing}
                                   job={job}
@@ -390,6 +392,8 @@ const Home = () => {
                               >
                                 <ListView
                                   key={job.id}
+                                  updateJobApplication={updateJobApplication}
+                                  jobToEdit={jobToEdit}
                                   editing={editing}
                                   setEditing={setEditing}
                                   job={job}
@@ -468,6 +472,8 @@ const Home = () => {
                             >
                               <ListView
                                 key={job.id}
+                                updateJobApplication={updateJobApplication}
+                                jobToEdit={jobToEdit}
                                 editing={editing}
                                 setEditing={setEditing}
                                 job={job}

@@ -52,7 +52,7 @@ const NewJob = (props) => {
 
   const initialValues = {
     company: editing ? jobToEdit.company : '',
-    dateApplied: editing ? format(new Date(jobToEdit.dateApplied), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+    dateApplied: editing ? format(new Date(jobToEdit.dateApplied.replace(/-/g, '\/')), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
     jobDescription: editing ? jobToEdit.jobDescription : '',
     jobTitle: editing ? jobToEdit.jobTitle : '',
     status: editing ? jobToEdit.status : 'Active',
@@ -75,10 +75,13 @@ const NewJob = (props) => {
 
   useEffect(() => {
     const newFormValues = { ...initialValues };
-    setFormValues(newFormValues);
+    setFormValues({
+      ...formValues,
+      ...newFormValues
+    });
   }, [editing])
 
-  console.log(initialValues);
+  console.log('initialValues', initialValues);
 
   console.log('formValues', formValues);
 
@@ -487,7 +490,7 @@ const NewJob = (props) => {
             onClick={validateFormFields}
             fullWidth
           >
-            {editing ? 'Update Application' : 'Create New Job'}
+            {editing ? `Update ${formValues.company}` : 'Create New Job'}
           </Button>
           {editing
             ? <Button
@@ -495,7 +498,7 @@ const NewJob = (props) => {
                 mt: 2
               }}
               type='button'
-              variant='text'
+              variant='contained'
               color='error'
               fullWidth
               onClick={() => setEditing(!editing)}
