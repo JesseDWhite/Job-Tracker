@@ -23,6 +23,8 @@ const Header = (props) => {
     setSearchJobs,
     applicationCount,
     setApplicationCount,
+    viewProfile,
+    setViewProfile,
   } = props;
 
   return (
@@ -86,19 +88,15 @@ const Header = (props) => {
               top: 18
             }}
           >
-            <Tooltip
-              title='Sign Out'
-            >
-              <Chip
-                avatar={
-                  <Avatar
-                    src={user?.photoURL}
-                  />}
-                label={user?.displayName}
-                clickable
-                onClick={logout}
-              />
-            </Tooltip>
+            <Chip
+              avatar={
+                <Avatar
+                  src={user?.photoURL}
+                />}
+              label={viewProfile ? 'Go Back' : 'My Profile'}
+              clickable
+              onClick={() => setViewProfile(!viewProfile)}
+            />
           </Grid>
         </Grid>
         : <Typography
