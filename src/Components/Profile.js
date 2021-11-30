@@ -55,7 +55,7 @@ const Profile = (props) => {
           }}
           component='img'
           alt='user profile photo'
-          image={user?.photoURL}
+          image={user?.photoURL.replace('s96-c', 's400-c')}
         />
         <CardContent>
           <Typography
@@ -65,6 +65,7 @@ const Profile = (props) => {
           >
             {user?.displayName}
           </Typography>
+          <hr />
           <Typography
             gutterBottom
             variant='h4'
