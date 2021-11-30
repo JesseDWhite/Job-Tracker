@@ -254,6 +254,7 @@ const Home = () => {
               <Profile
                 user={user}
                 logout={logout}
+                jobs={jobs}
               />
             </AnimateKeyframes>
           </Grid>
@@ -271,7 +272,10 @@ const Home = () => {
                 "opacity: 1",
               ]}
             >
-              <Analytics />
+              <Analytics
+                jobs={jobs}
+                applicationCount={applicationCount}
+              />
             </AnimateKeyframes>
           </Grid>
         </Grid>

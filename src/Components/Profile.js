@@ -29,7 +29,26 @@ const Profile = (props) => {
   const {
     user,
     logout,
+    jobs,
   } = props;
+
+  const [average, setAverage] = useState(0);
+
+  const getTotalApplicationAverage = () => {
+    const newJobs = [...jobs];
+    setAverage(0);
+    const averageToDivide = newJobs.length;
+    newJobs.map(job => {
+      return (
+        setAverage(prevState => prevState += parseInt(job.score))
+      )
+    })
+    setAverage(prevState => parseInt(prevState / averageToDivide));
+  }
+
+  useEffect(() => {
+    getTotalApplicationAverage();
+  }, [])
 
   return (
     <>
@@ -68,18 +87,21 @@ const Profile = (props) => {
           <hr />
           <Typography
             gutterBottom
-            variant='h4'
             component='div'
           >
-            {user?.email}
+            <Chip
+              label={user?.email}
+              color='info'
+              variant='contained'
+            />
           </Typography>
           <Typography
             gutterBottom
             variant='h5'
             component='div'
           >
-            Member Since: {user?.metadata.creationTime
-              ? format(new Date(user?.metadata.creationTime.replace(/-/g, '\/')), 'PPP')
+            {user?.metadata.creationTime
+              ? `Average Score As Of ${format(new Date(user?.metadata.creationTime.replace(/-/g, '\/')), 'PP')}: ${average}/100`
               : null
             }
           </Typography>
