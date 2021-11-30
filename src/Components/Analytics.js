@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore';
 import {
   Button,
+  IconButton,
   Grid,
   Paper,
   Card,
@@ -33,6 +34,7 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { getDay, format, getDayOfYear, sub } from 'date-fns';
+import { ArrowForwardIosTwoTone, ArrowBackIosTwoTone } from '@mui/icons-material';
 
 ChartJS.register(
   CategoryScale,
@@ -48,6 +50,18 @@ const Analytics = (props) => {
   const {
     jobs,
   } = props;
+
+  const [weekNumber, setWeekNumber] = useState(0);
+
+  const prevWeek = () => {
+    setWeekNumber(prevState => prevState += 6)
+  }
+
+  const nextWeek = () => {
+    if (weekNumber !== 0) {
+      setWeekNumber(prevState => prevState -= 6);
+    }
+  }
 
   const getDailyAverageScore = (daysToSub) => {
     const newJobs = [...jobs];
@@ -93,38 +107,38 @@ const Analytics = (props) => {
           width={600}
           data={{
             labels: [
-              format(sub(new Date(), { days: 6 }), 'PP'),
-              format(sub(new Date(), { days: 5 }), 'PP'),
-              format(sub(new Date(), { days: 4 }), 'PP'),
-              format(sub(new Date(), { days: 3 }), 'PP'),
-              format(sub(new Date(), { days: 2 }), 'PP'),
-              format(sub(new Date(), { days: 1 }), 'PP'),
-              format(sub(new Date(), { days: 0 }), 'PP')
+              format(sub(new Date(), { days: 6 + weekNumber }), 'PP'),
+              format(sub(new Date(), { days: 5 + weekNumber }), 'PP'),
+              format(sub(new Date(), { days: 4 + weekNumber }), 'PP'),
+              format(sub(new Date(), { days: 3 + weekNumber }), 'PP'),
+              format(sub(new Date(), { days: 2 + weekNumber }), 'PP'),
+              format(sub(new Date(), { days: 1 + weekNumber }), 'PP'),
+              format(sub(new Date(), { days: 0 + weekNumber }), 'PP'),
             ],
             datasets: [
               {
                 label: 'Number of Applications',
                 data: [
-                  getNumberOfDailyApplications(6),
-                  getNumberOfDailyApplications(5),
-                  getNumberOfDailyApplications(4),
-                  getNumberOfDailyApplications(3),
-                  getNumberOfDailyApplications(2),
-                  getNumberOfDailyApplications(1),
-                  getNumberOfDailyApplications(0),
+                  getNumberOfDailyApplications(6 + weekNumber),
+                  getNumberOfDailyApplications(5 + weekNumber),
+                  getNumberOfDailyApplications(4 + weekNumber),
+                  getNumberOfDailyApplications(3 + weekNumber),
+                  getNumberOfDailyApplications(2 + weekNumber),
+                  getNumberOfDailyApplications(1 + weekNumber),
+                  getNumberOfDailyApplications(0 + weekNumber),
                 ],
                 backgroundColor: 'rgba(255, 99, 132, 0.75)'
               },
               {
                 label: 'Average Score',
                 data: [
-                  getDailyAverageScore(6),
-                  getDailyAverageScore(5),
-                  getDailyAverageScore(4),
-                  getDailyAverageScore(3),
-                  getDailyAverageScore(2),
-                  getDailyAverageScore(1),
-                  getDailyAverageScore(0),
+                  getDailyAverageScore(6 + weekNumber),
+                  getDailyAverageScore(5 + weekNumber),
+                  getDailyAverageScore(4 + weekNumber),
+                  getDailyAverageScore(3 + weekNumber),
+                  getDailyAverageScore(2 + weekNumber),
+                  getDailyAverageScore(1 + weekNumber),
+                  getDailyAverageScore(0 + weekNumber),
                 ],
                 backgroundColor: 'rgba(53, 162, 235, 0.75)'
               },
@@ -141,6 +155,25 @@ const Analytics = (props) => {
           }}
         />
       </Card>
+      <Button
+        sx={{
+          float: 'left'
+        }}
+        startIcon={<ArrowBackIosTwoTone />}
+        onClick={() => prevWeek()}
+      >
+        Previous Week
+      </Button>
+      <Button
+        sx={{
+          float: 'right'
+        }}
+        onClick={() => nextWeek()}
+        disabled={weekNumber !== 0 ? false : true}
+        endIcon={<ArrowForwardIosTwoTone />}
+      >
+        Next Week
+      </Button>
     </>
   )
 }

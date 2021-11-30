@@ -48,7 +48,7 @@ const Profile = (props) => {
 
   useEffect(() => {
     getTotalApplicationAverage();
-  }, [])
+  }, []);
 
   return (
     <>
@@ -101,7 +101,8 @@ const Profile = (props) => {
             component='div'
           >
             {user?.metadata.creationTime
-              ? `Average Score As Of ${format(new Date(user?.metadata.creationTime.replace(/-/g, '\/')), 'PP')}: ${average}/100`
+              ? `Average Score As Of ${format(new Date(user?.metadata.creationTime.replace(/-/g, '\/')), 'PP')}: ${average > 0
+                ? average : 0}/100`
               : null
             }
           </Typography>
