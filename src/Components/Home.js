@@ -129,7 +129,7 @@ const Home = () => {
   }
 
   const getApplicationTotal = () => {
-    const newJobs = [...jobs];
+    const newJobs = [...searchJobs];
     setApplicationCount(0);
     const todaysDate = format(new Date(), 'yyyy-MM-dd');
     newJobs.map(job => {
@@ -151,33 +151,30 @@ const Home = () => {
   }
 
   const deleteJob = async (id, jobidx) => {
-    const newJobs = [...jobs];
+    const newJobs = [...searchJobs];
     newJobs.splice(jobidx, 1);
     const jobDoc = doc(db, 'jobs', id);
     setSearchJobs(newJobs);
-    setJobs(newJobs);
     await deleteDoc(jobDoc);
   }
 
   const updateJobStatus = async (id, jobidx, e) => {
     const newStatus = e.target.value;
-    const newJobs = [...jobs];
+    const newJobs = [...searchJobs];
     newJobs[jobidx].status = newStatus;
     const jobDoc = doc(db, 'jobs', id);
     const updateStatus = { status: newStatus };
     setSearchJobs(newJobs);
-    setJobs(newJobs);
     await updateDoc(jobDoc, updateStatus);
   }
 
   const updateInterviewDate = async (id, jobidx, e) => {
     const newInterviewDate = e.target.value;
-    const newJobs = [...jobs];
+    const newJobs = [...searchJobs];
     newJobs[jobidx].interviewDate = newInterviewDate;
     const jobDoc = doc(db, 'jobs', id);
     const updateInterviewDate = { interviewDate: newInterviewDate }
     setSearchJobs(newJobs);
-    setJobs(newJobs);
     await updateDoc(jobDoc, updateInterviewDate);
   }
 
@@ -210,7 +207,7 @@ const Home = () => {
   };
 
   const getTotalApplicationCount = (status) => {
-    const newJobs = [...jobs];
+    const newJobs = [...searchJobs];
     const filteredJobs = newJobs.filter(job => job.status.includes(status));
     const count = filteredJobs.length;
     return count;
