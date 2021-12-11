@@ -7,7 +7,6 @@ import {
   Avatar,
 } from '@mui/material';
 import SearchBar from './SearchBar';
-import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 
 const Header = (props) => {
 

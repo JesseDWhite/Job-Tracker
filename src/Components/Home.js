@@ -237,12 +237,7 @@ const Home = () => {
   }
 
   useEffect(() => {
-    if (!user?.email) {
-      setOpen(true);
-      setLoading(true);
-    } else {
-      getJobs();
-    }
+    getJobs();
   }, [user]);
 
   useEffect(() => {
@@ -253,7 +248,7 @@ const Home = () => {
     <>
       <Modal
         open={open}
-        onClose={() => setOpen(!open)}
+        onClose={() => (setOpen(!open), setEditing(false))}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -357,7 +352,7 @@ const Home = () => {
                     <Grid display='flex'>
                       <Grid
                         sx={{
-                          mt: 12
+                          mt: 11.50
                         }}
                         container
                         direction="row"
