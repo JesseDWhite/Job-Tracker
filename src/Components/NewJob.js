@@ -9,7 +9,6 @@ import {
   Radio,
   FormLabel,
   FormControlLabel,
-  Paper,
   Modal,
   Fade,
   Backdrop,
@@ -46,7 +45,8 @@ const NewJob = (props) => {
     user,
     editing,
     setEditing,
-    jobToEdit
+    jobToEdit,
+    handleSetOpen
   } = props;
 
   const initialValues = {
@@ -81,8 +81,6 @@ const NewJob = (props) => {
   }, [editing]);
 
   const handleInputChange = (e) => {
-    e.preventDefault();
-
     const { name, value } = e.target;
 
     setFormValues({
@@ -220,64 +218,64 @@ const NewJob = (props) => {
 
   return (
     <>
-      <Grid>
-        <Modal
-          open={open}
-          onClose={() => setOpen(!open)}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={open}>
-            <Box sx={modalStyle}>
-              <Typography variant='h6' component='h2'>
-                {extractKeyWords(formValues.jobDescription).length === 0
-                  ? 'No Keywords Found'
-                  : 'We Found Some Keywords For You'
-                }
-              </Typography>
-              <Typography component='h3'>
-                {extractKeyWords(formValues.jobDescription).length === 0
-                  ? null
-                  : <em>try writing to these points in your resume/cover letter</em>
-                }
-              </Typography>
-              <Typography sx={{ mt: 2 }}>
-                {extractKeyWords(formValues.jobDescription).length === 0
-                  ? 'Try adding the entire job description.'
-                  : extractKeyWords(formValues.jobDescription).map(keyword => {
-                    return (
-                      <li>{keyword[0].toUpperCase() + keyword.slice(1)}</li>
-                    )
-                  })}
-              </Typography>
-            </Box>
-          </Fade>
-        </Modal>
+      <Modal
+        open={open}
+        onClose={() => setOpen(!open)}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Box sx={modalStyle}>
+            <Typography variant='h6' component='h2'>
+              {extractKeyWords(formValues.jobDescription).length === 0
+                ? 'No Keywords Found'
+                : 'We Found Some Keywords For You'
+              }
+            </Typography>
+            <Typography component='h3'>
+              {extractKeyWords(formValues.jobDescription).length === 0
+                ? null
+                : <em>try writing to these points in your resume/cover letter</em>
+              }
+            </Typography>
+            <Typography sx={{ mt: 2 }}>
+              {extractKeyWords(formValues.jobDescription).length === 0
+                ? 'Try adding the entire job description.'
+                : extractKeyWords(formValues.jobDescription).map(keyword => {
+                  return (
+                    <li>{keyword[0].toUpperCase() + keyword.slice(1)}</li>
+                  )
+                })}
+            </Typography>
+          </Box>
+        </Fade>
+      </Modal>
+      <Grid
+        display='flex'
+      >
         <form method='POST' action='' onSubmit={validateFormFields}>
-          <TextField
-            sx={{
-              mb: 2,
-              zIndex: 0
-            }}
-            type='text'
-            name='company'
-            label='Company'
-            onChange={handleInputChange}
-            value={formValues.company}
-            fullWidth
-          />
           <Grid
             container
-            spacing={2}
+            direction="row"
+            justifyContent="center"
+            alignItems="start"
           >
-            <Grid
-              item
-              xl={8}
-              sm={12}
-            >
+            <Grid sm={6}>
+              <TextField
+                sx={{
+                  mb: 2,
+                  zIndex: 0
+                }}
+                type='text'
+                name='company'
+                label='Company'
+                onChange={handleInputChange}
+                value={formValues.company}
+                fullWidth
+              />
               <TextField
                 fullWidth
                 sx={{
@@ -290,12 +288,6 @@ const NewJob = (props) => {
                 onChange={handleInputChange}
                 value={formValues.jobTitle}
               />
-            </Grid>
-            <Grid
-              item
-              xl={4}
-              sm={12}
-            >
               <TextField
                 fullWidth
                 sx={{
@@ -308,192 +300,167 @@ const NewJob = (props) => {
                 onChange={handleInputChange}
                 value={formValues.dateApplied}
               />
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            direction='row'
-            justifyContent='space-around'
-            sx={{
-              mb: 2
-            }}
-          >
-            <FormControl component='fieldset'>
-              <FormLabel
-                component='legend'
+              <Grid
+                container
+                direction='row'
+                justifyContent='space-around'
                 sx={{
-                  textAlign: 'center'
+                  mb: 2
                 }}
               >
-                Status
-              </FormLabel>
-              <RadioGroup
-                row
-                name='status'
-                defaultValue='Active'
-                value={formValues.status}
-                onChange={handleInputChange}
-              >
-                <FormControlLabel
-                  value='Active'
-                  control={<Radio color='success' />}
-                  label='Active'
-                />
-                <FormControlLabel
-                  value='Interview'
-                  control={<Radio color='primary' />}
-                  label='Interview'
-                />
-                <FormControlLabel
-                  value='Closed'
-                  control={<Radio color='error' />}
-                  label='Closed'
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-          <TextField
-            sx={{
-              mb: 2,
-              zIndex: 0
-            }}
-            type='text'
-            name='jobPosting'
-            label='Link To Job Posting'
-            onChange={handleInputChange}
-            value={formValues.jobPosting}
-            fullWidth />
-          <TextField
-            sx={{
-              mb: 2,
-              zIndex: 0
-            }}
-            type='text'
-            name='ats'
-            label='Application Tracking System'
-            onChange={handleInputChange}
-            value={formValues.ats}
-            fullWidth />
-          <Paper
-            variant='outlined'
-            sx={{
-              p: 2,
-              mb: 2,
-            }}
-          >
-            <Grid
-              sx={{
-                mb: 2,
-              }}
-              container
-              spacing={2}
-            >
-              <Grid
-                item
-                xl={8}
-                sm={12}
-              >
-                <Tooltip
-                  placement='left'
-                  title='Insert the entire job description text'
-                  arrow
-                >
-                  <TextField
+                <FormControl component='fieldset'>
+                  <FormLabel
+                    component='legend'
                     sx={{
-                      zIndex: 0
+                      textAlign: 'center'
                     }}
-                    type='text'
-                    name='jobDescription'
-                    label='Job Description'
+                  >
+                    Status
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    name='status'
+                    defaultValue='Active'
+                    value={formValues.status}
                     onChange={handleInputChange}
-                    value={formValues.jobDescription}
-                    fullWidth />
-                </Tooltip>
+                  >
+                    <FormControlLabel
+                      value='Active'
+                      control={<Radio color='success' />}
+                      label='Active'
+                    />
+                    <FormControlLabel
+                      value='Interview'
+                      control={<Radio color='primary' />}
+                      label='Interview'
+                    />
+                    <FormControlLabel
+                      value='Closed'
+                      control={<Radio color='error' />}
+                      label='Closed'
+                    />
+                  </RadioGroup>
+                </FormControl>
               </Grid>
-              <Grid
-                item
-                xl={4}
-                sm={12}
-              >
-                <Button
-                  sx={{
-                    height: '100%'
-                  }}
-                  fullWidth
-                  variant='contained'
-                  color='success'
-                  onClick={() => setOpen(true)}
-                  disabled={!formValues.jobDescription ? true : false}
-                >
-                  Get Keywords
-                </Button>
-              </Grid>
-            </Grid>
-            {/* <input
-            type='file'
-            accept='application/pdf'
-            ref={fileInput}
-            name='coverLetter'
-            onChange={handleInputChange}
-            value={formValues.coverLetter}
-            id='coverLetter'
-          /> */}
-            {/* <Typography>Resume</Typography> */}
-            <Tooltip
-              placement='left'
-              title='Insert the entire resume text'
-              arrow
-            >
               <TextField
                 sx={{
                   mb: 2,
                   zIndex: 0
                 }}
                 type='text'
-                name='resume'
-                label='Resume'
+                name='jobPosting'
+                label='Link To Job Posting'
                 onChange={handleInputChange}
-                value={formValues.resume}
+                value={formValues.jobPosting}
                 fullWidth />
-            </Tooltip>
-            {/* <Typography>CoverLetter</Typography> */}
-            <Tooltip
-              placement='left'
-              title='Insert the entire cover letter text'
-              arrow
-            >
               <TextField
                 sx={{
+                  mb: 2,
                   zIndex: 0
                 }}
                 type='text'
-                name='coverLetter'
-                label='Cover Letter'
+                name='ats'
+                label='Application Tracking System'
                 onChange={handleInputChange}
-                value={formValues.coverLetter}
+                value={formValues.ats}
                 fullWidth />
-            </Tooltip>
-            {/* <input
-            type='file'
-            accept='application/pdf'
-            ref={fileInput}
-            name='resume'
-            onChange={handleInputChange}
-            value={formValues.resume}
-            id='resume'
-          /> */}
-          </Paper>
-          <TextField sx={{
-            mb: 2,
-            zIndex: 0
-          }}
-            type='text'
-            name='notes'
-            label='Notes'
-            onChange={handleInputChange}
-            value={formValues.notes}
-            fullWidth
-          />
+            </Grid>
+            <Grid sm={6} sx={{ pl: 2 }}>
+
+              <Grid
+                sx={{
+                  mb: 2,
+                }}
+                container
+                spacing={2}
+              >
+                <Grid
+                  item
+                  sm={8}
+                >
+                  <Tooltip
+                    placement='left'
+                    title='Insert the entire job description text'
+                    arrow
+                  >
+                    <TextField
+                      sx={{
+                        zIndex: 0
+                      }}
+                      type='text'
+                      name='jobDescription'
+                      label='Job Description'
+                      onChange={handleInputChange}
+                      value={formValues.jobDescription}
+                      fullWidth />
+                  </Tooltip>
+                </Grid>
+                <Grid
+                  item
+                  sm={4}
+                >
+                  <Button
+                    sx={{
+                      height: '100%'
+                    }}
+                    fullWidth
+                    variant='contained'
+                    color='success'
+                    onClick={() => setOpen(true)}
+                    disabled={!formValues.jobDescription ? true : false}
+                  >
+                    Keywords
+                  </Button>
+                </Grid>
+              </Grid>
+              <Tooltip
+                placement='left'
+                title='Insert the entire resume text'
+                arrow
+              >
+                <TextField
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  type='text'
+                  name='resume'
+                  label='Resume'
+                  onChange={handleInputChange}
+                  value={formValues.resume}
+                  fullWidth />
+              </Tooltip>
+              {/* <Typography>CoverLetter</Typography> */}
+              <Tooltip
+                placement='left'
+                title='Insert the entire cover letter text'
+                arrow
+              >
+                <TextField
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  type='text'
+                  name='coverLetter'
+                  label='Cover Letter'
+                  onChange={handleInputChange}
+                  value={formValues.coverLetter}
+                  fullWidth />
+              </Tooltip>
+              <TextField sx={{
+                mb: 2,
+                zIndex: 0
+              }}
+                type='text'
+                name='notes'
+                label='Notes'
+                onChange={handleInputChange}
+                value={formValues.notes}
+                fullWidth
+              />
+            </Grid>
+          </Grid>
           <Button
             sx={{
               background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
@@ -501,7 +468,6 @@ const NewJob = (props) => {
             }}
             type='submit'
             variant='contained'
-            // onClick={validateFormFields}
             fullWidth
           >
             {editing ? `Update ${formValues.company}` : 'Create New Job'}
@@ -515,14 +481,17 @@ const NewJob = (props) => {
               variant='contained'
               color='error'
               fullWidth
-              onClick={() => setEditing(!editing)}
+              onClick={() => (
+                setEditing(!editing),
+                handleSetOpen(false)
+              )}
             >
               Cancel
             </Button>
             : null
           }
-        </form>
-      </Grid>
+        </form >
+      </Grid >
     </>
   );
 };

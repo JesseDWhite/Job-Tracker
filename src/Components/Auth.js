@@ -12,6 +12,8 @@ import {
   signInWithEmailAndPassword,
 } from '@firebase/auth';
 import { auth, signInWithGoogle } from '../firebase';
+import signInPage from '../assets/img/signInPage.jpg';
+import PersonOutlineTwoToneIcon from '@mui/icons-material/PersonOutlineTwoTone';
 
 const Auth = () => {
 
@@ -116,7 +118,35 @@ const Auth = () => {
               >
                 Sign In
               </Button> */}
+            <img
+              src={signInPage}
+              alt="computer and code on it"
+              style={{
+                width: '100%',
+                height: 500,
+                objectFit: 'cover',
+                borderRadius: 25
+              }} />
+            <Typography
+              variant='h3'
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontWeight: 'bold',
+                fontSize: '500%',
+                textShadow: 'rgb(10,25,41) -8px 0px 0px',
+                color: 'lightgray'
+              }}
+            >
+              WELCOME
+            </Typography>
             <Button
+              sx={{
+                mt: 3
+              }}
+              startIcon={<PersonOutlineTwoToneIcon />}
               fullWidth
               variant='contained'
               onClick={signInWithGoogle}

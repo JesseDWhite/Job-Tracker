@@ -33,6 +33,7 @@ const SearchBar = (props) => {
       <TextField
         sx={{
           ml: 3,
+          width: '25%'
         }}
         placeholder='SEARCH COMPANIES'
         variant='standard'

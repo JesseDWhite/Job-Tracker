@@ -5,26 +5,24 @@ import {
   Typography,
   Chip,
   Avatar,
-  Tooltip,
 } from '@mui/material';
 import SearchBar from './SearchBar';
+import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 
 const Header = (props) => {
 
   const {
     user,
-    logout,
     sortByName,
     sortByDate,
-    cardView,
-    setCardView,
     sort,
     jobs,
     setSearchJobs,
     applicationCount,
-    setApplicationCount,
     viewProfile,
     setViewProfile,
+    open,
+    setOpen
   } = props;
 
   return (
@@ -38,7 +36,7 @@ const Header = (props) => {
           position: 'fixed',
           top: 0,
           p: 2,
-          filter: 'drop-shadow(0px 5px 25px rgba(0, 0, 0, 0.300))'
+          filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.300))'
         }}
       > {user?.email ?
         <Grid>
@@ -59,17 +57,7 @@ const Header = (props) => {
             }
             <Button
               sx={{
-                mr: 5,
-                ml: 3
-              }}
-              variant='text'
-              color='secondary'
-              onClick={() => setCardView(!cardView)}>
-              View By: {cardView ? 'CARD' : 'LIST'}
-            </Button>
-            <Button
-              sx={{
-                mr: 5
+                mx: 5
               }}
               variant='text'
               color='secondary'
@@ -99,14 +87,40 @@ const Header = (props) => {
             />
           </Grid>
         </Grid>
-        : <Typography
-          variant='h5'
-          sx={{
-            color: 'black'
-          }}
-        >
-          WELCOME
-        </Typography>
+        :
+        <Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="start"
+          >
+            <Typography
+              variant='h5'
+              sx={{
+                color: 'black'
+              }}
+            >
+              WELCOME
+            </Typography>
+            <Grid
+              sx={{
+                position: 'fixed',
+                right: 15,
+                top: 18
+              }}
+            >
+              <Chip
+                avatar={
+                  <Avatar
+                    src={user?.photoURL}
+                  />}
+                label='Sign In'
+                clickable
+                onClick={() => setOpen(!open)}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
         }
       </Grid>
     </>
