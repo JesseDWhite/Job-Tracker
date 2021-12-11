@@ -150,11 +150,14 @@ const Home = () => {
     reader.readAsText(e.target.files[0])
   }
 
-  const deleteJob = async (id, jobidx) => {
-    const newJobs = [...searchJobs];
-    newJobs.splice(jobidx, 1);
+  const deleteJob = async (id) => {
+    const newSearchJobs = [...searchJobs];
+    const newJobs = [...jobs];
+    const filteredJobs = newJobs.filter(job => !job.id.includes(id))
+    const filteredSearchJobs = newSearchJobs.filter(job => !job.id.includes(id))
     const jobDoc = doc(db, 'jobs', id);
-    setSearchJobs(newJobs);
+    setSearchJobs(filteredSearchJobs);
+    setJobs(filteredJobs);
     await deleteDoc(jobDoc);
   }
 

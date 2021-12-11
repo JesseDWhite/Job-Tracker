@@ -91,7 +91,8 @@ const NewJob = (props) => {
     });
   };
 
-  const validateFormFields = () => {
+  const validateFormFields = (e) => {
+    e.preventDefault();
     if (formValues.company === '' ||
       formValues.dateApplied === '' ||
       formValues.jobTitle === '' ||
@@ -255,7 +256,7 @@ const NewJob = (props) => {
             </Box>
           </Fade>
         </Modal>
-        <form method='post'>
+        <form method='POST' action='' onSubmit={validateFormFields}>
           <TextField
             sx={{
               mb: 2,
@@ -498,9 +499,9 @@ const NewJob = (props) => {
               background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
               fontSize: 18,
             }}
-            type='button'
+            type='submit'
             variant='contained'
-            onClick={validateFormFields}
+            // onClick={validateFormFields}
             fullWidth
           >
             {editing ? `Update ${formValues.company}` : 'Create New Job'}

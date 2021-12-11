@@ -151,7 +151,7 @@ const CardView = (props) => {
             >
               <IconButton
                 color='error'
-                onClick={() => deleteJob(job.id, jobidx)}>
+                onClick={() => deleteJob(job.id)}>
                 <DeleteForeverTwoTone />
               </IconButton>
             </Tooltip>
