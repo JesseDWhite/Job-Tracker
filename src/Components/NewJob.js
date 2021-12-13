@@ -14,6 +14,9 @@ import {
   Backdrop,
   Box,
   Tooltip,
+  Slide,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { db } from '../firebase';
 import {
@@ -46,7 +49,10 @@ const NewJob = (props) => {
     editing,
     setEditing,
     jobToEdit,
-    handleSetOpen
+    handleSetOpen,
+    handleClose,
+    feedback,
+    setFeedback
   } = props;
 
   const initialValues = {
@@ -95,9 +101,33 @@ const NewJob = (props) => {
       formValues.dateApplied === '' ||
       formValues.jobTitle === '' ||
       formValues.status === '') {
-      console.log('gotta fill that bad boy out');
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Please fill out at least the "Company" and "Job Title" sections before submitting.'
+      });
     } else {
-      createJob();
+      if (editing) {
+        createJob();
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'info',
+          title: 'Updated',
+          message: `${formValues.company} has successfully been updated in your list`
+        });
+      } else {
+        createJob();
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'success',
+          title: 'Added',
+          message: `${formValues.company} has successfully been added to your list!`
+        });
+      }
     }
   }
 
@@ -145,7 +175,7 @@ const NewJob = (props) => {
           : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
         user: user?.uid,
         id: jobToEdit.id
-      })
+      });
     getJobs();
     setEditing(false);
     setFormValues(initialValues);
@@ -491,7 +521,7 @@ const NewJob = (props) => {
             : null
           }
         </form >
-      </Grid >
+      </Grid>
     </>
   );
 };

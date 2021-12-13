@@ -19,7 +19,11 @@ import {
   Backdrop,
   Box,
   Fab,
-  Skeleton
+  Skeleton,
+  Snackbar,
+  Alert,
+  Slide,
+  AlertTitle
 } from '@mui/material';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
@@ -71,6 +75,20 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   const [viewProfile, setViewProfile] = useState(false);
+
+  const [feedback, setFeedback] = useState({
+    open: false,
+    type: null,
+    title: null,
+    message: null
+  });
+
+  const handleClose = () => {
+    setFeedback({
+      ...feedback,
+      open: false
+    });
+  }
 
   onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
@@ -169,7 +187,7 @@ const Home = () => {
     reader.readAsText(e.target.files[0])
   }
 
-  const deleteJob = async (id) => {
+  const deleteJob = async (id, name) => {
     const newSearchJobs = [...searchJobs];
     const newJobs = [...jobs];
     const filteredJobs = newJobs.filter(job => !job.id.includes(id))
@@ -177,6 +195,13 @@ const Home = () => {
     const jobDoc = doc(db, 'jobs', id);
     setSearchJobs(filteredSearchJobs);
     setJobs(filteredJobs);
+    setFeedback({
+      ...feedback,
+      open: true,
+      type: 'warning',
+      title: 'Deleted',
+      message: `${name} has successfully been removed from your list`
+    })
     await deleteDoc(jobDoc);
   }
 
@@ -219,13 +244,17 @@ const Home = () => {
     } else return 5
   }
 
-  const getStatus = (status) => {
-    if (status === 'Active') {
-      return '#4CAF50';
-    } else if (status === 'Interview') {
-      return '#673AB7';
-    } else if (status === 'Closed') {
-      return '#F44336';
+  const getStatus = (status, score) => {
+    if (score > 89) {
+      return '#FDD835'
+    } else {
+      if (status === 'Active') {
+        return '#4CAF50';
+      } else if (status === 'Interview') {
+        return '#673AB7';
+      } else if (status === 'Closed') {
+        return '#F44336';
+      }
     }
   };
 
@@ -271,6 +300,9 @@ const Home = () => {
                 setSearchJobs={setSearchJobs}
                 user={user}
                 handleSetOpen={setOpen}
+                handleClose={handleClose}
+                feedback={feedback}
+                setFeedback={setFeedback}
               />
             }
           </Box>
@@ -596,6 +628,24 @@ const Home = () => {
         open={open}
         setOpen={setOpen}
       />
+      <Snackbar
+        sx={{ width: '100%' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={feedback.open}
+        onClose={handleClose}
+        TransitionComponent={Slide}
+        autoHideDuration={4000}
+      >
+        <Alert
+          variant="filled"
+          severity={feedback.type}
+          onClose={handleClose}
+          sx={{ width: '45%' }}
+        >
+          <AlertTitle>{feedback.title}</AlertTitle>
+          {feedback.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

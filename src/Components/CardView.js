@@ -36,7 +36,7 @@ const CardView = (props) => {
     updateJobStatus,
     jobidx,
     updateInterviewDate,
-    updateJobApplication
+    updateJobApplication,
   } = props;
 
   return (
@@ -51,8 +51,8 @@ const CardView = (props) => {
           p: 2,
           minHeight: 250,
           border: 'solid 5px',
-          borderColor: getStatus(job.status),
-          background: job.score > 89 ? 'linear-gradient(135deg, white 40%, gold)' : 'white',
+          borderColor: getStatus(job.status, job.score),
+          background: job.score > 89 ? 'linear-gradient(135deg, white 50%, #FDD835)' : 'white',
           borderRadius: 5
         }}
       >
@@ -150,7 +150,7 @@ const CardView = (props) => {
             >
               <IconButton
                 color='error'
-                onClick={() => deleteJob(job.id)}>
+                onClick={() => deleteJob(job.id, job.company)}>
                 <DeleteForeverTwoTone />
               </IconButton>
             </Tooltip>
