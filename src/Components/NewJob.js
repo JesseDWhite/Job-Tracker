@@ -14,10 +14,12 @@ import {
   Backdrop,
   Box,
   Tooltip,
-  Slide,
-  Snackbar,
-  Alert,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
+import { Check, Close } from '@mui/icons-material';
 import { db } from '../firebase';
 import {
   updateDoc,
@@ -262,13 +264,13 @@ const NewJob = (props) => {
             <Typography variant='h6' component='h2'>
               {extractKeyWords(formValues.jobDescription).length === 0
                 ? 'No Keywords Found'
-                : 'We Found Some Keywords For You'
+                : `We Found ${extractKeyWords(formValues.jobDescription).length} Keywords For You`
               }
             </Typography>
             <Typography component='h3'>
               {extractKeyWords(formValues.jobDescription).length === 0
                 ? null
-                : <em>try writing to these points in your resume/cover letter</em>
+                : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
               }
             </Typography>
             <Typography sx={{ mt: 2 }}>
@@ -276,7 +278,12 @@ const NewJob = (props) => {
                 ? 'Try adding the entire job description.'
                 : extractKeyWords(formValues.jobDescription).map(keyword => {
                   return (
-                    <li>{keyword[0].toUpperCase() + keyword.slice(1)}</li>
+                    <List dense={true} disablePadding>
+                      {extractKeyWords(formValues.coverLetter).includes(keyword) || extractKeyWords(formValues.resume).includes(keyword)
+                        ? <ListItem disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                        : <ListItem disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                      }
+                    </List>
                   )
                 })}
             </Typography>
