@@ -6,6 +6,22 @@ body {
   height: 100%;
 }
 
-/* body {
-  background: linear-gradient(90deg, rgb(37, 11, 63), rgb(187, 114, 255));
-} */
+body::-webkit-scrollbar {
+  background-color: rgba(0, 0, 0, 0);
+  width: 0.5em;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: rgb(169, 169, 169);
+  border-radius: 1em;
+}
+
+.modal::-webkit-scrollbar {
+  width: 0.5em;
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background-color: rgb(169, 169, 169);
+  border-radius: 1em;
+}

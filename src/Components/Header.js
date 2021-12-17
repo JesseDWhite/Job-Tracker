@@ -61,7 +61,7 @@ const Header = (props) => {
               variant='text'
               color='secondary'
               onClick={() => sort ? sortByDate() : sortByName()}>
-              SORT BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
+              SORTED BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
             </Button>
             <SearchBar
               jobs={jobs}

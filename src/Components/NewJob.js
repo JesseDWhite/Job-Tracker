@@ -19,7 +19,7 @@ import {
   ListItemIcon,
   ListItemText
 } from '@mui/material';
-import { Check, Close } from '@mui/icons-material';
+import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
 import { db } from '../firebase';
 import {
   updateDoc,
@@ -36,10 +36,12 @@ const modalStyle = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
+  maxHeight: '85%',
   bgcolor: 'background.paper',
   borderRadius: 5,
   boxShadow: 24,
   p: 4,
+  overflowY: 'auto',
 };
 
 const NewJob = (props) => {
@@ -260,7 +262,7 @@ const NewJob = (props) => {
         }}
       >
         <Fade in={open}>
-          <Box sx={modalStyle}>
+          <Box sx={modalStyle} className='modal'>
             <Typography variant='h6' component='h2'>
               {extractKeyWords(formValues.jobDescription).length === 0
                 ? 'No Keywords Found'
@@ -299,13 +301,15 @@ const NewJob = (props) => {
             direction="row"
             justifyContent="center"
             alignItems="start"
+            spacing={2}
           >
-            <Grid sm={6}>
+            <Grid lg={6} item>
               <TextField
                 sx={{
                   mb: 2,
                   zIndex: 0
                 }}
+                autoFocus
                 type='text'
                 name='company'
                 label='Company'
@@ -402,8 +406,7 @@ const NewJob = (props) => {
                 value={formValues.ats}
                 fullWidth />
             </Grid>
-            <Grid sm={6} sx={{ pl: 2 }}>
-
+            <Grid lg={6} item>
               <Grid
                 sx={{
                   mb: 2,
@@ -505,9 +508,10 @@ const NewJob = (props) => {
             }}
             type='submit'
             variant='contained'
+            startIcon={<AddBoxTwoTone />}
             fullWidth
           >
-            {editing ? `Update ${formValues.company}` : 'Create New Job'}
+            {editing ? `Update ${formValues.company}` : 'ADD TO LIST'}
           </Button>
           {editing
             ? <Button

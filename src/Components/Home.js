@@ -37,6 +37,7 @@ import Header from './Header';
 import CardView from './CardView';
 import Profile from './Profile';
 import Analytics from './Analytics';
+import MasterList from './MasterList';
 import { AnimateKeyframes } from 'react-simple-animate';
 
 const modalStyle = {
@@ -50,6 +51,7 @@ const modalStyle = {
   borderRadius: 5,
   boxShadow: 24,
   p: 4,
+  overflowY: 'auto'
 };
 
 const Home = () => {
@@ -285,7 +287,7 @@ const Home = () => {
         }}
       >
         <Fade in={open}>
-          <Box container sx={modalStyle}>
+          <Box container sx={modalStyle} className='modal'>
             {!user?.email
               ? <Auth />
               : <NewJob
@@ -406,188 +408,20 @@ const Home = () => {
                     </Grid>
                   </AnimateKeyframes>
                   : <Grid>
-                    <Grid>
-                      <AnimateKeyframes
-                        play
-                        iterationCount={1}
-                        keyframes={[
-                          "opacity: 0",
-                          "opacity: 1",
-                        ]}
-                      >
-                        {searchJobs.every(job => job.status !== 'Interview')
-                          ? null
-                          :
-                          <Typography
-                            variant='h4'
-                            sx={{
-                              mt: 3,
-                              ml: 2
-                            }}
-                          >
-                            Upcoming Interviews <Chip label={getTotalApplicationCount('Interview')} />
-                          </Typography>
-                        }
-                      </AnimateKeyframes>
-                      <Grid
-                        container
-                        direction='row'
-                        justifyContent='start'
-                      >
-                        {searchJobs.map((job, jobidx) => {
-                          return (
-                            job.status === 'Interview' ?
-                              <Grid
-                                sm={6}
-                                xl={3}
-                              >
-                                <AnimateKeyframes
-                                  play
-                                  iterationCount={1}
-                                  keyframes={[
-                                    "opacity: 0",
-                                    "opacity: 1",
-                                  ]}
-                                >
-                                  <CardView
-                                    key={job.id}
-                                    updateJobApplication={updateJobApplication}
-                                    jobToEdit={jobToEdit}
-                                    setJobToEdit={setJobToEdit}
-                                    editing={editing}
-                                    setEditing={setEditing}
-                                    job={job}
-                                    getStatus={getStatus}
-                                    gradeApplication={gradeApplication}
-                                    deleteJob={deleteJob}
-                                    updateJobStatus={updateJobStatus}
-                                    jobidx={jobidx}
-                                    updateInterviewDate={updateInterviewDate}
-                                  />
-                                </AnimateKeyframes>
-                              </Grid>
-                              : null
-                          );
-                        })}
-                      </Grid>
-                    </Grid>
-                    <Grid>
-                      <AnimateKeyframes
-                        play
-                        iterationCount={1}
-                        keyframes={["opacity: 0", "opacity: 1"]}
-                      >
-                        {searchJobs.every(job => job.status !== 'Active')
-                          ? null
-                          :
-                          <Typography
-                            variant='h4'
-                            sx={{
-                              mt: 3,
-                              ml: 2
-                            }}
-                          >
-                            Active Applications <Chip label={getTotalApplicationCount('Active')} />
-                            {/* <Pagination color='primary' variant='outlined' count={10} /> */}
-                          </Typography>
-                        }
-                      </AnimateKeyframes>
-                      <Grid
-                        container
-                        direction='row'
-                        justifyContent='start'
-                      >
-                        {searchJobs.map((job, jobidx) => {
-                          return (
-                            job.status === 'Active' ?
-                              <Grid
-                                sm={6}
-                                xl={3}
-                              >
-                                <AnimateKeyframes
-                                  play
-                                  iterationCount={1}
-                                  keyframes={["opacity: 0", "opacity: 1"]}
-                                >
-                                  <CardView
-                                    key={job.id}
-                                    updateJobApplication={updateJobApplication}
-                                    jobToEdit={jobToEdit}
-                                    setJobToEdit={setJobToEdit}
-                                    editing={editing}
-                                    setEditing={setEditing}
-                                    job={job}
-                                    getStatus={getStatus}
-                                    gradeApplication={gradeApplication}
-                                    deleteJob={deleteJob}
-                                    updateJobStatus={updateJobStatus}
-                                    jobidx={jobidx}
-                                    updateInterviewDate={updateInterviewDate}
-                                  />
-                                </AnimateKeyframes>
-                              </Grid>
-                              : null
-                          );
-                        })}
-                      </Grid>
-                    </Grid>
-                    <AnimateKeyframes
-                      play
-                      iterationCount={1}
-                      keyframes={["opacity: 0", "opacity: 1"]}
-                    >
-                      {searchJobs.every(job => job.status !== 'Closed')
-                        ? null
-                        :
-                        <Typography
-                          variant='h4'
-                          sx={{
-                            mt: 3,
-                            ml: 2
-                          }}
-                        >
-                          Closed Applications <Chip label={getTotalApplicationCount('Closed')} />
-                        </Typography>
-                      }
-                    </AnimateKeyframes>
-                    <Grid
-                      container
-                      direction='row'
-                      justifyContent='start'
-                    >
-                      {searchJobs.map((job, jobidx) => {
-                        return (
-                          job.status === 'Closed' ?
-                            <Grid
-                              sm={6}
-                              xl={3}
-                            >
-                              <AnimateKeyframes
-                                play
-                                iterationCount={1}
-                                keyframes={["opacity: 0", "opacity: 1"]}
-                              >
-                                <CardView
-                                  key={job.id}
-                                  updateJobApplication={updateJobApplication}
-                                  jobToEdit={jobToEdit}
-                                  setJobToEdit={setJobToEdit}
-                                  editing={editing}
-                                  setEditing={setEditing}
-                                  job={job}
-                                  getStatus={getStatus}
-                                  gradeApplication={gradeApplication}
-                                  deleteJob={deleteJob}
-                                  updateJobStatus={updateJobStatus}
-                                  jobidx={jobidx}
-                                  updateInterviewDate={updateInterviewDate}
-                                />
-                              </AnimateKeyframes>
-                            </Grid>
-                            : null
-                        );
-                      })}
-                    </Grid>
+                    <MasterList
+                      getTotalApplicationCount={getTotalApplicationCount}
+                      searchJobs={searchJobs}
+                      updateJobApplication={updateJobApplication}
+                      jobToEdit={jobToEdit}
+                      setJobToEdit={setJobToEdit}
+                      editing={editing}
+                      setEditing={setEditing}
+                      getStatus={getStatus}
+                      gradeApplication={gradeApplication}
+                      deleteJob={deleteJob}
+                      updateJobStatus={updateJobStatus}
+                      updateInterviewDate={updateInterviewDate}
+                    />
                     <Fab
                       variant='extended'
                       sx={{
