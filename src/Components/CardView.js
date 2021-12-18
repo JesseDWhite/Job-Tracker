@@ -91,7 +91,8 @@ const CardView = (props) => {
                 {job.company}
               </Typography>
               <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                <CircularProgress variant="determinate" value={job.score} sx={{ color: getScoreColor(job.score) }} />
+                <CircularProgress variant="determinate" value={job.score} sx={{ color: getScoreColor(job.score) }} thickness={6}
+                />
                 <Box
                   sx={{
                     top: 0,
