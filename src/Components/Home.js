@@ -389,7 +389,7 @@ const Home = () => {
                         direction="row"
                         justifyContent="start"
                       >
-                        {Array.from(new Array(8)).map(skeleton => {
+                        {Array.from(new Array(12)).map(skeleton => {
                           return (
                             <Grid
                               sm={6}
@@ -397,7 +397,7 @@ const Home = () => {
                               spacing={2}
                               item
                             >
-                              <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 6, mx: 3, height: 350, borderRadius: 5 }} />
+                              <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 290, borderRadius: 5 }} />
                             </Grid>
                           )
                         })}

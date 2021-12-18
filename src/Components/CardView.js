@@ -5,7 +5,6 @@ import {
   Paper,
   IconButton,
   Tooltip,
-  Rating,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -64,7 +63,7 @@ const CardView = (props) => {
         sx={{
           m: 3,
           p: 2,
-          minHeight: 250,
+          minHeight: 200,
           border: 'solid 5px',
           borderColor: getStatus(job.status, job.score),
           background: job.score > 89 ? 'linear-gradient(135deg, white 50%, #FDD835)' : 'white',
@@ -111,29 +110,27 @@ const CardView = (props) => {
                 </Box>
               </Box>
             </Grid>
-            <Grid
-              item
-              sm={6}
-            >
-              <Rating
-                readOnly
-                value={gradeApplication(job.score)}
-                size='large'
-                sx={{
-                  mt: 0.75
-                }}
-              />
-            </Grid>
+          </Grid>
+          <Grid>
+            <Typography variant='h5'>{job.jobTitle}</Typography>
+          </Grid>
+          <Grid container>
+            <Typography>
+              {format(new Date(job.dateApplied.replace(/-/g, '\/')), 'PPP')}
+            </Typography>
           </Grid>
           <Grid
             container
             direction="row"
-            justifyContent='start'
+            justifyContent="flex-start"
           >
             <Tooltip
               title='Job Posting'
             >
               <IconButton
+                sx={{
+                  pl: 0
+                }}
                 target='_blank'
                 rel='noopener noreferrer'
                 href={job.jobPosting}
@@ -200,10 +197,6 @@ const CardView = (props) => {
             </Tooltip>
           </Grid>
         </Grid>
-        <Typography variant='h5'>{job.jobTitle}</Typography>
-        <Typography>
-          {format(new Date(job.dateApplied.replace(/-/g, '\/')), 'PPP')}
-        </Typography>
         <FormControl component='fieldset'>
           <RadioGroup
             row
@@ -244,9 +237,12 @@ const CardView = (props) => {
         }
         <Typography>{job.notes}</Typography>
         <Box
-          component='float'
+          sx={{
+            pt: 1
+          }}
         >
           <Accordion
+            item
             disableGutters
             elevation={0}
             sx={{
@@ -274,7 +270,7 @@ const CardView = (props) => {
             </AccordionDetails>
           </Accordion>
         </Box>
-      </Paper >
+      </Paper>
     </>
   )
 }
