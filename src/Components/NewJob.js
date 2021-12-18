@@ -82,6 +82,8 @@ const NewJob = (props) => {
 
   const [open, setOpen] = useState(false);
 
+  const [timer, setTimer] = useState(0);
+
   useEffect(() => {
     const newFormValues = { ...initialValues };
     setFormValues({
@@ -263,32 +265,37 @@ const NewJob = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            <Typography variant='h6' component='h2'>
-              {extractKeyWords(formValues.jobDescription).length === 0
-                ? 'No Keywords Found'
-                : `We Found ${extractKeyWords(formValues.jobDescription).length} Keywords For You`
-              }
-            </Typography>
-            <Typography component='h3'>
-              {extractKeyWords(formValues.jobDescription).length === 0
-                ? null
-                : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
-              }
-            </Typography>
-            <Typography sx={{ mt: 2 }}>
-              {extractKeyWords(formValues.jobDescription).length === 0
-                ? 'Try adding the entire job description.'
-                : extractKeyWords(formValues.jobDescription).map(keyword => {
-                  return (
-                    <List dense={true} disablePadding>
-                      {extractKeyWords(formValues.coverLetter).includes(keyword) || extractKeyWords(formValues.resume).includes(keyword)
-                        ? <ListItem disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
-                        : <ListItem disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
-                      }
-                    </List>
-                  )
-                })}
-            </Typography>
+            {open
+              ? <>
+                <Typography variant='h6' component='h2'>
+                  {extractKeyWords(formValues.jobDescription).length === 0
+                    ? 'No Keywords Found'
+                    : `We Found ${extractKeyWords(formValues.jobDescription).length} Keywords For You`
+                  }
+                </Typography>
+                <Typography component='h3'>
+                  {extractKeyWords(formValues.jobDescription).length === 0
+                    ? null
+                    : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
+                  }
+                </Typography>
+                <Typography sx={{ mt: 2 }}>
+                  {extractKeyWords(formValues.jobDescription).length === 0
+                    ? 'Try adding the entire job description.'
+                    : extractKeyWords(formValues.jobDescription).map(keyword => {
+                      return (
+                        <List dense={true} disablePadding>
+                          {extractKeyWords(formValues.coverLetter).includes(keyword) || extractKeyWords(formValues.resume).includes(keyword)
+                            ? <ListItem disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                            : <ListItem disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                          }
+                        </List>
+                      )
+                    })}
+                </Typography>
+              </>
+              : null
+            }
           </Box>
         </Fade>
       </Modal>
