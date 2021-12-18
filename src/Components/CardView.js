@@ -15,6 +15,7 @@ import {
   AccordionDetails,
   Box,
   TextField,
+  CircularProgress
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -38,6 +39,20 @@ const CardView = (props) => {
     updateInterviewDate,
     updateJobApplication,
   } = props;
+
+  const getScoreColor = (score) => {
+    if (score < 20) {
+      return '#FF3D00'
+    } else if (score >= 20 && score < 40) {
+      return '#FF9100'
+    } else if (score >= 40 && score < 60) {
+      return '#FFC400'
+    } else if (score >= 60 && score < 80) {
+      return '#FFD600'
+    } else if (score >= 80 && score < 90) {
+      return '#64DD17'
+    } else return '#00B0FF'
+  }
 
   return (
     <>
@@ -64,11 +79,39 @@ const CardView = (props) => {
           <Grid
             sm={12}
           >
-            <Typography
-              variant='h4'>
-              {job.company}
-            </Typography>
             <Grid
+              container
+              direction="row"
+              justifyContent='space-between'
+            >
+              <Typography
+                item
+                sm={6}
+                variant='h4'>
+                {job.company}
+              </Typography>
+              <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                <CircularProgress variant="determinate" value={job.score} sx={{ color: getScoreColor(job.score) }} />
+                <Box
+                  sx={{
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    position: 'absolute',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography variant="caption" component="div" sx={{ fontWeight: 'bold', fontSize: 'large' }}>
+                    {job.score}
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid
+              item
               sm={6}
             >
               <Rating

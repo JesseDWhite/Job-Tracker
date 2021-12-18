@@ -12,8 +12,6 @@ import {
 import NewJob from './NewJob';
 import {
   Grid,
-  Typography,
-  Chip,
   Modal,
   Fade,
   Backdrop,
@@ -34,7 +32,6 @@ import {
 } from '@firebase/auth';
 import { auth } from '../firebase';
 import Header from './Header';
-import CardView from './CardView';
 import Profile from './Profile';
 import Analytics from './Analytics';
 import MasterList from './MasterList';
