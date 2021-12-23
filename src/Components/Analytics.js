@@ -90,6 +90,9 @@ const Analytics = (props) => {
     return total;
   }
 
+  const handleWeeklyNumbers = () => {
+  }
+
   return (
     <>
       <Card

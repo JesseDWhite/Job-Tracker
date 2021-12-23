@@ -54,10 +54,15 @@ const NewJob = (props) => {
     setEditing,
     jobToEdit,
     handleSetOpen,
-    handleClose,
     feedback,
     setFeedback
   } = props;
+
+  const [resumeKeywords, setResumeKeywords] = useState([]);
+
+  const [coverLetterKeywords, setCoverLetterKeywords] = useState([]);
+
+  const [jobPostingKeywords, setJobPostingKeywords] = useState([]);
 
   const initialValues = {
     company: editing ? jobToEdit.company : '',
@@ -82,8 +87,6 @@ const NewJob = (props) => {
 
   const [open, setOpen] = useState(false);
 
-  const [timer, setTimer] = useState(0);
-
   useEffect(() => {
     const newFormValues = { ...initialValues };
     setFormValues({
@@ -103,10 +106,7 @@ const NewJob = (props) => {
 
   const validateFormFields = (e) => {
     e.preventDefault();
-    if (formValues.company === '' ||
-      formValues.dateApplied === '' ||
-      formValues.jobTitle === '' ||
-      formValues.status === '') {
+    if (!formValues.company || !formValues.jobTitle) {
       setFeedback({
         ...feedback,
         open: true,
@@ -154,9 +154,7 @@ const NewJob = (props) => {
         coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
         resumeKeyWords: extractKeyWords(formValues.resume),
         missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
-        score: formValues.coverLetter === ''
-          && formValues.resume === ''
-          && formValues.jobDescription === '' ? 0
+        score: !formValues.coverLetter && !formValues.resume && !formValues.jobDescription ? 0
           : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
         user: user?.uid
       })
@@ -175,9 +173,7 @@ const NewJob = (props) => {
         coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
         resumeKeyWords: extractKeyWords(formValues.resume),
         missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
-        score: formValues.coverLetter === ''
-          && formValues.resume === ''
-          && formValues.jobDescription === '' ? 0
+        score: !formValues.coverLetter && !formValues.resume && !formValues.jobDescription ? 0
           : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
         user: user?.uid,
         id: jobToEdit.id
@@ -252,11 +248,31 @@ const NewJob = (props) => {
     return URLObject;
   }
 
+  const handleModalKeywordExtraction = (doc, docType) => {
+    const newDocKeywords = extractKeyWords(doc);
+    if (docType === 'resume') {
+      setResumeKeywords(newDocKeywords);
+    } else if (docType === 'coverLetter') {
+      setCoverLetterKeywords(newDocKeywords);
+    } else if (docType === 'jobPosting') {
+      setJobPostingKeywords(newDocKeywords);
+    }
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+    setTimeout(() => {
+      setResumeKeywords([]);
+      setCoverLetterKeywords([]);
+      setJobPostingKeywords([]);
+    }, 500);
+  }
+
   return (
     <>
       <Modal
         open={open}
-        onClose={() => setOpen(!open)}
+        onClose={() => handleClose()}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -265,44 +281,39 @@ const NewJob = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            {open
-              ? <>
-                <Typography variant='h6' component='h2'>
-                  {extractKeyWords(formValues.jobDescription).length === 0
-                    ? 'No Keywords Found'
-                    : `We Found ${extractKeyWords(formValues.jobDescription).length} Keywords For You`
-                  }
-                </Typography>
-                <Typography component='h3'>
-                  {extractKeyWords(formValues.jobDescription).length === 0
-                    ? null
-                    : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
-                  }
-                </Typography>
-                <Typography sx={{ mt: 2 }}>
-                  {extractKeyWords(formValues.jobDescription).length === 0
-                    ? 'Try adding the entire job description.'
-                    : extractKeyWords(formValues.jobDescription).map(keyword => {
-                      return (
-                        <List dense={true} disablePadding>
-                          {extractKeyWords(formValues.coverLetter).includes(keyword) || extractKeyWords(formValues.resume).includes(keyword)
-                            ? <ListItem disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
-                            : <ListItem disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
-                          }
-                        </List>
-                      )
-                    })}
-                </Typography>
-              </>
-              : null
-            }
+            <Typography variant='h6' component='h2'>
+              {jobPostingKeywords.length === 0
+                ? 'No Keywords Found'
+                : `We Found ${jobPostingKeywords.length} Keywords For You`
+              }
+            </Typography>
+            <Typography component='h3'>
+              {jobPostingKeywords.length === 0
+                ? null
+                : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
+              }
+            </Typography>
+            <Typography sx={{ mt: 2 }}>
+              {jobPostingKeywords.length === 0
+                ? 'Try adding the entire job description.'
+                : jobPostingKeywords.map(keyword => {
+                  return (
+                    <List dense={true} disablePadding>
+                      {coverLetterKeywords.includes(keyword) || resumeKeywords.includes(keyword)
+                        ? <ListItem disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                        : <ListItem disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                      }
+                    </List>
+                  )
+                })}
+            </Typography>
           </Box>
         </Fade>
       </Modal>
       <Grid
         display='flex'
       >
-        <form method='POST' action='' onSubmit={validateFormFields}>
+        <form method='POST' action='#' onSubmit={(e) => validateFormFields(e)}>
           <Grid
             container
             direction="row"
@@ -451,9 +462,10 @@ const NewJob = (props) => {
                       height: '100%'
                     }}
                     fullWidth
+                    type='button'
                     variant='contained'
                     color='success'
-                    onClick={() => setOpen(true)}
+                    onClick={() => (setOpen(true), handleModalKeywordExtraction(formValues.jobDescription, 'jobPosting'), handleModalKeywordExtraction(formValues.resume, 'resume'), handleModalKeywordExtraction(formValues.coverLetter, 'coverLetter'))}
                     disabled={!formValues.jobDescription ? true : false}
                   >
                     Keywords
@@ -477,7 +489,6 @@ const NewJob = (props) => {
                   value={formValues.resume}
                   fullWidth />
               </Tooltip>
-              {/* <Typography>CoverLetter</Typography> */}
               <Tooltip
                 placement='left'
                 title='Insert the entire cover letter text'

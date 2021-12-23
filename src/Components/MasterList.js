@@ -10,19 +10,37 @@ import { AnimateKeyframes } from 'react-simple-animate';
 const MasterList = (props) => {
 
   const {
-    getTotalApplicationCount,
     searchJobs,
     updateJobApplication,
     jobToEdit,
     setJobToEdit,
     editing,
     setEditing,
-    getStatus,
-    gradeApplication,
     deleteJob,
     updateJobStatus,
     updateInterviewDate,
   } = props;
+
+  const getTotalApplicationCount = (status) => {
+    const newJobs = [...searchJobs];
+    const filteredJobs = newJobs.filter(job => job.status.includes(status));
+    const count = filteredJobs.length;
+    return count;
+  }
+
+  const getStatus = (status, score) => {
+    if (score > 89) {
+      return '#FDD835'
+    } else {
+      if (status === 'Active') {
+        return '#4CAF50';
+      } else if (status === 'Interview') {
+        return '#673AB7';
+      } else if (status === 'Closed') {
+        return '#F44336';
+      }
+    }
+  };
 
   return (
     <Grid>
@@ -78,7 +96,6 @@ const MasterList = (props) => {
                       setEditing={setEditing}
                       job={job}
                       getStatus={getStatus}
-                      gradeApplication={gradeApplication}
                       deleteJob={deleteJob}
                       updateJobStatus={updateJobStatus}
                       jobidx={jobidx}
@@ -138,7 +155,6 @@ const MasterList = (props) => {
                       setEditing={setEditing}
                       job={job}
                       getStatus={getStatus}
-                      gradeApplication={gradeApplication}
                       deleteJob={deleteJob}
                       updateJobStatus={updateJobStatus}
                       jobidx={jobidx}
@@ -196,7 +212,6 @@ const MasterList = (props) => {
                     setEditing={setEditing}
                     job={job}
                     getStatus={getStatus}
-                    gradeApplication={gradeApplication}
                     deleteJob={deleteJob}
                     updateJobStatus={updateJobStatus}
                     jobidx={jobidx}

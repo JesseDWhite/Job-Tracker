@@ -31,7 +31,6 @@ const CardView = (props) => {
   const {
     job,
     getStatus,
-    gradeApplication,
     deleteJob,
     updateJobStatus,
     jobidx,

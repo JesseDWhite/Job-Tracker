@@ -231,39 +231,6 @@ const Home = () => {
     setOpen(true);
   }
 
-  const gradeApplication = (score) => {
-    if (score < 20) {
-      return 1
-    } else if (score >= 20 && score < 40) {
-      return 2
-    } else if (score >= 40 && score < 70) {
-      return 3
-    } else if (score >= 70 && score < 90) {
-      return 4
-    } else return 5
-  }
-
-  const getStatus = (status, score) => {
-    if (score > 89) {
-      return '#FDD835'
-    } else {
-      if (status === 'Active') {
-        return '#4CAF50';
-      } else if (status === 'Interview') {
-        return '#673AB7';
-      } else if (status === 'Closed') {
-        return '#F44336';
-      }
-    }
-  };
-
-  const getTotalApplicationCount = (status) => {
-    const newJobs = [...searchJobs];
-    const filteredJobs = newJobs.filter(job => job.status.includes(status));
-    const count = filteredJobs.length;
-    return count;
-  }
-
   useEffect(() => {
     getJobs();
   }, [user]);
@@ -406,15 +373,12 @@ const Home = () => {
                   </AnimateKeyframes>
                   : <Grid>
                     <MasterList
-                      getTotalApplicationCount={getTotalApplicationCount}
                       searchJobs={searchJobs}
                       updateJobApplication={updateJobApplication}
                       jobToEdit={jobToEdit}
                       setJobToEdit={setJobToEdit}
                       editing={editing}
                       setEditing={setEditing}
-                      getStatus={getStatus}
-                      gradeApplication={gradeApplication}
                       deleteJob={deleteJob}
                       updateJobStatus={updateJobStatus}
                       updateInterviewDate={updateInterviewDate}
