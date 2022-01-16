@@ -1,28 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import {
-  collection,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc,
-  query,
-  where,
-} from 'firebase/firestore';
 import {
   Button,
-  Grid,
-  Paper,
   Card,
   CardMedia,
   CardContent,
   CardActions,
   Typography,
   Chip,
-  LinearProgress,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { AnimateKeyframes } from 'react-simple-animate';
+import EditProfile from './EditProfile';
 
 const Profile = (props) => {
 
@@ -30,9 +17,23 @@ const Profile = (props) => {
     user,
     logout,
     jobs,
+    currentUser
   } = props;
 
+  const initialValues = {
+    name: currentUser.name,
+    email: currentUser.email,
+    signedUpOn: currentUser.signedUpOn,
+    advisor: currentUser.advisor,
+    advisorId: currentUser.advisorId,
+    cohort: currentUser.cohort,
+    role: currentUser.role,
+    uid: currentUser.uid
+  }
+
   const [average, setAverage] = useState(0);
+
+  const [editProfile, setEditProfile] = useState(false);
 
   const getTotalApplicationAverage = () => {
     const newJobs = [...jobs];

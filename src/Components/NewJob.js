@@ -48,6 +48,7 @@ const NewJob = (props) => {
 
   const {
     jobsReference,
+    subCollection,
     getJobs,
     user,
     editing,

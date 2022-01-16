@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from '@firebase/firestore';
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, logEvent } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, signInWithPopup, } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -14,6 +14,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+logEvent(analytics, 'login');
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);

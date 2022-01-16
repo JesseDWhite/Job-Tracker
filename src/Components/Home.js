@@ -8,6 +8,8 @@ import {
   doc,
   query,
   where,
+  addDoc,
+  setDoc
 } from 'firebase/firestore';
 import NewJob from './NewJob';
 import {
@@ -51,9 +53,19 @@ const modalStyle = {
   overflowY: 'auto'
 };
 
+const initialUser = {
+  advisor: null,
+  advisorId: null,
+  cohort: null,
+  name: null,
+  uid: null
+};
+
 const Home = () => {
 
   const jobsReference = collection(db, 'jobs');
+
+  const userReference = collection(db, 'users');
 
   const [jobs, setJobs] = useState([]);
 
@@ -67,11 +79,15 @@ const Home = () => {
 
   const [applicationCount, setApplicationCount] = useState(0);
 
-  const [user, setUser] = useState({});
-
   const [sort, setSort] = useState(false);
 
   const [loading, setLoading] = useState(true);
+
+  const [user, setUser] = useState(initialUser);
+
+  const subCollection = collection(userReference, `${user?.uid}/jobs`);
+
+  const [currentUser, setCurrentUser] = useState([]);
 
   const [viewProfile, setViewProfile] = useState(false);
 
@@ -92,6 +108,36 @@ const Home = () => {
   onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
   });
+
+  const getUser = async () => {
+    if (user?.uid) {
+      const newData = await getDocs(subCollection);
+      const updatedNewData = newData.docs.map((doc) => ({
+        ...doc.data(), id: doc.id
+      }));
+
+      const userData = await getDocs(userReference, user?.uid);
+      const newUserData = userData.docs.map((doc) => ({
+        ...doc.data(), id: doc.id
+      }));
+      if (newUserData.length > 0) {
+        setCurrentUser(newUserData);
+      } else {
+        await setDoc(doc(userReference, user?.uid), {
+          name: user?.displayName,
+          email: user?.email,
+          signedUpOn: user?.metadata.creationTime,
+          advisor: 'NOT YET ASSIGNED',
+          advisorId: 'NOT YET ASSIGNED',
+          cohort: 'NOT YET ASSIGNED',
+          role: 'Student',
+          uid: user?.uid
+        });
+      }
+      console.log(newUserData)
+      console.log(updatedNewData)
+    }
+  }
 
   const getJobs = async () => {
     setOpen(false);
@@ -119,6 +165,17 @@ const Home = () => {
       setLoading(false);
     }
   }
+
+  const seedData = async () => {
+    const newJobs = [...jobs];
+    for (let i = 0; i < newJobs.length; i++) {
+      await setDoc(doc(subCollection, newJobs[i].id), { ...newJobs[i] })
+    }
+  }
+
+  // useEffect(() => {
+  //   seedData();
+  // }, [])
 
   const logout = async () => {
     try {
@@ -233,10 +290,12 @@ const Home = () => {
 
   useEffect(() => {
     getJobs();
+    getUser();
   }, [user]);
 
   useEffect(() => {
     getApplicationTotal();
+    console.log(jobs)
   }, [getJobs])
 
   return (
@@ -256,6 +315,7 @@ const Home = () => {
               ? <Auth />
               : <NewJob
                 jobsReference={jobsReference}
+                subCollection={subCollection}
                 getJobs={getJobs}
                 editing={editing}
                 setEditing={setEditing}
@@ -298,6 +358,7 @@ const Home = () => {
             >
               <Profile
                 user={user}
+                currentUser={currentUser}
                 logout={logout}
                 jobs={jobs}
               />
