@@ -140,7 +140,7 @@ const NewJob = (props) => {
 
   const createJob = async () => {
     !editing
-      ? await addDoc(jobsReference, {
+      ? await addDoc(subCollection, {
         company: formValues.company,
         dateApplied: formValues.dateApplied,
         jobDescription: formValues.jobDescription,
@@ -159,7 +159,7 @@ const NewJob = (props) => {
           : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
         user: user?.uid
       })
-      : await updateDoc(doc(db, 'jobs', jobToEdit.id), {
+      : await updateDoc(doc(subCollection, jobToEdit.id), {
         company: formValues.company,
         dateApplied: formValues.dateApplied,
         jobDescription: formValues.jobDescription,

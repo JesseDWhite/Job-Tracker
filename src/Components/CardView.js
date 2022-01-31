@@ -89,7 +89,7 @@ const CardView = (props) => {
                 {job.company}
               </Typography>
               <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                <CircularProgress variant="determinate" value={job.score} sx={{ color: getScoreColor(job.score) }} thickness={6}
+                <CircularProgress variant="determinate" value={parseInt(job.score)} sx={{ color: getScoreColor(job.score) }} thickness={6}
                 />
                 <Box
                   sx={{
@@ -126,73 +126,85 @@ const CardView = (props) => {
             <Tooltip
               title='Job Posting'
             >
-              <IconButton
-                sx={{
-                  pl: 0
-                }}
-                target='_blank'
-                rel='noopener noreferrer'
-                href={job.jobPosting}
-                disabled={!job.jobPosting ? true : false}
-                color='primary'
-              >
-                <WorkTwoTone />
-              </IconButton>
+              <span>
+                <IconButton
+                  sx={{
+                    pl: 0
+                  }}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={job.jobPosting}
+                  disabled={!job.jobPosting ? true : false}
+                  color='primary'
+                >
+                  <WorkTwoTone />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip
               title='Application Tracking System'
             >
-              <IconButton
-                target='_blank'
-                rel='noopener noreferrer'
-                href={job.ats}
-                disabled={!job.ats ? true : false}
-                color='primary'
-              >
-                <InsertChartTwoTone />
-              </IconButton>
+              <span>
+                <IconButton
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={job.ats}
+                  disabled={!job.ats ? true : false}
+                  color='primary'
+                >
+                  <InsertChartTwoTone />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip
               title='Cover Letter'
             >
-              <IconButton
-                href={job.coverLetter}
-                disabled={!job.coverLetter ? true : false}
-                download='Cover Letter'
-                color='primary'
-              >
-                <DescriptionTwoTone />
-              </IconButton>
+              <span>
+                <IconButton
+                  href={job.coverLetter}
+                  disabled={!job.coverLetter ? true : false}
+                  download='Cover Letter'
+                  color='primary'
+                >
+                  <DescriptionTwoTone />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip
               title='Resume'
             >
-              <IconButton
-                href={job.resume}
-                disabled={!job.resume ? true : false}
-                download='Resume'
-                color='primary'
-              >
-                <DescriptionTwoTone />
-              </IconButton>
+              <span>
+                <IconButton
+                  href={job.resume}
+                  disabled={!job.resume ? true : false}
+                  download='Resume'
+                  color='primary'
+                >
+                  <DescriptionTwoTone />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip
               title='Edit'
             >
-              <IconButton
-                color='warning'
-                onClick={() => updateJobApplication(job)}>
-                <CreateTwoTone />
-              </IconButton>
+              <span>
+                <IconButton
+                  color='warning'
+                  onClick={() => updateJobApplication(job)}>
+                  <CreateTwoTone />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip
               title='Delete'
             >
-              <IconButton
-                color='error'
-                onClick={() => deleteJob(job.id, job.company)}>
-                <DeleteForeverTwoTone />
-              </IconButton>
+              <span>
+                <IconButton
+                  color='error'
+                  onClick={() => deleteJob(job.id, job.company)}>
+                  <DeleteForeverTwoTone />
+                </IconButton>
+              </span>
             </Tooltip>
           </Grid>
         </Grid>

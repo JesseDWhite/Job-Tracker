@@ -20,16 +20,16 @@ const Profile = (props) => {
     currentUser
   } = props;
 
-  const initialValues = {
-    name: currentUser.name,
-    email: currentUser.email,
-    signedUpOn: currentUser.signedUpOn,
-    advisor: currentUser.advisor,
-    advisorId: currentUser.advisorId,
-    cohort: currentUser.cohort,
-    role: currentUser.role,
-    uid: currentUser.uid
-  }
+  // const initialValues = {
+  //   name: currentUser.name,
+  //   email: currentUser.email,
+  //   signedUpOn: currentUser.signedUpOn,
+  //   advisor: currentUser.advisor,
+  //   advisorId: currentUser.advisorId,
+  //   cohort: currentUser.cohort,
+  //   role: currentUser.role,
+  //   uid: currentUser.uid
+  // }
 
   const [average, setAverage] = useState(0);
 

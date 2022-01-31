@@ -53,14 +53,6 @@ const modalStyle = {
   overflowY: 'auto'
 };
 
-const initialUser = {
-  advisor: null,
-  advisorId: null,
-  cohort: null,
-  name: null,
-  uid: null
-};
-
 const Home = () => {
 
   const jobsReference = collection(db, 'jobs');
@@ -83,7 +75,7 @@ const Home = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const [user, setUser] = useState(initialUser);
+  const [user, setUser] = useState({});
 
   const subCollection = collection(userReference, `${user?.uid}/jobs`);
 
@@ -105,51 +97,35 @@ const Home = () => {
     });
   }
 
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
+  onAuthStateChanged(auth, (current) => {
+    setUser(current);
   });
 
-  const getUser = async () => {
-    if (user?.uid) {
-      const newData = await getDocs(subCollection);
-      const updatedNewData = newData.docs.map((doc) => ({
-        ...doc.data(), id: doc.id
-      }));
-
-      const userData = await getDocs(userReference, user?.uid);
-      const newUserData = userData.docs.map((doc) => ({
-        ...doc.data(), id: doc.id
-      }));
-      if (newUserData.length > 0) {
-        setCurrentUser(newUserData);
-      } else {
-        await setDoc(doc(userReference, user?.uid), {
-          name: user?.displayName,
-          email: user?.email,
-          signedUpOn: user?.metadata.creationTime,
-          advisor: 'NOT YET ASSIGNED',
-          advisorId: 'NOT YET ASSIGNED',
-          cohort: 'NOT YET ASSIGNED',
-          role: 'Student',
-          uid: user?.uid
-        });
-      }
-      console.log(newUserData)
-      console.log(updatedNewData)
-    }
+  const getUserData = async () => {
+    const userData = await getDocs(userReference, user?.uid);
+    const extractedUserData = userData.docs[0].data();
+    extractedUserData.uid === user?.uid
+      ? setCurrentUser(extractedUserData)
+      : await setDoc(doc(userReference, user?.uid), {
+        name: user?.displayName,
+        email: user?.email,
+        signedUpOn: user?.metadata.creationTime,
+        advisor: 'NOT YET ASSIGNED',
+        advisorId: 'NOT YET ASSIGNED',
+        cohort: 'NOT YET ASSIGNED',
+        role: 'Student',
+        uid: user?.uid
+      });
   }
 
   const getJobs = async () => {
     setOpen(false);
     if (user?.uid) {
-      const querySnapshot = query(jobsReference, where('user', '==', user?.uid))
-      const data = await getDocs(querySnapshot);
-      const newSearchJobs = data.docs.map((doc) =>
-      ({
+      const userJobsList = await getDocs(subCollection);
+      const extractedJobsList = userJobsList.docs.map((doc) => ({
         ...doc.data(), id: doc.id
       }));
-
-      newSearchJobs.sort((a, b) => {
+      extractedJobsList.sort((a, b) => {
         const newA = a.dateApplied;
         const newB = b.dateApplied;
         if (newA < newB) {
@@ -160,16 +136,17 @@ const Home = () => {
         }
         return 0;
       })
-      setSearchJobs(newSearchJobs);
-      setJobs(newSearchJobs);
+      getUserData();
+      setSearchJobs(extractedJobsList);
+      setJobs(extractedJobsList);
       setLoading(false);
     }
   }
 
-  const seedData = async () => {
+  const seedData = () => {
     const newJobs = [...jobs];
     for (let i = 0; i < newJobs.length; i++) {
-      await setDoc(doc(subCollection, newJobs[i].id), { ...newJobs[i] })
+      setDoc(doc(subCollection, newJobs[i].id), { ...newJobs[i] })
     }
   }
 
@@ -182,6 +159,7 @@ const Home = () => {
       await signOut(auth);
       setViewProfile(false);
       setLoading(true);
+      setCurrentUser(null);
     } catch (error) {
       console.log(error.message);
     }
@@ -246,9 +224,9 @@ const Home = () => {
   const deleteJob = async (id, name) => {
     const newSearchJobs = [...searchJobs];
     const newJobs = [...jobs];
-    const filteredJobs = newJobs.filter(job => !job.id.includes(id))
-    const filteredSearchJobs = newSearchJobs.filter(job => !job.id.includes(id))
-    const jobDoc = doc(db, 'jobs', id);
+    const filteredJobs = newJobs.filter(job => !job.id.includes(id));
+    const filteredSearchJobs = newSearchJobs.filter(job => !job.id.includes(id));
+    const jobDoc = doc(subCollection, id);
     setSearchJobs(filteredSearchJobs);
     setJobs(filteredJobs);
     setFeedback({
@@ -265,7 +243,7 @@ const Home = () => {
     const newStatus = e.target.value;
     const newJobs = [...searchJobs];
     newJobs[jobidx].status = newStatus;
-    const jobDoc = doc(db, 'jobs', id);
+    const jobDoc = doc(subCollection, id);
     const updateStatus = { status: newStatus };
     setSearchJobs(newJobs);
     await updateDoc(jobDoc, updateStatus);
@@ -275,7 +253,7 @@ const Home = () => {
     const newInterviewDate = e.target.value;
     const newJobs = [...searchJobs];
     newJobs[jobidx].interviewDate = newInterviewDate;
-    const jobDoc = doc(db, 'jobs', id);
+    const jobDoc = doc(subCollection, id);
     const updateInterviewDate = { interviewDate: newInterviewDate }
     setSearchJobs(newJobs);
     await updateDoc(jobDoc, updateInterviewDate);
@@ -290,12 +268,10 @@ const Home = () => {
 
   useEffect(() => {
     getJobs();
-    getUser();
   }, [user]);
 
   useEffect(() => {
     getApplicationTotal();
-    console.log(jobs)
   }, [getJobs])
 
   return (
