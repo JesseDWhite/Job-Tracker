@@ -393,9 +393,10 @@ const Home = () => {
                         direction="row"
                         justifyContent="start"
                       >
-                        {Array.from(new Array(12)).map(skeleton => {
+                        {Array.from(new Array(12)).map((skeleton, idx) => {
                           return (
                             <Grid
+                              key={idx}
                               sm={6}
                               xl={3}
                               spacing={2}

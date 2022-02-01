@@ -297,12 +297,12 @@ const NewJob = (props) => {
             <Typography sx={{ mt: 2 }}>
               {jobPostingKeywords.length === 0
                 ? 'Try adding the entire job description.'
-                : jobPostingKeywords.map(keyword => {
+                : jobPostingKeywords.map((keyword, idx) => {
                   return (
                     <List dense={true} disablePadding>
                       {coverLetterKeywords.includes(keyword) || resumeKeywords.includes(keyword)
-                        ? <ListItem disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
-                        : <ListItem disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                        ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                        : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
                       }
                     </List>
                   )

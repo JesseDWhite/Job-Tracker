@@ -78,6 +78,7 @@ const MasterList = (props) => {
                 <Grid
                   sm={6}
                   xl={3}
+                  key={job.id}
                 >
                   <AnimateKeyframes
                     play
@@ -88,7 +89,6 @@ const MasterList = (props) => {
                     ]}
                   >
                     <CardView
-                      key={job.id}
                       updateJobApplication={updateJobApplication}
                       jobToEdit={jobToEdit}
                       setJobToEdit={setJobToEdit}
@@ -140,6 +140,7 @@ const MasterList = (props) => {
                 <Grid
                   sm={6}
                   xl={3}
+                  key={job.id}
                 >
                   <AnimateKeyframes
                     play
@@ -147,7 +148,6 @@ const MasterList = (props) => {
                     keyframes={["opacity: 0", "opacity: 1"]}
                   >
                     <CardView
-                      key={job.id}
                       updateJobApplication={updateJobApplication}
                       jobToEdit={jobToEdit}
                       setJobToEdit={setJobToEdit}
@@ -197,6 +197,7 @@ const MasterList = (props) => {
               <Grid
                 sm={6}
                 xl={3}
+                key={job.id}
               >
                 <AnimateKeyframes
                   play
@@ -204,7 +205,6 @@ const MasterList = (props) => {
                   keyframes={["opacity: 0", "opacity: 1"]}
                 >
                   <CardView
-                    key={job.id}
                     updateJobApplication={updateJobApplication}
                     jobToEdit={jobToEdit}
                     setJobToEdit={setJobToEdit}

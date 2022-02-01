@@ -272,7 +272,7 @@ const CardView = (props) => {
               {job.missingKeyWords.length > 0 ?
                 job.missingKeyWords.map(keyword => {
                   return (
-                    <li>{keyword[0].toUpperCase() + keyword.slice(1)}</li>
+                    <li key={keyword.concat(job.id)}>{keyword[0].toUpperCase() + keyword.slice(1)}</li>
                   )
                 })
                 : <Typography>{job.missingKeyWords.length === 0 && job.score === 0
