@@ -97,6 +97,19 @@ const Home = () => {
     setUser(current);
   });
 
+  const seedData = async () => {
+    const legacyJobs = query(jobsReference, where('user', '==', user?.uid));
+    const legacySnapshot = await getDocs(legacyJobs);
+    const extractedJobsList = legacySnapshot.docs.map((doc) => ({
+      ...doc.data(), id: doc.id
+    }));
+    if (extractedJobsList.length > 0) {
+      for (let i = 0; i < extractedJobsList.length; i++) {
+        await setDoc(doc(subCollection, extractedJobsList[i].id), { ...extractedJobsList[i] });
+      }
+    }
+  }
+
   const getUserData = async () => {
     const userObject = {
       name: user?.displayName,
@@ -114,6 +127,7 @@ const Home = () => {
     if (!userData) {
       await setDoc(doc(userReference, user?.uid), userObject);
       setCurrentUser(userObject);
+      seedData();
     } else {
       setCurrentUser(userData);
     }
@@ -137,23 +151,12 @@ const Home = () => {
         }
         return 0;
       })
-      getUserData();
       setSearchJobs(extractedJobsList);
       setJobs(extractedJobsList);
+      getUserData();
       setLoading(false);
     }
   }
-
-  const seedData = () => {
-    const newJobs = [...jobs];
-    for (let i = 0; i < newJobs.length; i++) {
-      setDoc(doc(subCollection, newJobs[i].id), { ...newJobs[i] })
-    }
-  }
-
-  // useEffect(() => {
-  //   seedData();
-  // }, [])
 
   const logout = async () => {
     try {
