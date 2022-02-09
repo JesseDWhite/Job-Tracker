@@ -20,7 +20,6 @@ import {
   ListItemText
 } from '@mui/material';
 import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
-import { db } from '../firebase';
 import {
   updateDoc,
   addDoc,
@@ -47,7 +46,6 @@ const modalStyle = {
 const NewJob = (props) => {
 
   const {
-    jobsReference,
     subCollection,
     getJobs,
     user,
@@ -241,12 +239,6 @@ const NewJob = (props) => {
       : 0;
 
     return parseInt(percentage.toFixed(0));
-  }
-
-  const readFile = (file, id) => {
-    file = document.getElementById(id).files[0];
-    const URLObject = URL.createObjectURL(file);
-    return URLObject;
   }
 
   const handleModalKeywordExtraction = (doc, docType) => {

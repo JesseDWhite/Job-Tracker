@@ -1,28 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import {
-  collection,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc,
-  query,
-  where,
-} from 'firebase/firestore';
-import {
-  Button,
-  IconButton,
-  Grid,
-  Paper,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  Chip,
-  LinearProgress,
-} from '@mui/material';
-import { AnimateKeyframes } from 'react-simple-animate';
+import React, { useState } from 'react';
+import { Button, Card, } from '@mui/material';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,7 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { getDay, format, getDayOfYear, sub } from 'date-fns';
+import { format, sub } from 'date-fns';
 import { ArrowForwardIosTwoTone, ArrowBackIosTwoTone } from '@mui/icons-material';
 
 ChartJS.register(
@@ -47,14 +24,12 @@ ChartJS.register(
 
 const Analytics = (props) => {
 
-  const {
-    jobs,
-  } = props;
+  const { jobs } = props;
 
   const [weekNumber, setWeekNumber] = useState(0);
 
   const prevWeek = () => {
-    setWeekNumber(prevState => prevState += 6)
+    setWeekNumber(prevState => prevState += 6);
   }
 
   const nextWeek = () => {
@@ -88,9 +63,6 @@ const Analytics = (props) => {
       }
     })
     return total;
-  }
-
-  const handleWeeklyNumbers = () => {
   }
 
   return (

@@ -8,7 +8,6 @@ import {
   doc,
   query,
   where,
-  addDoc,
   setDoc
 } from 'firebase/firestore';
 import NewJob from './NewJob';
@@ -28,10 +27,7 @@ import {
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
 import Auth from './Auth';
-import {
-  signOut,
-  onAuthStateChanged,
-} from '@firebase/auth';
+import { signOut, onAuthStateChanged, } from '@firebase/auth';
 import { auth } from '../firebase';
 import Header from './Header';
 import Profile from './Profile';
@@ -79,7 +75,7 @@ const Home = () => {
 
   const subCollection = collection(userReference, `${user?.uid}/jobs`);
 
-  const [currentUser, setCurrentUser] = useState([]);
+  const [currentUser, setCurrentUser] = useState({});
 
   const [viewProfile, setViewProfile] = useState(false);
 
@@ -102,20 +98,25 @@ const Home = () => {
   });
 
   const getUserData = async () => {
-    const userData = await getDocs(userReference, user?.uid);
-    const extractedUserData = userData.docs[0].data();
-    extractedUserData.uid === user?.uid
-      ? setCurrentUser(extractedUserData)
-      : await setDoc(doc(userReference, user?.uid), {
-        name: user?.displayName,
-        email: user?.email,
-        signedUpOn: user?.metadata.creationTime,
-        advisor: 'NOT YET ASSIGNED',
-        advisorId: 'NOT YET ASSIGNED',
-        cohort: 'NOT YET ASSIGNED',
-        role: 'Student',
-        uid: user?.uid
-      });
+    const userObject = {
+      name: user?.displayName,
+      email: user?.email,
+      signedUpOn: user?.metadata.creationTime,
+      advisor: 'NOT YET ASSIGNED',
+      advisorId: 'NOT YET ASSIGNED',
+      cohort: 'NOT YET ASSIGNED',
+      role: 'Student',
+      uid: user?.uid
+    };
+    const userQuery = query(userReference, where('uid', '==', user?.uid));
+    const querySnapshot = await getDocs(userQuery);
+    const userData = querySnapshot.docs[0]?.data();
+    if (!userData) {
+      await setDoc(doc(userReference, user?.uid), userObject);
+      setCurrentUser(userObject);
+    } else {
+      setCurrentUser(userData);
+    }
   }
 
   const getJobs = async () => {
@@ -209,16 +210,6 @@ const Home = () => {
         setApplicationCount(prevState => prevState += 1);
       }
     });
-  }
-
-  const showFile = async (e) => {
-    e.preventDefault()
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-      const text = (e.target.result)
-      console.log(text)
-    };
-    reader.readAsText(e.target.files[0])
   }
 
   const deleteJob = async (id, name) => {

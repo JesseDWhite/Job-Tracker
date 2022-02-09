@@ -9,7 +9,6 @@ import {
   Chip,
 } from '@mui/material';
 import { format } from 'date-fns';
-import EditProfile from './EditProfile';
 
 const Profile = (props) => {
 
@@ -20,20 +19,7 @@ const Profile = (props) => {
     currentUser
   } = props;
 
-  // const initialValues = {
-  //   name: currentUser.name,
-  //   email: currentUser.email,
-  //   signedUpOn: currentUser.signedUpOn,
-  //   advisor: currentUser.advisor,
-  //   advisorId: currentUser.advisorId,
-  //   cohort: currentUser.cohort,
-  //   role: currentUser.role,
-  //   uid: currentUser.uid
-  // }
-
   const [average, setAverage] = useState(0);
-
-  const [editProfile, setEditProfile] = useState(false);
 
   const getTotalApplicationAverage = () => {
     const newJobs = [...jobs];
@@ -58,9 +44,7 @@ const Profile = (props) => {
         sx={{
           maxWidth: 500,
           minHeight: 500,
-          pl: 3,
-          pr: 3,
-          pt: 3,
+          p: 3,
           textAlign: 'center'
         }}
         container
@@ -83,7 +67,7 @@ const Profile = (props) => {
             variant='h3'
             component='div'
           >
-            {user?.displayName}
+            {currentUser.name}
           </Typography>
           <hr />
           <Typography
@@ -91,18 +75,36 @@ const Profile = (props) => {
             component='div'
           >
             <Chip
-              label={user?.email}
+              label={currentUser.email}
               color='info'
               variant='contained'
             />
           </Typography>
           <Typography
             gutterBottom
+            component='div'
+          >
+            Role: {currentUser.role}
+          </Typography>
+          <Typography
+            gutterBottom
+            component='div'
+          >
+            Advisor: {currentUser.advisor}
+          </Typography>
+          <Typography
+            gutterBottom
+            component='div'
+          >
+            Cohort: {currentUser.cohort}
+          </Typography>
+          <Typography
+            gutterBottom
             variant='h5'
             component='div'
           >
-            {user?.metadata.creationTime
-              ? `Average Score As Of ${format(new Date(user?.metadata.creationTime.replace(/-/g, '\/')), 'PP')}: ${average > 0
+            {currentUser.signedUpOn
+              ? `Average Score As Of ${format(new Date(currentUser.signedUpOn.replace(/-/g, '\/')), 'PP')}: ${average > 0
                 ? average : 0}/100`
               : null
             }
