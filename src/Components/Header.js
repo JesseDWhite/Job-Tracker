@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   Button,
@@ -11,6 +11,7 @@ import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SearchBar from './SearchBar';
 import { THEME } from '../Constants/Theme';
+import { format } from 'date-fns';
 
 const Header = (props) => {
 
@@ -29,6 +30,19 @@ const Header = (props) => {
     themeMode,
     setThemeMode
   } = props;
+
+  const [filter, setFilter] = useState(false);
+
+  useEffect(() => {
+    const newJobs = [...jobs];
+    if (filter) {
+      const todaysDate = format(new Date(), 'yyyy-MM-dd');
+      const todaysJobs = newJobs.filter(job => job.dateApplied === todaysDate);
+      setSearchJobs(todaysJobs);
+    } else {
+      setSearchJobs(newJobs);
+    }
+  }, [filter])
 
   return (
     <>
@@ -56,7 +70,8 @@ const Header = (props) => {
               }}
               color='secondary'
               variant='contained'
-              label={applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+              onClick={() => applicationCount >= 1 ? setFilter(!filter) : setFilter(false)}
+              label={filter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
               avatar={<Avatar>{applicationCount}</Avatar>}
             /> : null
             }
