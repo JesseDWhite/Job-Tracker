@@ -1,9 +1,9 @@
 body {
   /* background-image: linear-gradient(rgb(230, 148, 255), rgb(116, 78, 187)); */
   /* background-image: linear-gradient(rgb(239, 248, 255), rgb(153, 214, 255)); */
-  background-image: linear-gradient(white, rgb(192, 192, 192));
+  /* background-image: linear-gradient(white, rgb(192, 192, 192));
   background-attachment: fixed;
-  height: 100%;
+  height: 100%; */
 }
 
 body::-webkit-scrollbar {

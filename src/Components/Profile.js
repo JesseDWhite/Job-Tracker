@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
   Button,
@@ -7,8 +8,10 @@ import {
   CardActions,
   Typography,
   Chip,
+
+  Box
 } from '@mui/material';
-import { format } from 'date-fns';
+import { THEME } from '../Constants/Theme';
 
 const Profile = (props) => {
 
@@ -16,7 +19,8 @@ const Profile = (props) => {
     user,
     logout,
     jobs,
-    currentUser
+    currentUser,
+    themeMode
   } = props;
 
   const [average, setAverage] = useState(0);
@@ -38,14 +42,15 @@ const Profile = (props) => {
   }, []);
 
   return (
-    <>
+    <Box>
       <Card
         elevation={3}
         sx={{
           maxWidth: 500,
           minHeight: 500,
           p: 3,
-          textAlign: 'center'
+          background: THEME[themeMode].card,
+          color: THEME[themeMode].textColor
         }}
         container
       >
@@ -55,7 +60,8 @@ const Profile = (props) => {
             width: 200,
             objectFit: 'contain',
             mr: 'auto',
-            ml: 'auto'
+            ml: 'auto',
+            textAlign: 'center'
           }}
           component='img'
           alt='user profile photo'
@@ -64,50 +70,46 @@ const Profile = (props) => {
         <CardContent>
           <Typography
             gutterBottom
-            variant='h3'
             component='div'
-          >
-            {currentUser.name}
-          </Typography>
-          <hr />
-          <Typography
-            gutterBottom
-            component='div'
+            sx={{ textAlign: 'center' }}
           >
             <Chip
-              label={currentUser.email}
+              sx={{ px: 3, fontSize: '1rem' }}
+              label={currentUser.role}
               color='info'
               variant='contained'
             />
           </Typography>
           <Typography
             gutterBottom
+            variant='h3'
             component='div'
+            sx={{ textAlign: 'center' }}
           >
-            Role: {currentUser.role}
+            {currentUser.name}
           </Typography>
+          <hr />
           <Typography
+            sx={{ textAlign: 'center', fontSize: '1.25rem' }}
             gutterBottom
             component='div'
           >
             Advisor: {currentUser.advisor}
           </Typography>
           <Typography
+            sx={{ textAlign: 'center', fontSize: '1.25rem' }}
             gutterBottom
             component='div'
           >
             Cohort: {currentUser.cohort}
           </Typography>
           <Typography
+            sx={{ textAlign: 'center', fontSize: '1.25rem' }}
             gutterBottom
             variant='h5'
             component='div'
           >
-            {currentUser.signedUpOn
-              ? `Average Score As Of ${format(new Date(currentUser.signedUpOn.replace(/-/g, '\/')), 'PP')}: ${average > 0
-                ? average : 0}/100`
-              : null
-            }
+            {`Average Score: ${average > 0 ? average : 0}/100`}
           </Typography>
         </CardContent>
         <CardActions>
@@ -121,7 +123,7 @@ const Profile = (props) => {
           </Button>
         </CardActions>
       </Card>
-    </>
+    </Box>
   )
 }
 

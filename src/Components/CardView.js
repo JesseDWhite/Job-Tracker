@@ -25,6 +25,7 @@ import {
   CreateTwoTone,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
+import { THEME } from '../Constants/Theme';
 
 const CardView = (props) => {
 
@@ -36,6 +37,7 @@ const CardView = (props) => {
     jobidx,
     updateInterviewDate,
     updateJobApplication,
+    themeMode
   } = props;
 
   const getScoreColor = (score) => {
@@ -46,10 +48,10 @@ const CardView = (props) => {
     } else if (score >= 40 && score < 60) {
       return '#FFC400'
     } else if (score >= 60 && score < 80) {
-      return '#FFD600'
+      return '#CDDC39'
     } else if (score >= 80 && score < 90) {
       return '#64DD17'
-    } else return '#00B0FF'
+    } else return '#3D5AFE'
   }
 
   return (
@@ -65,8 +67,9 @@ const CardView = (props) => {
           minHeight: 200,
           border: 'solid 5px',
           borderColor: getStatus(job.status, job.score),
-          background: job.score > 89 ? 'linear-gradient(135deg, white 50%, #FDD835)' : 'white',
-          borderRadius: 5
+          background: job.score > 89 ? `linear-gradient(135deg, ${THEME[themeMode].card} 50%, #FDD835)` : THEME[themeMode].card,
+          borderRadius: 5,
+          color: THEME[themeMode].textColor
         }}
       >
         <Grid
@@ -83,12 +86,14 @@ const CardView = (props) => {
               justifyContent='space-between'
             >
               <Typography
+                sx={{ maxWidth: '80%' }}
+                noWrap
                 item
-                sm={6}
+                sm={8}
                 variant='h4'>
                 {job.company}
               </Typography>
-              <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              <Box item sm={4} sx={{ position: 'relative', right: 0, display: 'inline-flex' }}>
                 <CircularProgress variant="determinate" value={parseInt(job.score)} sx={{ color: getScoreColor(job.score) }} thickness={6}
                 />
                 <Box
@@ -115,7 +120,7 @@ const CardView = (props) => {
           </Grid>
           <Grid container>
             <Typography>
-              {format(new Date(job.dateApplied.replace(/-/g, '\/')), 'PPP')}
+              {format(new Date(job.dateApplied.replace(/-/g, '/')), 'PPP')}
             </Typography>
           </Grid>
           <Grid
@@ -161,9 +166,8 @@ const CardView = (props) => {
             >
               <span>
                 <IconButton
-                  href={job.coverLetter}
+                  // href={job.coverLetter}
                   disabled={!job.coverLetter ? true : false}
-                  download='Cover Letter'
                   color='primary'
                 >
                   <DescriptionTwoTone />
@@ -175,9 +179,8 @@ const CardView = (props) => {
             >
               <span>
                 <IconButton
-                  href={job.resume}
+                  // href={job.resume}
                   disabled={!job.resume ? true : false}
-                  download='Resume'
                   color='primary'
                 >
                   <DescriptionTwoTone />
@@ -258,6 +261,7 @@ const CardView = (props) => {
             elevation={0}
             sx={{
               background: 'rgb(128,128,128, 15%)',
+              color: THEME[themeMode].textColor
             }}
           >
             <AccordionSummary

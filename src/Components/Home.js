@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import {
@@ -34,20 +35,8 @@ import Profile from './Profile';
 import Analytics from './Analytics';
 import MasterList from './MasterList';
 import { AnimateKeyframes } from 'react-simple-animate';
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  minWidth: 500,
-  maxHeight: '85%',
-  bgcolor: 'background.paper',
-  borderRadius: 5,
-  boxShadow: 24,
-  p: 4,
-  overflowY: 'auto'
-};
+import { THEME } from '../Constants/Theme';
+import SignIn from './SignIn';
 
 const Home = () => {
 
@@ -78,6 +67,23 @@ const Home = () => {
   const [currentUser, setCurrentUser] = useState({});
 
   const [viewProfile, setViewProfile] = useState(false);
+
+  const [themeMode, setThemeMode] = useState('lightMode');
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    minWidth: 500,
+    maxHeight: '85%',
+    bgcolor: THEME[themeMode].card,
+    color: THEME[themeMode].textColor,
+    borderRadius: 5,
+    boxShadow: 24,
+    p: 4,
+    overflowY: 'auto'
+  };
 
   const [feedback, setFeedback] = useState({
     open: false,
@@ -207,8 +213,8 @@ const Home = () => {
     const newJobs = [...searchJobs];
     setApplicationCount(0);
     const todaysDate = format(new Date(), 'yyyy-MM-dd');
-    newJobs.map(job => {
-      const appDate = format(new Date(job.dateApplied.replace(/-/g, '\/')), 'yyyy-MM-dd');
+    newJobs.forEach(job => {
+      const appDate = format(new Date(job.dateApplied.replace(/-/g, '/')), 'yyyy-MM-dd');
       if (appDate === todaysDate && job.user === user?.uid) {
         setApplicationCount(prevState => prevState += 1);
       }
@@ -269,21 +275,27 @@ const Home = () => {
   }, [getJobs])
 
   return (
-    <>
+    <Box
+      sx={{
+        background: THEME[themeMode].backgroundColor,
+        mt: user?.email ? 8 : 0,
+        minHeight: '100vh'
+      }}
+    >
+      {!user?.email ? <SignIn /> : null}
       <Modal
         open={open}
-        onClose={() => (setOpen(!open), setEditing(false))}
+        onClose={() => ((setOpen(!open), setEditing(false)))}
         closeAfterTransition
         BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
+        BackdropProps={{ timeout: 500 }}
       >
         <Fade in={open}>
           <Box container sx={modalStyle} className='modal'>
             {!user?.email
               ? <Auth />
               : <NewJob
+                themeMode={themeMode}
                 jobsReference={jobsReference}
                 subCollection={subCollection}
                 getJobs={getJobs}
@@ -305,18 +317,12 @@ const Home = () => {
         </Fade>
       </Modal>
       {user?.email && viewProfile
-        ?
-        <Grid
+        ? <Grid
           display='flex'
-          sx={{
-            mt: 10
-          }}
         >
           <Grid
             sm={4}
-            sx={{
-              m: 3
-            }}
+            sx={{ m: 3, mt: 6 }}
           >
             <AnimateKeyframes
               play
@@ -331,13 +337,15 @@ const Home = () => {
                 currentUser={currentUser}
                 logout={logout}
                 jobs={jobs}
+                themeMode={themeMode}
               />
             </AnimateKeyframes>
           </Grid>
           <Grid
             sm={8}
             sx={{
-              m: 3
+              m: 3,
+              mt: 6
             }}
           >
             <AnimateKeyframes
@@ -349,6 +357,7 @@ const Home = () => {
               ]}
             >
               <Analytics
+                themeMode={themeMode}
                 jobs={jobs}
                 applicationCount={applicationCount}
               />
@@ -357,15 +366,9 @@ const Home = () => {
         </Grid>
         : <Grid
           display='flex'
-          sx={{
-            mt: 10
-          }}
         >
           <Grid
             sm={12}
-            sx={{
-              m: 3,
-            }}
           >
             <Grid>
               {user?.email ?
@@ -380,9 +383,7 @@ const Home = () => {
                   >
                     <Grid display='flex'>
                       <Grid
-                        sx={{
-                          mt: 11.50
-                        }}
+                        sx={{ mt: 11.50, mx: 3 }}
                         container
                         direction="row"
                         justifyContent="start"
@@ -403,8 +404,9 @@ const Home = () => {
                       </Grid>
                     </Grid>
                   </AnimateKeyframes>
-                  : <Grid>
+                  : <Grid sx={{ m: 3 }}>
                     <MasterList
+                      themeMode={themeMode}
                       searchJobs={searchJobs}
                       updateJobApplication={updateJobApplication}
                       jobToEdit={jobToEdit}
@@ -419,7 +421,7 @@ const Home = () => {
                       variant='extended'
                       sx={{
                         position: 'fixed',
-                        top: 110,
+                        top: 100,
                         right: 30,
                         backgroundColor: 'green',
                         '&:hover': {
@@ -439,22 +441,27 @@ const Home = () => {
           </Grid>
         </Grid>
       }
-      <Header
-        viewProfile={viewProfile}
-        setViewProfile={setViewProfile}
-        user={user}
-        logout={logout}
-        sortByDate={sortByDate}
-        sortByName={sortByName}
-        sort={sort}
-        setSort={setSort}
-        jobs={jobs}
-        setSearchJobs={setSearchJobs}
-        applicationCount={applicationCount}
-        setApplicationCount={setApplicationCount}
-        open={open}
-        setOpen={setOpen}
-      />
+      {user?.email
+        ? <Header
+          themeMode={themeMode}
+          setThemeMode={setThemeMode}
+          viewProfile={viewProfile}
+          setViewProfile={setViewProfile}
+          user={user}
+          logout={logout}
+          sortByDate={sortByDate}
+          sortByName={sortByName}
+          sort={sort}
+          setSort={setSort}
+          jobs={jobs}
+          setSearchJobs={setSearchJobs}
+          applicationCount={applicationCount}
+          setApplicationCount={setApplicationCount}
+          open={open}
+          setOpen={setOpen}
+        />
+        : null
+      }
       <Snackbar
         sx={{ width: '100%' }}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -473,7 +480,7 @@ const Home = () => {
           {feedback.message}
         </Alert>
       </Snackbar>
-    </>
+    </Box>
   );
 };
 

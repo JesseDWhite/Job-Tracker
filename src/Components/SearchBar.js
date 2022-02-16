@@ -1,14 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import {
   TextField,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { THEME } from '../Constants/Theme';
 
 const SearchBar = (props) => {
 
   const {
     jobs,
-    setSearchJobs
+    setSearchJobs,
+    themeMode
   } = props;
+
+  const StyledTextField = styled(TextField)({
+    ...THEME[themeMode].textField
+  });
 
   const [searchString, setSearchString] = useState('');
 
@@ -29,20 +37,18 @@ const SearchBar = (props) => {
   }, [searchString]);
 
   return (
-    <>
-      <TextField
-        sx={{
-          ml: 3,
-          width: '25%'
-        }}
-        placeholder='SEARCH COMPANIES'
-        variant='standard'
-        color='secondary'
-        id='searchBar'
-        onChange={(e) => handleInputChange(e)}
-        value={searchString}
-      />
-    </>
+    <TextField
+      sx={{
+        ml: 3,
+        width: '25%',
+      }}
+      placeholder='SEARCH COMPANIES'
+      variant='standard'
+      color='secondary'
+      id='searchBar'
+      onChange={(e) => handleInputChange(e)}
+      value={searchString}
+    />
   );
 }
 

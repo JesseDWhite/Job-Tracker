@@ -5,8 +5,12 @@ import {
   Typography,
   Chip,
   Avatar,
+  IconButton,
 } from '@mui/material';
+import NightsStayIcon from '@mui/icons-material/NightsStay';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import SearchBar from './SearchBar';
+import { THEME } from '../Constants/Theme';
 
 const Header = (props) => {
 
@@ -21,21 +25,23 @@ const Header = (props) => {
     viewProfile,
     setViewProfile,
     open,
-    setOpen
+    setOpen,
+    themeMode,
+    setThemeMode
   } = props;
 
   return (
     <>
       <Grid
         sx={{
-          backgroundColor: '#ECECEC',
+          backgroundColor: THEME[themeMode].header,
           width: '100%',
           height: 70,
           color: 'white',
           position: 'fixed',
           top: 0,
           p: 2,
-          filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.300))'
+          filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.300))',
         }}
       > {user?.email ?
         <Grid>
@@ -56,14 +62,15 @@ const Header = (props) => {
             }
             <Button
               sx={{
-                mx: 5
+                mx: 5,
               }}
-              variant='text'
+              variant={THEME[themeMode].buttonStyle}
               color='secondary'
               onClick={() => sort ? sortByDate() : sortByName()}>
               SORTED BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
             </Button>
             <SearchBar
+              themeMode={themeMode}
               jobs={jobs}
               setSearchJobs={setSearchJobs}
             />
@@ -75,11 +82,21 @@ const Header = (props) => {
               top: 18
             }}
           >
+            {/* dark mode and light mode toggle */}
+
+            {/* <IconButton sx={{ mr: 3 }} onClick={() => themeMode === 'darkMode' ? setThemeMode('lightMode') : setThemeMode('darkMode')}>
+              {themeMode === 'darkMode'
+                ? <LightModeIcon sx={{ color: 'white' }} />
+                : <NightsStayIcon />
+              }
+            </IconButton> */}
+
             <Chip
               avatar={
                 <Avatar
                   src={user?.photoURL}
                 />}
+              color={THEME[themeMode].chipColor}
               label={viewProfile ? 'Go Back' : 'My Profile'}
               clickable
               onClick={() => setViewProfile(!viewProfile)}

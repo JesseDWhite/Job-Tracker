@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
   TextField,
@@ -28,20 +29,8 @@ import {
 import { KEYWORDS } from '../Constants/Keywords';
 import format from 'date-fns/format';
 import strCompare from 'str-compare';
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  maxHeight: '85%',
-  bgcolor: 'background.paper',
-  borderRadius: 5,
-  boxShadow: 24,
-  p: 4,
-  overflowY: 'auto',
-};
+import { THEME } from '../Constants/Theme';
+import { styled } from '@mui/material/styles';
 
 const NewJob = (props) => {
 
@@ -54,8 +43,48 @@ const NewJob = (props) => {
     jobToEdit,
     handleSetOpen,
     feedback,
-    setFeedback
+    setFeedback,
+    themeMode
   } = props;
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    maxHeight: '85%',
+    bgcolor: THEME[themeMode].card,
+    color: THEME[themeMode].textColor,
+    borderRadius: 5,
+    boxShadow: 24,
+    p: 4,
+    overflowY: 'auto',
+  };
+
+  const StyledTextField = styled(TextField)({
+    '& label.Mui-focused': {
+      color: themeMode === 'lightMode' ? 'default' : 'white',
+    },
+    '& label': {
+      color: themeMode === 'lightMode' ? 'default' : 'white',
+      zIndex: 0
+    },
+    '& .MuiInput-underline:after': {
+      borderBottomColor: themeMode === 'lightMode' ? 'default' : 'white',
+    },
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: themeMode === 'lightMode' ? 'default' : 'white',
+      },
+      '&:hover fieldset': {
+        borderColor: themeMode === 'lightMode' ? 'default' : 'lightBlue',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: themeMode === 'lightMode' ? 'default' : 'lightBlue',
+      },
+    },
+  });
 
   const [resumeKeywords, setResumeKeywords] = useState([]);
 
@@ -65,7 +94,7 @@ const NewJob = (props) => {
 
   const initialValues = {
     company: editing ? jobToEdit.company : '',
-    dateApplied: editing ? format(new Date(jobToEdit.dateApplied.replace(/-/g, '\/')), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
+    dateApplied: editing ? format(new Date(jobToEdit.dateApplied.replace(/-/g, '/')), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
     jobDescription: editing ? jobToEdit.jobDescription : '',
     jobTitle: editing ? jobToEdit.jobTitle : '',
     status: editing ? jobToEdit.status : 'Active',
@@ -458,7 +487,7 @@ const NewJob = (props) => {
                     type='button'
                     variant='contained'
                     color='success'
-                    onClick={() => (setOpen(true), handleModalKeywordExtraction(formValues.jobDescription, 'jobPosting'), handleModalKeywordExtraction(formValues.resume, 'resume'), handleModalKeywordExtraction(formValues.coverLetter, 'coverLetter'))}
+                    onClick={() => ((setOpen(true), handleModalKeywordExtraction(formValues.jobDescription, 'jobPosting'), handleModalKeywordExtraction(formValues.resume, 'resume'), handleModalKeywordExtraction(formValues.coverLetter, 'coverLetter')))}
                     disabled={!formValues.jobDescription ? true : false}
                   >
                     Keywords
@@ -506,6 +535,8 @@ const NewJob = (props) => {
                 type='text'
                 name='notes'
                 label='Notes'
+                multiline
+                rows={4.5}
                 onChange={handleInputChange}
                 value={formValues.notes}
                 fullWidth
@@ -533,10 +564,7 @@ const NewJob = (props) => {
               variant='contained'
               color='error'
               fullWidth
-              onClick={() => (
-                setEditing(!editing),
-                handleSetOpen(false)
-              )}
+              onClick={() => ((setEditing(!editing), handleSetOpen(false)))}
             >
               Cancel
             </Button>

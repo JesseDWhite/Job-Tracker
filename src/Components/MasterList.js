@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import CardView from './CardView';
 import { AnimateKeyframes } from 'react-simple-animate';
+import { THEME } from '../Constants/Theme';
 
 const MasterList = (props) => {
 
@@ -19,6 +20,7 @@ const MasterList = (props) => {
     deleteJob,
     updateJobStatus,
     updateInterviewDate,
+    themeMode
   } = props;
 
   const getTotalApplicationCount = (status) => {
@@ -60,10 +62,11 @@ const MasterList = (props) => {
               variant='h4'
               sx={{
                 mt: 3,
-                ml: 2
+                ml: 2,
+                color: THEME[themeMode].textColor
               }}
             >
-              Upcoming Interviews <Chip label={getTotalApplicationCount('Interview')} />
+              Upcoming Interviews <Chip sx={{ fontSize: '1.15rem', color: THEME[themeMode].textColor }} label={getTotalApplicationCount('Interview')} />
             </Typography>
           }
         </AnimateKeyframes>
@@ -89,6 +92,7 @@ const MasterList = (props) => {
                     ]}
                   >
                     <CardView
+                      themeMode={themeMode}
                       updateJobApplication={updateJobApplication}
                       jobToEdit={jobToEdit}
                       setJobToEdit={setJobToEdit}
@@ -121,11 +125,11 @@ const MasterList = (props) => {
               variant='h4'
               sx={{
                 mt: 3,
-                ml: 2
+                ml: 2,
+                color: THEME[themeMode].textColor
               }}
             >
-              Active Applications <Chip label={getTotalApplicationCount('Active')} />
-              {/* <Pagination color='primary' variant='outlined' count={10} /> */}
+              Active Applications <Chip sx={{ fontSize: '1.15rem', color: THEME[themeMode].textColor }} label={getTotalApplicationCount('Active')} />
             </Typography>
           }
         </AnimateKeyframes>
@@ -148,6 +152,7 @@ const MasterList = (props) => {
                     keyframes={["opacity: 0", "opacity: 1"]}
                   >
                     <CardView
+                      themeMode={themeMode}
                       updateJobApplication={updateJobApplication}
                       jobToEdit={jobToEdit}
                       setJobToEdit={setJobToEdit}
@@ -179,10 +184,11 @@ const MasterList = (props) => {
             variant='h4'
             sx={{
               mt: 3,
-              ml: 2
+              ml: 2,
+              color: THEME[themeMode].textColor
             }}
           >
-            Closed Applications <Chip label={getTotalApplicationCount('Closed')} />
+            Closed Applications <Chip sx={{ fontSize: '1.15rem', color: THEME[themeMode].textColor }} label={getTotalApplicationCount('Closed')} />
           </Typography>
         }
       </AnimateKeyframes>
@@ -205,6 +211,7 @@ const MasterList = (props) => {
                   keyframes={["opacity: 0", "opacity: 1"]}
                 >
                   <CardView
+                    themeMode={themeMode}
                     updateJobApplication={updateJobApplication}
                     jobToEdit={jobToEdit}
                     setJobToEdit={setJobToEdit}

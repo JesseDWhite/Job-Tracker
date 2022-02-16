@@ -12,6 +12,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import { format, sub } from 'date-fns';
 import { ArrowForwardIosTwoTone, ArrowBackIosTwoTone } from '@mui/icons-material';
+import { THEME } from '../Constants/Theme';
 
 ChartJS.register(
   CategoryScale,
@@ -24,7 +25,7 @@ ChartJS.register(
 
 const Analytics = (props) => {
 
-  const { jobs } = props;
+  const { jobs, themeMode } = props;
 
   const [weekNumber, setWeekNumber] = useState(0);
 
@@ -43,7 +44,7 @@ const Analytics = (props) => {
     const dateToCompare = format(sub(new Date(), { days: daysToSub }), 'yyyy-MM-dd');
     let score = 0;
     let count = 0;
-    newJobs.map(job => {
+    newJobs.forEach(job => {
       if (job.dateApplied === dateToCompare) {
         count += 1
         score += parseInt(job.score);
@@ -56,8 +57,8 @@ const Analytics = (props) => {
     const newJobs = [...jobs];
     const dateToCompare = format(sub(new Date(), { days: daysToSub }), 'yyyy-MM-dd');
     let total = 0;
-    newJobs.map(job => {
-      const appDate = format(new Date(job.dateApplied.replace(/-/g, '\/')), 'yyyy-MM-dd');
+    newJobs.forEach(job => {
+      const appDate = format(new Date(job.dateApplied.replace(/-/g, '/')), 'yyyy-MM-dd');
       if (dateToCompare === appDate) {
         total += 1;
       }
@@ -74,7 +75,8 @@ const Analytics = (props) => {
           pl: 3,
           pr: 3,
           pt: 3,
-          textAlign: 'center'
+          textAlign: 'center',
+          background: THEME[themeMode].card,
         }}
       >
         <Bar
@@ -115,7 +117,7 @@ const Analytics = (props) => {
                   getDailyAverageScore(1 + weekNumber),
                   getDailyAverageScore(0 + weekNumber),
                 ],
-                backgroundColor: 'rgba(53, 162, 235, 0.75)'
+                backgroundColor: 'rgba(53, 162, 235, 0.75)',
               },
             ]
           }}
@@ -124,7 +126,27 @@ const Analytics = (props) => {
             plugins: {
               title: {
                 display: true,
-                text: '7-Day Total'
+                text: '7-Day Total',
+                color: THEME[themeMode].textColor
+              },
+              legend: {
+                labels: {
+                  color: THEME[themeMode].textColor,
+                }
+              }
+            },
+            scales: {
+              y: {
+                ticks: {
+                  color: THEME[themeMode].textColor,
+                  font: { size: 14 }
+                }
+              },
+              x: {
+                ticks: {
+                  color: THEME[themeMode].textColor,
+                  font: { size: 14 }
+                }
               }
             }
           }}
