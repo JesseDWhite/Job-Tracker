@@ -66,6 +66,8 @@ const Home = () => {
 
   const [currentUser, setCurrentUser] = useState({});
 
+  const [students, setStudents] = useState([]);
+
   const [viewProfile, setViewProfile] = useState(false);
 
   const [themeMode, setThemeMode] = useState('lightMode');
@@ -116,6 +118,18 @@ const Home = () => {
     }
   }
 
+  const getStudents = async (userData) => {
+    if (userData.role === 'Admin') {
+      const q = query(userReference, where('advisorId', '==', userData.id));
+      const querySnapshot = await getDocs(q);
+      const studentsList = querySnapshot.docs.map((student) => {
+        return student.data();
+      });
+      setStudents(studentsList);
+      console.log(studentsList);
+    }
+  }
+
   const getUserData = async () => {
     const userObject = {
       name: user?.displayName,
@@ -125,9 +139,9 @@ const Home = () => {
       advisorId: 'NOT YET ASSIGNED',
       cohort: 'NOT YET ASSIGNED',
       role: 'Student',
-      uid: user?.uid
+      id: user?.uid,
     };
-    const userQuery = query(userReference, where('uid', '==', user?.uid));
+    const userQuery = query(userReference, where('id', '==', user?.uid));
     const querySnapshot = await getDocs(userQuery);
     const userData = querySnapshot.docs[0]?.data();
     if (!userData) {
@@ -136,6 +150,7 @@ const Home = () => {
       seedData();
     } else {
       setCurrentUser(userData);
+      getStudents(userData);
     }
   }
 
@@ -318,52 +333,27 @@ const Home = () => {
         </Fade>
       </Modal>
       {user?.email && viewProfile
-        ? <Grid
-          display='flex'
+        ?
+        <Grid
+          sx={{ m: 3, mt: 6 }}
         >
-          <Grid
-            sm={4}
-            sx={{ m: 3, mt: 6 }}
+          <AnimateKeyframes
+            play
+            iterationCount={1}
+            keyframes={[
+              "opacity: 0",
+              "opacity: 1",
+            ]}
           >
-            <AnimateKeyframes
-              play
-              iterationCount={1}
-              keyframes={[
-                "opacity: 0",
-                "opacity: 1",
-              ]}
-            >
-              <Profile
-                user={user}
-                currentUser={currentUser}
-                logout={logout}
-                jobs={jobs}
-                themeMode={themeMode}
-              />
-            </AnimateKeyframes>
-          </Grid>
-          <Grid
-            sm={8}
-            sx={{
-              m: 3,
-              mt: 6
-            }}
-          >
-            <AnimateKeyframes
-              play
-              iterationCount={1}
-              keyframes={[
-                "opacity: 0",
-                "opacity: 1",
-              ]}
-            >
-              <Analytics
-                themeMode={themeMode}
-                jobs={jobs}
-                applicationCount={applicationCount}
-              />
-            </AnimateKeyframes>
-          </Grid>
+            <Profile
+              user={user}
+              currentUser={currentUser}
+              logout={logout}
+              jobs={jobs}
+              themeMode={themeMode}
+              students={students}
+            />
+          </AnimateKeyframes>
         </Grid>
         : <Grid
           display='flex'

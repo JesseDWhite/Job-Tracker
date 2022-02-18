@@ -6,6 +6,7 @@ import {
   Chip,
   Avatar,
   IconButton,
+  Box
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -63,32 +64,44 @@ const Header = (props) => {
             container
             direction="row"
             justifyContent="start"
+            alignItems='center'
           >
-            {user?.email ? <Chip
-              sx={{
-                background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
-              }}
-              color='secondary'
-              variant='contained'
-              onClick={() => applicationCount >= 1 ? setFilter(!filter) : setFilter(false)}
-              label={filter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
-              avatar={<Avatar>{applicationCount}</Avatar>}
-            /> : null
+            {viewProfile
+              ? <Typography variant='h3' sx={{
+                fontSize: '2rem',
+                color: THEME[themeMode].textColor,
+                mx: 1
+              }}>
+                My Profile
+              </Typography>
+              :
+              <>
+                <Chip
+                  sx={{
+                    background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
+                  }}
+                  color='secondary'
+                  variant='contained'
+                  onClick={() => applicationCount >= 1 ? setFilter(!filter) : setFilter(false)}
+                  label={filter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+                  avatar={<Avatar>{applicationCount}</Avatar>}
+                />
+                <Button
+                  sx={{
+                    mx: 5,
+                  }}
+                  variant={THEME[themeMode].buttonStyle}
+                  color='secondary'
+                  onClick={() => sort ? sortByDate() : sortByName()}>
+                  SORTED BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
+                </Button>
+                <SearchBar
+                  themeMode={themeMode}
+                  jobs={jobs}
+                  setSearchJobs={setSearchJobs}
+                />
+              </>
             }
-            <Button
-              sx={{
-                mx: 5,
-              }}
-              variant={THEME[themeMode].buttonStyle}
-              color='secondary'
-              onClick={() => sort ? sortByDate() : sortByName()}>
-              SORTED BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
-            </Button>
-            <SearchBar
-              themeMode={themeMode}
-              jobs={jobs}
-              setSearchJobs={setSearchJobs}
-            />
           </Grid>
           <Grid
             sx={{
