@@ -217,7 +217,7 @@ const CardView = (props) => {
             id='status'
             name='status'
             value={job.status}
-            onChange={(e) => updateJobStatus(job.id, jobidx, e)}
+            onChange={(e) => updateJobStatus(job.id, e)}
           >
             <FormControlLabel
               value='Active'

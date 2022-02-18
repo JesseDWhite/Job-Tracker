@@ -239,10 +239,11 @@ const Home = () => {
     await deleteDoc(jobDoc);
   }
 
-  const updateJobStatus = async (id, jobidx, e) => {
+  const updateJobStatus = async (id, e) => {
     const newStatus = e.target.value;
     const newJobs = [...searchJobs];
-    newJobs[jobidx].status = newStatus;
+    const jobToUpdate = newJobs.find(job => job.id.includes(id));
+    jobToUpdate.status = newStatus;
     const jobDoc = doc(subCollection, id);
     const updateStatus = { status: newStatus };
     setSearchJobs(newJobs);
@@ -408,6 +409,7 @@ const Home = () => {
                     <MasterList
                       themeMode={themeMode}
                       searchJobs={searchJobs}
+                      jobs={jobs}
                       updateJobApplication={updateJobApplication}
                       jobToEdit={jobToEdit}
                       setJobToEdit={setJobToEdit}

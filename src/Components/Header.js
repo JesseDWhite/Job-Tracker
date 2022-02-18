@@ -55,7 +55,7 @@ const Header = (props) => {
           position: 'fixed',
           top: 0,
           p: 2,
-          filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.300))',
+          filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.200))',
         }}
       > {user?.email ?
         <Grid>
