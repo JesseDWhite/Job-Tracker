@@ -34,7 +34,6 @@ const CardView = (props) => {
     getStatus,
     deleteJob,
     updateJobStatus,
-    jobidx,
     updateInterviewDate,
     updateJobApplication,
     themeMode
@@ -66,6 +65,7 @@ const CardView = (props) => {
           p: 2,
           minHeight: 200,
           border: 'solid 5px',
+          transition: 'background .5s',
           borderColor: getStatus(job.status, job.score),
           background: job.score > 89 ? `linear-gradient(135deg, ${THEME[themeMode].card} 50%, #FDD835)` : THEME[themeMode].card,
           borderRadius: 5,
@@ -244,7 +244,7 @@ const CardView = (props) => {
               mb: 2,
             }}
             value={job.interviewDate}
-            onChange={(e) => updateInterviewDate(job.id, jobidx, e)}
+            onChange={(e) => updateInterviewDate(job.id, e)}
             type='datetime-local'
             name='interviewDate'
           /> : null

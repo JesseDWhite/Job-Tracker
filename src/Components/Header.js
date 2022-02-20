@@ -6,13 +6,13 @@ import {
   Chip,
   Avatar,
   IconButton,
-  Box
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import SearchBar from './SearchBar';
 import { THEME } from '../Constants/Theme';
 import { format } from 'date-fns';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const Header = (props) => {
 
@@ -29,8 +29,15 @@ const Header = (props) => {
     open,
     setOpen,
     themeMode,
-    setThemeMode
+    currentUser,
+    updatePreferrdTheme
   } = props;
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: themeMode === 'darkMode' ? 'dark' : 'light'
+    }
+  });
 
   const [filter, setFilter] = useState(false);
 
@@ -46,9 +53,10 @@ const Header = (props) => {
   }, [filter])
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
       <Grid
         sx={{
+          transition: 'color .5s, background .5s',
           backgroundColor: THEME[themeMode].header,
           width: '100%',
           height: 70,
@@ -69,6 +77,7 @@ const Header = (props) => {
             {viewProfile
               ? <Typography variant='h3' sx={{
                 fontSize: '2rem',
+                transition: 'color .5s, background .5s',
                 color: THEME[themeMode].textColor,
                 mx: 1
               }}>
@@ -90,7 +99,7 @@ const Header = (props) => {
                   sx={{
                     mx: 5,
                   }}
-                  variant={THEME[themeMode].buttonStyle}
+                  variant='text'
                   color='secondary'
                   onClick={() => sort ? sortByDate() : sortByName()}>
                   SORTED BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
@@ -110,15 +119,12 @@ const Header = (props) => {
               top: 18
             }}
           >
-            {/* dark mode and light mode toggle */}
-
-            {/* <IconButton sx={{ mr: 3 }} onClick={() => themeMode === 'darkMode' ? setThemeMode('lightMode') : setThemeMode('darkMode')}>
+            <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
               {themeMode === 'darkMode'
                 ? <LightModeIcon sx={{ color: 'white' }} />
                 : <NightsStayIcon />
               }
-            </IconButton> */}
-
+            </IconButton>
             <Chip
               avatar={
                 <Avatar
@@ -167,7 +173,7 @@ const Header = (props) => {
         </Grid>
         }
       </Grid>
-    </>
+    </ThemeProvider>
   )
 }
 

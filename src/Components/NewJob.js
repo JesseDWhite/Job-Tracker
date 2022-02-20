@@ -30,7 +30,7 @@ import { KEYWORDS } from '../Constants/Keywords';
 import format from 'date-fns/format';
 import strCompare from 'str-compare';
 import { THEME } from '../Constants/Theme';
-import { styled } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const NewJob = (props) => {
 
@@ -62,28 +62,10 @@ const NewJob = (props) => {
     overflowY: 'auto',
   };
 
-  const StyledTextField = styled(TextField)({
-    '& label.Mui-focused': {
-      color: themeMode === 'lightMode' ? 'default' : 'white',
-    },
-    '& label': {
-      color: themeMode === 'lightMode' ? 'default' : 'white',
-      zIndex: 0
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: themeMode === 'lightMode' ? 'default' : 'white',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: themeMode === 'lightMode' ? 'default' : 'white',
-      },
-      '&:hover fieldset': {
-        borderColor: themeMode === 'lightMode' ? 'default' : 'lightBlue',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: themeMode === 'lightMode' ? 'default' : 'lightBlue',
-      },
-    },
+  const darkTheme = createTheme({
+    palette: {
+      mode: themeMode === 'darkMode' ? 'dark' : 'light'
+    }
   });
 
   const [resumeKeywords, setResumeKeywords] = useState([]);
@@ -292,286 +274,288 @@ const NewJob = (props) => {
 
   return (
     <>
-      <Modal
-        open={open}
-        onClose={() => handleClose()}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={open}>
-          <Box sx={modalStyle} className='modal'>
-            <Typography variant='h6' component='h2'>
-              {jobPostingKeywords.length === 0
-                ? 'No Keywords Found'
-                : `We Found ${jobPostingKeywords.length} Keywords For You`
-              }
-            </Typography>
-            <Typography component='h3'>
-              {jobPostingKeywords.length === 0
-                ? null
-                : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
-              }
-            </Typography>
-            <Typography sx={{ mt: 2 }}>
-              {jobPostingKeywords.length === 0
-                ? 'Try adding the entire job description.'
-                : jobPostingKeywords.map((keyword, idx) => {
-                  return (
-                    <List dense={true} disablePadding>
-                      {coverLetterKeywords.includes(keyword) || resumeKeywords.includes(keyword)
-                        ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
-                        : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
-                      }
-                    </List>
-                  )
-                })}
-            </Typography>
-          </Box>
-        </Fade>
-      </Modal>
-      <Grid
-        display='flex'
-      >
-        <form method='POST' action='#' onSubmit={(e) => validateFormFields(e)}>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="start"
-            spacing={2}
-          >
-            <Grid lg={6} item>
-              <TextField
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                autoFocus
-                type='text'
-                name='company'
-                label='Company'
-                onChange={handleInputChange}
-                value={formValues.company}
-                fullWidth
-              />
-              <TextField
-                fullWidth
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                type='text'
-                name='jobTitle'
-                label='Job Title'
-                onChange={handleInputChange}
-                value={formValues.jobTitle}
-              />
-              <TextField
-                fullWidth
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                type='date'
-                name='dateApplied'
-                label='Date Applied'
-                onChange={handleInputChange}
-                value={formValues.dateApplied}
-              />
-              <Grid
-                container
-                direction='row'
-                justifyContent='space-around'
-                sx={{
-                  mb: 2
-                }}
-              >
-                <FormControl component='fieldset'>
-                  <FormLabel
-                    component='legend'
-                    sx={{
-                      textAlign: 'center'
-                    }}
-                  >
-                    Status
-                  </FormLabel>
-                  <RadioGroup
-                    row
-                    name='status'
-                    defaultValue='Active'
-                    value={formValues.status}
-                    onChange={handleInputChange}
-                  >
-                    <FormControlLabel
-                      value='Active'
-                      control={<Radio color='success' />}
-                      label='Active'
-                    />
-                    <FormControlLabel
-                      value='Interview'
-                      control={<Radio color='primary' />}
-                      label='Interview'
-                    />
-                    <FormControlLabel
-                      value='Closed'
-                      control={<Radio color='error' />}
-                      label='Closed'
-                    />
-                  </RadioGroup>
-                </FormControl>
-              </Grid>
-              <TextField
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                type='text'
-                name='jobPosting'
-                label='Link To Job Posting'
-                onChange={handleInputChange}
-                value={formValues.jobPosting}
-                fullWidth />
-              <TextField
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                type='text'
-                name='ats'
-                label='Application Tracking System'
-                onChange={handleInputChange}
-                value={formValues.ats}
-                fullWidth />
-            </Grid>
-            <Grid lg={6} item>
-              <Grid
-                sx={{
-                  mb: 2,
-                }}
-                container
-                spacing={2}
-              >
-                <Grid
-                  item
-                  sm={8}
-                >
-                  <Tooltip
-                    placement='left'
-                    title='Insert the entire job description text'
-                    arrow
-                  >
-                    <TextField
-                      sx={{
-                        zIndex: 0
-                      }}
-                      type='text'
-                      name='jobDescription'
-                      label='Job Description'
-                      onChange={handleInputChange}
-                      value={formValues.jobDescription}
-                      fullWidth />
-                  </Tooltip>
-                </Grid>
-                <Grid
-                  item
-                  sm={4}
-                >
-                  <Button
-                    sx={{
-                      height: '100%'
-                    }}
-                    fullWidth
-                    type='button'
-                    variant='contained'
-                    color='success'
-                    onClick={() => ((setOpen(true), handleModalKeywordExtraction(formValues.jobDescription, 'jobPosting'), handleModalKeywordExtraction(formValues.resume, 'resume'), handleModalKeywordExtraction(formValues.coverLetter, 'coverLetter')))}
-                    disabled={!formValues.jobDescription ? true : false}
-                  >
-                    Keywords
-                  </Button>
-                </Grid>
-              </Grid>
-              <Tooltip
-                placement='left'
-                title='Insert the entire resume text'
-                arrow
-              >
-                <TextField
-                  sx={{
-                    mb: 2,
-                    zIndex: 0
-                  }}
-                  type='text'
-                  name='resume'
-                  label='Resume'
-                  onChange={handleInputChange}
-                  value={formValues.resume}
-                  fullWidth />
-              </Tooltip>
-              <Tooltip
-                placement='left'
-                title='Insert the entire cover letter text'
-                arrow
-              >
-                <TextField
-                  sx={{
-                    mb: 2,
-                    zIndex: 0
-                  }}
-                  type='text'
-                  name='coverLetter'
-                  label='Cover Letter'
-                  onChange={handleInputChange}
-                  value={formValues.coverLetter}
-                  fullWidth />
-              </Tooltip>
-              <TextField sx={{
-                mb: 2,
-                zIndex: 0
-              }}
-                type='text'
-                name='notes'
-                label='Notes'
-                multiline
-                rows={4.5}
-                onChange={handleInputChange}
-                value={formValues.notes}
-                fullWidth
-              />
-            </Grid>
-          </Grid>
-          <Button
-            sx={{
-              background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
-              fontSize: 18,
-            }}
-            type='submit'
-            variant='contained'
-            startIcon={<AddBoxTwoTone />}
-            fullWidth
-          >
-            {editing ? `Update ${formValues.company}` : 'ADD TO LIST'}
-          </Button>
-          {editing
-            ? <Button
-              sx={{
-                mt: 2
-              }}
-              type='button'
-              variant='contained'
-              color='error'
-              fullWidth
-              onClick={() => ((setEditing(!editing), handleSetOpen(false)))}
+      <ThemeProvider theme={darkTheme}>
+        <Modal
+          open={open}
+          onClose={() => handleClose()}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={open}>
+            <Box sx={modalStyle} className='modal'>
+              <Typography variant='h6' component='h2'>
+                {jobPostingKeywords.length === 0
+                  ? 'No Keywords Found'
+                  : `We Found ${jobPostingKeywords.length} Keywords For You`
+                }
+              </Typography>
+              <Typography component='h3'>
+                {jobPostingKeywords.length === 0
+                  ? null
+                  : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
+                }
+              </Typography>
+              <Typography sx={{ mt: 2 }}>
+                {jobPostingKeywords.length === 0
+                  ? 'Try adding the entire job description.'
+                  : jobPostingKeywords.map((keyword, idx) => {
+                    return (
+                      <List dense={true} disablePadding>
+                        {coverLetterKeywords.includes(keyword) || resumeKeywords.includes(keyword)
+                          ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                          : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                        }
+                      </List>
+                    )
+                  })}
+              </Typography>
+            </Box>
+          </Fade>
+        </Modal>
+        <Grid
+          display='flex'
+        >
+          <form method='POST' action='#' onSubmit={(e) => validateFormFields(e)}>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="start"
+              spacing={2}
             >
-              Cancel
+              <Grid lg={6} item>
+                <TextField
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  autoFocus
+                  type='text'
+                  name='company'
+                  label='Company'
+                  onChange={handleInputChange}
+                  value={formValues.company}
+                  fullWidth
+                />
+                <TextField
+                  fullWidth
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  type='text'
+                  name='jobTitle'
+                  label='Job Title'
+                  onChange={handleInputChange}
+                  value={formValues.jobTitle}
+                />
+                <TextField
+                  fullWidth
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  type='date'
+                  name='dateApplied'
+                  label='Date Applied'
+                  onChange={handleInputChange}
+                  value={formValues.dateApplied}
+                />
+                <Grid
+                  container
+                  direction='row'
+                  justifyContent='space-around'
+                  sx={{
+                    mb: 2
+                  }}
+                >
+                  <FormControl component='fieldset'>
+                    <FormLabel
+                      component='legend'
+                      sx={{
+                        textAlign: 'center'
+                      }}
+                    >
+                      Status
+                    </FormLabel>
+                    <RadioGroup
+                      row
+                      name='status'
+                      defaultValue='Active'
+                      value={formValues.status}
+                      onChange={handleInputChange}
+                    >
+                      <FormControlLabel
+                        value='Active'
+                        control={<Radio color='success' />}
+                        label='Active'
+                      />
+                      <FormControlLabel
+                        value='Interview'
+                        control={<Radio color='primary' />}
+                        label='Interview'
+                      />
+                      <FormControlLabel
+                        value='Closed'
+                        control={<Radio color='error' />}
+                        label='Closed'
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+                <TextField
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  type='text'
+                  name='jobPosting'
+                  label='Link To Job Posting'
+                  onChange={handleInputChange}
+                  value={formValues.jobPosting}
+                  fullWidth />
+                <TextField
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  type='text'
+                  name='ats'
+                  label='Application Tracking System'
+                  onChange={handleInputChange}
+                  value={formValues.ats}
+                  fullWidth />
+              </Grid>
+              <Grid lg={6} item>
+                <Grid
+                  sx={{
+                    mb: 2,
+                  }}
+                  container
+                  spacing={2}
+                >
+                  <Grid
+                    item
+                    sm={8}
+                  >
+                    <Tooltip
+                      placement='left'
+                      title='Insert the entire job description text'
+                      arrow
+                    >
+                      <TextField
+                        sx={{
+                          zIndex: 0
+                        }}
+                        type='text'
+                        name='jobDescription'
+                        label='Job Description'
+                        onChange={handleInputChange}
+                        value={formValues.jobDescription}
+                        fullWidth />
+                    </Tooltip>
+                  </Grid>
+                  <Grid
+                    item
+                    sm={4}
+                  >
+                    <Button
+                      sx={{
+                        height: '100%'
+                      }}
+                      fullWidth
+                      type='button'
+                      variant='contained'
+                      color='success'
+                      onClick={() => ((setOpen(true), handleModalKeywordExtraction(formValues.jobDescription, 'jobPosting'), handleModalKeywordExtraction(formValues.resume, 'resume'), handleModalKeywordExtraction(formValues.coverLetter, 'coverLetter')))}
+                      disabled={!formValues.jobDescription ? true : false}
+                    >
+                      Keywords
+                    </Button>
+                  </Grid>
+                </Grid>
+                <Tooltip
+                  placement='left'
+                  title='Insert the entire resume text'
+                  arrow
+                >
+                  <TextField
+                    sx={{
+                      mb: 2,
+                      zIndex: 0
+                    }}
+                    type='text'
+                    name='resume'
+                    label='Resume'
+                    onChange={handleInputChange}
+                    value={formValues.resume}
+                    fullWidth />
+                </Tooltip>
+                <Tooltip
+                  placement='left'
+                  title='Insert the entire cover letter text'
+                  arrow
+                >
+                  <TextField
+                    sx={{
+                      mb: 2,
+                      zIndex: 0
+                    }}
+                    type='text'
+                    name='coverLetter'
+                    label='Cover Letter'
+                    onChange={handleInputChange}
+                    value={formValues.coverLetter}
+                    fullWidth />
+                </Tooltip>
+                <TextField sx={{
+                  mb: 2,
+                  zIndex: 0
+                }}
+                  type='text'
+                  name='notes'
+                  label='Notes'
+                  multiline
+                  rows={4.5}
+                  onChange={handleInputChange}
+                  value={formValues.notes}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+            <Button
+              sx={{
+                background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
+                fontSize: 18,
+              }}
+              type='submit'
+              variant='contained'
+              startIcon={<AddBoxTwoTone />}
+              fullWidth
+            >
+              {editing ? `Update ${formValues.company}` : 'ADD TO LIST'}
             </Button>
-            : null
-          }
-        </form >
-      </Grid>
+            {editing
+              ? <Button
+                sx={{
+                  mt: 2
+                }}
+                type='button'
+                variant='contained'
+                color='error'
+                fullWidth
+                onClick={() => ((setEditing(!editing), handleSetOpen(false)))}
+              >
+                Cancel
+              </Button>
+              : null
+            }
+          </form >
+        </Grid>
+      </ThemeProvider>
     </>
   );
 };

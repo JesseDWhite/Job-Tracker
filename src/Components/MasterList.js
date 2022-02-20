@@ -157,7 +157,6 @@ const MasterList = (props) => {
                     getStatus={getStatus}
                     deleteJob={deleteJob}
                     updateJobStatus={updateJobStatus}
-                    jobidx={jobidx}
                     updateInterviewDate={updateInterviewDate}
                   />
                 </AnimateKeyframes>

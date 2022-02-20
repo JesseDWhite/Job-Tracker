@@ -76,6 +76,7 @@ const Analytics = (props) => {
           pr: 3,
           pt: 3,
           textAlign: 'center',
+          transition: 'color .5s, background .5s',
           background: THEME[themeMode].card,
         }}
       >

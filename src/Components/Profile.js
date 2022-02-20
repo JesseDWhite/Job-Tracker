@@ -30,9 +30,10 @@ const Profile = (props) => {
 
   const columnsTest = [
     // { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Full Name', width: 200 },
+    { field: 'name', headerName: 'Full Name', width: 300 },
+    { field: 'role', headerName: 'Status', width: 200 },
     { field: 'cohort', headerName: 'Cohort', width: 200 },
-    { field: 'email', headerName: 'Email', width: 300 },
+    { field: 'email', headerName: 'Email', width: 400 },
   ];
 
   const getTotalApplicationAverage = () => {
@@ -52,7 +53,7 @@ const Profile = (props) => {
   }, []);
 
   return (
-    <Grid display='flex'>
+    <Grid display='flex' sx={{ ml: 3, mr: 3 }}>
       <Grid
         container
         direction="row"
@@ -60,13 +61,14 @@ const Profile = (props) => {
         alignItems="start"
         spacing={4}
       >
-        <Grid sx={{ mt: 4 }} sm={4} item>
+        <Grid sx={{ mt: 4 }} sm={6} xl={4} item>
           <Card
             elevation={3}
             sx={{
               maxWidth: 500,
               minHeight: 500,
               p: 3,
+              transition: 'color .5s, background .5s',
               background: THEME[themeMode].card,
               color: THEME[themeMode].textColor
             }}
@@ -142,20 +144,26 @@ const Profile = (props) => {
             </CardActions>
           </Card>
         </Grid>
-        <Grid sx={{ mt: 4 }} sm={8} item>
+        <Grid sx={{ mt: 4 }} sm={12} xl={8} item>
           <Analytics jobs={jobs} themeMode={themeMode} />
         </Grid>
-        <Grid sm={8} item>
+        <Grid sm={12} xl={8} item>
           {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
             ? <Paper
               elevation={3}
               sx={{
-                height: 300,
+                transition: 'color .5s, background .5s',
+                height: 500,
                 width: '100%',
                 background: THEME[themeMode].card,
-                color: THEME[themeMode].textColor
+                mb: 4
               }}>
               <DataGrid
+                sx={{
+                  transition: 'color .5s, background .5s',
+                  color: THEME[themeMode].textColor,
+                  border: 'none'
+                }}
                 rows={students}
                 columns={columnsTest}
                 pageSize={5}

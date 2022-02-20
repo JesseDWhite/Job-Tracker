@@ -32,7 +32,6 @@ import { signOut, onAuthStateChanged, } from '@firebase/auth';
 import { auth } from '../firebase';
 import Header from './Header';
 import Profile from './Profile';
-import Analytics from './Analytics';
 import MasterList from './MasterList';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Constants/Theme';
@@ -126,7 +125,6 @@ const Home = () => {
         return student.data();
       });
       setStudents(studentsList);
-      console.log(studentsList);
     }
   }
 
@@ -139,6 +137,7 @@ const Home = () => {
       advisorId: 'NOT YET ASSIGNED',
       cohort: 'NOT YET ASSIGNED',
       role: 'Student',
+      preferredTheme: 'lightMode',
       id: user?.uid,
     };
     const userQuery = query(userReference, where('id', '==', user?.uid));
@@ -151,6 +150,7 @@ const Home = () => {
     } else {
       setCurrentUser(userData);
       getStudents(userData);
+      setThemeMode(userData.preferredTheme);
     }
   }
 
@@ -265,14 +265,28 @@ const Home = () => {
     await updateDoc(jobDoc, updateStatus);
   }
 
-  const updateInterviewDate = async (id, jobidx, e) => {
+  const updateInterviewDate = async (id, e) => {
     const newInterviewDate = e.target.value;
     const newJobs = [...searchJobs];
-    newJobs[jobidx].interviewDate = newInterviewDate;
+    const jobToUpdate = newJobs.find(job => job.id.includes(id));
+    jobToUpdate.interviewDate = newInterviewDate;
     const jobDoc = doc(subCollection, id);
     const updateInterviewDate = { interviewDate: newInterviewDate }
     setSearchJobs(newJobs);
     await updateDoc(jobDoc, updateInterviewDate);
+  }
+
+  const updatePreferrdTheme = async (id) => {
+    const userToUpdate = doc(userReference, id);
+    if (themeMode === 'lightMode') {
+      setThemeMode('darkMode');
+      const newTheme = { preferredTheme: 'darkMode' };
+      await updateDoc(userToUpdate, newTheme);
+    } else {
+      setThemeMode('lightMode');
+      const newTheme = { preferredTheme: 'lightMode' };
+      await updateDoc(userToUpdate, newTheme);
+    }
   }
 
   const updateJobApplication = (job) => {
@@ -293,6 +307,7 @@ const Home = () => {
   return (
     <Box
       sx={{
+        transition: 'color .5s, background .5s',
         background: THEME[themeMode].backgroundColor,
         mt: user?.email ? 8 : 0,
         minHeight: '100vh'
@@ -334,9 +349,7 @@ const Home = () => {
       </Modal>
       {user?.email && viewProfile
         ?
-        <Grid
-          sx={{ m: 3, mt: 6 }}
-        >
+        <Grid>
           <AnimateKeyframes
             play
             iterationCount={1}
@@ -435,8 +448,9 @@ const Home = () => {
       }
       {user?.email
         ? <Header
+          updatePreferrdTheme={updatePreferrdTheme}
+          currentUser={currentUser}
           themeMode={themeMode}
-          setThemeMode={setThemeMode}
           viewProfile={viewProfile}
           setViewProfile={setViewProfile}
           user={user}
