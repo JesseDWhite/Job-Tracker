@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import CardView from './CardView';
 import { AnimateKeyframes } from 'react-simple-animate';
-import { THEME } from '../Constants/Theme';
+import { THEME } from '../Layout/Theme';
 
 const MasterList = (props) => {
 

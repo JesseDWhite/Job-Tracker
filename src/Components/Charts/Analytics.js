@@ -12,7 +12,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import { format, sub } from 'date-fns';
 import { ArrowForwardIosTwoTone, ArrowBackIosTwoTone } from '@mui/icons-material';
-import { THEME } from '../Constants/Theme';
+import { THEME } from '../../Layout/Theme';
 
 ChartJS.register(
   CategoryScale,

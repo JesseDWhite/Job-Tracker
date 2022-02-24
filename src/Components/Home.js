@@ -11,7 +11,7 @@ import {
   where,
   setDoc
 } from 'firebase/firestore';
-import NewJob from './NewJob';
+import NewJob from './Forms/NewJob';
 import {
   Grid,
   Modal,
@@ -30,12 +30,13 @@ import { format } from 'date-fns';
 import Auth from './Auth';
 import { signOut, onAuthStateChanged, } from '@firebase/auth';
 import { auth } from '../firebase';
-import Header from './Header';
+import Header from '../Layout/Header';
 import Profile from './Profile';
 import MasterList from './MasterList';
 import { AnimateKeyframes } from 'react-simple-animate';
-import { THEME } from '../Constants/Theme';
+import { THEME } from '../Layout/Theme';
 import SignIn from './SignIn';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const Home = () => {
 
@@ -70,6 +71,12 @@ const Home = () => {
   const [viewProfile, setViewProfile] = useState(false);
 
   const [themeMode, setThemeMode] = useState('lightMode');
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: themeMode === 'darkMode' ? 'dark' : 'light'
+    }
+  });
 
   const modalStyle = {
     position: 'absolute',
@@ -133,10 +140,11 @@ const Home = () => {
       name: user?.displayName,
       email: user?.email,
       signedUpOn: user?.metadata.creationTime,
+      organization: 'General',
       advisor: 'NOT YET ASSIGNED',
       advisorId: 'NOT YET ASSIGNED',
       cohort: 'NOT YET ASSIGNED',
-      role: 'Student',
+      role: 'General',
       preferredTheme: 'lightMode',
       id: user?.uid,
     };
@@ -305,188 +313,190 @@ const Home = () => {
   }, [getJobs])
 
   return (
-    <Box
-      sx={{
-        transition: 'color .5s, background .5s',
-        background: THEME[themeMode].backgroundColor,
-        mt: user?.email ? 8 : 0,
-        minHeight: '100vh'
-      }}
-    >
-      {!user?.email ? <SignIn /> : null}
-      <Modal
-        open={open}
-        onClose={() => ((setOpen(!open), setEditing(false)))}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{ timeout: 500 }}
+    <ThemeProvider theme={darkTheme}>
+      <Box
+        sx={{
+          transition: 'color .5s, background .5s',
+          background: THEME[themeMode].backgroundColor,
+          mt: user?.email ? 8 : 0,
+          minHeight: '100vh'
+        }}
       >
-        <Fade in={open}>
-          <Box container sx={modalStyle} className='modal'>
-            {!user?.email
-              ? <Auth />
-              : <NewJob
-                themeMode={themeMode}
-                jobsReference={jobsReference}
-                subCollection={subCollection}
-                getJobs={getJobs}
-                editing={editing}
-                setEditing={setEditing}
-                jobToEdit={jobToEdit}
-                jobs={jobs}
-                setJobs={setJobs}
-                searchJobs={searchJobs}
-                setSearchJobs={setSearchJobs}
-                user={user}
-                handleSetOpen={setOpen}
-                handleClose={handleClose}
-                feedback={feedback}
-                setFeedback={setFeedback}
-              />
-            }
-          </Box>
-        </Fade>
-      </Modal>
-      {user?.email && viewProfile
-        ?
-        <Grid>
-          <AnimateKeyframes
-            play
-            iterationCount={1}
-            keyframes={[
-              "opacity: 0",
-              "opacity: 1",
-            ]}
-          >
-            <Profile
-              user={user}
-              currentUser={currentUser}
-              logout={logout}
-              jobs={jobs}
-              themeMode={themeMode}
-              students={students}
-            />
-          </AnimateKeyframes>
-        </Grid>
-        : <Grid
-          display='flex'
+        {!user?.email ? <SignIn /> : null}
+        <Modal
+          open={open}
+          onClose={() => ((setOpen(!open), setEditing(false)))}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{ timeout: 500 }}
         >
-          <Grid
-            sm={12}
-          >
-            <Grid>
-              {user?.email ?
-                loading
-                  ? <AnimateKeyframes
-                    play
-                    iterationCount={1}
-                    keyframes={[
-                      "opacity: 0",
-                      "opacity: 1",
-                    ]}
-                  >
-                    <Grid display='flex'>
-                      <Grid
-                        sx={{ mt: 11.50, mx: 3 }}
-                        container
-                        direction="row"
-                        justifyContent="start"
-                      >
-                        {Array.from(new Array(12)).map((skeleton, idx) => {
-                          return (
-                            <Grid
-                              key={idx}
-                              sm={6}
-                              xl={3}
-                              spacing={2}
-                              item
-                            >
-                              <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 290, borderRadius: 5 }} />
-                            </Grid>
-                          )
-                        })}
-                      </Grid>
-                    </Grid>
-                  </AnimateKeyframes>
-                  : <Grid sx={{ m: 3 }}>
-                    <MasterList
-                      themeMode={themeMode}
-                      searchJobs={searchJobs}
-                      jobs={jobs}
-                      updateJobApplication={updateJobApplication}
-                      jobToEdit={jobToEdit}
-                      setJobToEdit={setJobToEdit}
-                      editing={editing}
-                      setEditing={setEditing}
-                      deleteJob={deleteJob}
-                      updateJobStatus={updateJobStatus}
-                      updateInterviewDate={updateInterviewDate}
-                    />
-                    <Fab
-                      variant='extended'
-                      sx={{
-                        position: 'fixed',
-                        top: 100,
-                        right: 30,
-                        backgroundColor: 'green',
-                        '&:hover': {
-                          backgroundColor: 'darkGreen'
-                        },
-                        color: 'white'
-                      }}
-                      onClick={() => setOpen(!open)}
-                    >
-                      <AddCircleTwoToneIcon sx={{ mr: 1 }} />
-                      ADD NEW
-                    </Fab>
-                  </Grid>
-                : null
+          <Fade in={open}>
+            <Box container sx={modalStyle} className='modal'>
+              {!user?.email
+                ? <Auth />
+                : <NewJob
+                  themeMode={themeMode}
+                  jobsReference={jobsReference}
+                  subCollection={subCollection}
+                  getJobs={getJobs}
+                  editing={editing}
+                  setEditing={setEditing}
+                  jobToEdit={jobToEdit}
+                  jobs={jobs}
+                  setJobs={setJobs}
+                  searchJobs={searchJobs}
+                  setSearchJobs={setSearchJobs}
+                  user={user}
+                  handleSetOpen={setOpen}
+                  handleClose={handleClose}
+                  feedback={feedback}
+                  setFeedback={setFeedback}
+                />
               }
+            </Box>
+          </Fade>
+        </Modal>
+        {user?.email && viewProfile
+          ?
+          <Grid>
+            <AnimateKeyframes
+              play
+              iterationCount={1}
+              keyframes={[
+                "opacity: 0",
+                "opacity: 1",
+              ]}
+            >
+              <Profile
+                user={user}
+                currentUser={currentUser}
+                logout={logout}
+                jobs={jobs}
+                themeMode={themeMode}
+                students={students}
+              />
+            </AnimateKeyframes>
+          </Grid>
+          : <Grid
+            display='flex'
+          >
+            <Grid
+              sm={12}
+            >
+              <Grid>
+                {user?.email ?
+                  loading
+                    ? <AnimateKeyframes
+                      play
+                      iterationCount={1}
+                      keyframes={[
+                        "opacity: 0",
+                        "opacity: 1",
+                      ]}
+                    >
+                      <Grid display='flex'>
+                        <Grid
+                          sx={{ mt: 11.50, mx: 3 }}
+                          container
+                          direction="row"
+                          justifyContent="start"
+                        >
+                          {Array.from(new Array(12)).map((skeleton, idx) => {
+                            return (
+                              <Grid
+                                key={idx}
+                                sm={6}
+                                xl={3}
+                                spacing={2}
+                                item
+                              >
+                                <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 290, borderRadius: 5 }} />
+                              </Grid>
+                            )
+                          })}
+                        </Grid>
+                      </Grid>
+                    </AnimateKeyframes>
+                    : <Grid sx={{ m: 3 }}>
+                      <MasterList
+                        themeMode={themeMode}
+                        searchJobs={searchJobs}
+                        jobs={jobs}
+                        updateJobApplication={updateJobApplication}
+                        jobToEdit={jobToEdit}
+                        setJobToEdit={setJobToEdit}
+                        editing={editing}
+                        setEditing={setEditing}
+                        deleteJob={deleteJob}
+                        updateJobStatus={updateJobStatus}
+                        updateInterviewDate={updateInterviewDate}
+                      />
+                      <Fab
+                        variant='extended'
+                        sx={{
+                          position: 'fixed',
+                          top: 100,
+                          right: 30,
+                          backgroundColor: 'green',
+                          '&:hover': {
+                            backgroundColor: 'darkGreen'
+                          },
+                          color: 'white'
+                        }}
+                        onClick={() => setOpen(!open)}
+                      >
+                        <AddCircleTwoToneIcon sx={{ mr: 1 }} />
+                        ADD NEW
+                      </Fab>
+                    </Grid>
+                  : null
+                }
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      }
-      {user?.email
-        ? <Header
-          updatePreferrdTheme={updatePreferrdTheme}
-          currentUser={currentUser}
-          themeMode={themeMode}
-          viewProfile={viewProfile}
-          setViewProfile={setViewProfile}
-          user={user}
-          logout={logout}
-          sortByDate={sortByDate}
-          sortByName={sortByName}
-          sort={sort}
-          setSort={setSort}
-          jobs={jobs}
-          setSearchJobs={setSearchJobs}
-          applicationCount={applicationCount}
-          setApplicationCount={setApplicationCount}
-          open={open}
-          setOpen={setOpen}
-        />
-        : null
-      }
-      <Snackbar
-        sx={{ width: '100%' }}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={feedback.open}
-        onClose={handleClose}
-        TransitionComponent={Slide}
-        autoHideDuration={4000}
-      >
-        <Alert
-          variant="filled"
-          severity={feedback.type}
+        }
+        {user?.email
+          ? <Header
+            updatePreferrdTheme={updatePreferrdTheme}
+            currentUser={currentUser}
+            themeMode={themeMode}
+            viewProfile={viewProfile}
+            setViewProfile={setViewProfile}
+            user={user}
+            logout={logout}
+            sortByDate={sortByDate}
+            sortByName={sortByName}
+            sort={sort}
+            setSort={setSort}
+            jobs={jobs}
+            setSearchJobs={setSearchJobs}
+            applicationCount={applicationCount}
+            setApplicationCount={setApplicationCount}
+            open={open}
+            setOpen={setOpen}
+          />
+          : null
+        }
+        <Snackbar
+          sx={{ width: '100%' }}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={feedback.open}
           onClose={handleClose}
-          sx={{ width: '45%' }}
+          TransitionComponent={Slide}
+          autoHideDuration={4000}
         >
-          <AlertTitle>{feedback.title}</AlertTitle>
-          {feedback.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+          <Alert
+            variant="filled"
+            severity={feedback.type}
+            onClose={handleClose}
+            sx={{ width: '45%' }}
+          >
+            <AlertTitle>{feedback.title}</AlertTitle>
+            {feedback.message}
+          </Alert>
+        </Snackbar>
+      </Box>
+    </ThemeProvider>
   );
 };
 

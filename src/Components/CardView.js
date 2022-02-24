@@ -21,11 +21,11 @@ import {
   InsertChartTwoTone,
   DescriptionTwoTone,
   DeleteForeverTwoTone,
-  ArrowDropDownCircleTwoTone,
   CreateTwoTone,
+  KeyboardArrowDownRounded
 } from '@mui/icons-material';
 import format from 'date-fns/format';
-import { THEME } from '../Constants/Theme';
+import { THEME } from '../Layout/Theme';
 
 const CardView = (props) => {
 
@@ -265,7 +265,7 @@ const CardView = (props) => {
             }}
           >
             <AccordionSummary
-              expandIcon={<ArrowDropDownCircleTwoTone color='primary' />}
+              expandIcon={<KeyboardArrowDownRounded color='primary' />}
             >
               <Typography>{job.missingKeyWords.length === 0 && job.score === 0
                 ? 'Not enough information for score'

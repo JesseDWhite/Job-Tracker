@@ -4,6 +4,9 @@
   background-attachment: fixed;
   height: 100%; */
 
+body {
+  overflow: overlay;
+}
 
 body::-webkit-scrollbar {
   background-color: rgba(0, 0, 0, 0);

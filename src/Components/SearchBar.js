@@ -4,7 +4,7 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { THEME } from '../Constants/Theme';
+import { THEME } from '../Layout/Theme';
 
 const SearchBar = (props) => {
 
@@ -13,10 +13,6 @@ const SearchBar = (props) => {
     setSearchJobs,
     themeMode
   } = props;
-
-  const StyledTextField = styled(TextField)({
-    ...THEME[themeMode].textField
-  });
 
   const [searchString, setSearchString] = useState('');
 
