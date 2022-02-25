@@ -17,19 +17,37 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Select,
+  Switch,
+  MenuItem,
+  InputLabel
 } from '@mui/material';
 import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
 import {
   updateDoc,
   addDoc,
-  doc
+  doc,
+  arrayUnion,
+  query,
+  where,
+  collection,
+  getDocs,
+  setDoc,
+  deleteDoc
 } from 'firebase/firestore';
 import format from 'date-fns/format';
 import { THEME } from '../../Layout/Theme';
 import { createTheme } from '@mui/material/styles';
 
-const UserUpload = () => {
+const UserUpload = (props) => {
+
+  const {
+    organization,
+    organizationReference,
+    currentUser,
+    setOrganization
+  } = props;
 
   const initialValues =
   {
@@ -41,6 +59,50 @@ const UserUpload = () => {
   }
 
   const [formValues, setFormValues] = useState([initialValues]);
+
+  const [editing, setEditing] = useState(false);
+
+  const [cohort, setCohort] = useState('');
+
+  const subCollection = collection(organizationReference, `${organization.accessToken}/approvedUsers`);
+
+  const handleSelectChange = (e) => {
+    setCohort(e.target.value);
+  }
+
+  const addUserList = async (e) => {
+    e.preventDefault();
+    try {
+      if (!editing) {
+        formValues.forEach(user => {
+          addDoc(subCollection, user);
+        });
+      } else {
+        formValues.forEach(user => {
+          setDoc(doc(subCollection, user.id), user);
+        });
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+
+  const getUsersToEdit = async (date) => {
+    try {
+      const userQuery = query(subCollection, where('cohort', '==', date));
+      const querySnapshot = await getDocs(userQuery);
+      if (!querySnapshot.docs[0]?.data()) {
+        alert('No users for that cohort yet');
+      } else {
+        const results = querySnapshot.docs.map((user) => {
+          return { ...user.data(), id: user.id }
+        });
+        setFormValues(results);
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  }
 
   const handleInputChange = (e, idx) => {
     const { name, value } = e.target;
@@ -55,31 +117,68 @@ const UserUpload = () => {
     setFormValues(newFormValues);
   }
 
-  const deleteEntry = (idx) => {
+  const deleteEntry = async (idx, id) => {
     if (formValues.length > 1) {
       const newFormValues = [...formValues];
       newFormValues.splice(idx, 1);
       setFormValues(newFormValues);
+      if (editing) {
+        await deleteDoc(doc(subCollection, id));
+      }
     }
   }
 
   return (
     <Box>
-      <Typography component='h2' sx={{ mb: 3, textAlign: 'center' }}>
-        Add Users You Would Like In Your Organization
-      </Typography>
+      <Grid>
+        <Typography variant='h4' sx={{ mb: 3, textAlign: 'center' }}>
+          Add Users You Would Like In {organization.name}
+        </Typography>
+        <FormControlLabel
+          control={<Switch />}
+          label='Edit Existing'
+          checked={editing}
+          onChange={() => setEditing(!editing)}
+        />
+      </Grid>
+      {editing
+        ? <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="start"
+          spacing={2}
+        >
+          <Grid item md={8}>
+            <FormControl fullWidth>
+              <InputLabel>Cohort To Edit</InputLabel>
+              <Select
+                value={cohort}
+                onChange={handleSelectChange}
+              >
+                <MenuItem value='March 2021'>March 2021</MenuItem>
+                <MenuItem value='January 2021'>January 2021</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item md={4}>
+            <Button sx={{ height: '100%' }} fullWidth color='primary' variant='contained' onClick={() => getUsersToEdit(cohort)}>Find Cohort</Button>
+          </Grid>
+        </Grid>
+        : null
+      }
       <Grid display='flex'>
-        <form action="#" method='POST'>
+        <form action="#" method='POST' onSubmit={(e) => addUserList(e)}>
           <Grid
             container
             direction="row"
-            justifyContent="center"
+            justifyContent="start"
             alignItems="start"
             spacing={2}
           >
             {formValues.map((entry, idx) => {
               return (
-                <Box sx={{ m: 2 }}>
+                <Grid md={6} item>
                   <Typography>
                     User # {idx + 1}
                   </Typography>
@@ -91,7 +190,7 @@ const UserUpload = () => {
                     variant='contained'
                     color='error'
                     disabled={formValues.length > 1 ? false : true}
-                    onClick={() => deleteEntry(idx)}
+                    onClick={() => deleteEntry(idx, entry.id)}
                   >
                     Delete
                   </Button>
@@ -107,6 +206,7 @@ const UserUpload = () => {
                     onChange={(e) => handleInputChange(e, idx)}
                     value={entry.email}
                     fullWidth
+                    size='small'
                   />
                   <TextField
                     fullWidth
@@ -119,6 +219,7 @@ const UserUpload = () => {
                     label='Role'
                     onChange={(e) => handleInputChange(e, idx)}
                     value={entry.role}
+                    size='small'
                   />
                   <TextField
                     fullWidth
@@ -131,6 +232,7 @@ const UserUpload = () => {
                     label='Cohort'
                     onChange={(e) => handleInputChange(e, idx)}
                     value={entry.cohort}
+                    size='small'
                   />
                   <TextField
                     fullWidth
@@ -143,8 +245,9 @@ const UserUpload = () => {
                     label='Advisor'
                     onChange={(e) => handleInputChange(e, idx)}
                     value={entry.advisor}
+                    size='small'
                   />
-                </Box>
+                </Grid>
               )
             })}
           </Grid>
@@ -161,6 +264,7 @@ const UserUpload = () => {
                 variant='contained'
                 color='success'
                 type='button'
+                disabled={editing ? true : false}
                 onClick={() => addNewEntry()}
               >
                 Add Entry

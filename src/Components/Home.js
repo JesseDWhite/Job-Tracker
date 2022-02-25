@@ -44,6 +44,10 @@ const Home = () => {
 
   const userReference = collection(db, 'users');
 
+  const organizationReference = collection(db, 'organizations');
+
+  const [organization, setOrganization] = useState({});
+
   const [jobs, setJobs] = useState([]);
 
   const [searchJobs, setSearchJobs] = useState(jobs);
@@ -140,6 +144,7 @@ const Home = () => {
       name: user?.displayName,
       email: user?.email,
       signedUpOn: user?.metadata.creationTime,
+      accessToken: '',
       organization: 'General',
       advisor: 'NOT YET ASSIGNED',
       advisorId: 'NOT YET ASSIGNED',
@@ -154,11 +159,43 @@ const Home = () => {
     if (!userData) {
       await setDoc(doc(userReference, user?.uid), userObject);
       setCurrentUser(userObject);
+      getOrganization(userData);
       seedData();
     } else {
       setCurrentUser(userData);
       getStudents(userData);
       setThemeMode(userData.preferredTheme);
+      getOrganization(userData);
+    }
+  }
+
+  const getOrganization = async (userData) => {
+    if (userData.role === 'Admin' || userData.role === 'Advisor') {
+      const orgQuery = query(organizationReference, where('adminId', '==', userData.id));
+      const querySnapshot = await getDocs(orgQuery);
+      const orgData = querySnapshot.docs[0].data();
+      setOrganization(orgData);
+      setCurrentUser(userData);
+    } else {
+      const orgQuery = query(collection(organizationReference, `${userData.accessToken}/approvedUsers`), where('email', '==', userData.email));
+      const querySnapshot = await getDocs(orgQuery);
+      const orgData = querySnapshot.docs[0]?.data();
+      if (orgData) {
+        const newCurrentUser = {
+          ...userData,
+          role: orgData.role,
+          advisor: orgData.advisor,
+          cohort: orgData.cohort
+        };
+        await updateDoc(doc(userReference, userData.id), {
+          role: orgData.role,
+          advisor: orgData.advisor,
+          cohort: orgData.cohort
+        });
+        setCurrentUser(newCurrentUser);
+      } else {
+        console.log('it didnt run')
+      }
     }
   }
 
@@ -368,6 +405,10 @@ const Home = () => {
               ]}
             >
               <Profile
+                userReference={userReference}
+                organization={organization}
+                organizationReference={organizationReference}
+                setOrganization={setOrganization}
                 user={user}
                 currentUser={currentUser}
                 logout={logout}

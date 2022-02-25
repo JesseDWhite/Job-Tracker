@@ -14,7 +14,18 @@ import {
   Fade,
   Backdrop,
   Box,
+  TextField
 } from '@mui/material';
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  setDoc
+} from 'firebase/firestore';
 import { THEME } from '../Layout/Theme';
 import { DataGrid } from '@mui/x-data-grid';
 import Analytics from './Charts/Analytics';
@@ -28,7 +39,11 @@ const Profile = (props) => {
     jobs,
     currentUser,
     themeMode,
-    students
+    students,
+    organization,
+    setOrganization,
+    organizationReference,
+    userReference
   } = props;
 
   const modalStyle = {
@@ -49,6 +64,18 @@ const Profile = (props) => {
   const [average, setAverage] = useState(0);
 
   const [open, setOpen] = useState(false);
+
+  const [accessToken, setAccessToken] = useState('');
+
+  const handleChange = (e) => {
+    const { value } = e.target;
+    setAccessToken(value);
+  }
+
+  const uploadAccessToken = async (token) => {
+    const docToUpdate = doc(userReference, currentUser.id);
+    await updateDoc(docToUpdate, { accessToken: token });
+  }
 
   const columnsTest = [
     // { field: 'id', headerName: 'ID', width: 100 },
@@ -87,7 +114,12 @@ const Profile = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            <UserUpload />
+            <UserUpload
+              organization={organization}
+              organizationReference={organizationReference}
+              currentUser={currentUser}
+              setOrganization={setOrganization}
+            />
           </Box>
         </Fade>
       </Modal>
@@ -146,6 +178,15 @@ const Profile = (props) => {
                 >
                   {currentUser.name}
                 </Typography>
+                <TextField
+                  label="Access Token"
+                  variant="outlined"
+                  size='small'
+                  value={accessToken}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <Button onClick={() => uploadAccessToken(accessToken)}>Upload</Button>
                 <hr />
                 <Typography
                   sx={{ textAlign: 'center', fontSize: '1.25rem' }}
@@ -179,13 +220,16 @@ const Profile = (props) => {
                 >
                   Sign Out
                 </Button>
-                <Button
-                  fullWidth
-                  color='info'
-                  variant='contained'
-                  onClick={() => setOpen(true)}>
-                  Add Users
-                </Button>
+                {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
+                  ? <Button
+                    fullWidth
+                    color='info'
+                    variant='contained'
+                    onClick={() => setOpen(true)}>
+                    Add Users
+                  </Button>
+                  : null
+                }
               </CardActions>
             </Card>
           </Grid>
@@ -219,28 +263,30 @@ const Profile = (props) => {
               : null
             }
           </Grid>
-          <Grid sm={6} xl={4} item>
-            <Card
-              elevation={3}
-              sx={{
-                maxWidth: 500,
-                minHeight: 500,
-                // p: 3,
-                mb: 3,
-                transition: 'color .5s, background .5s',
-                background: THEME[themeMode].card,
-                color: THEME[themeMode].textColor
-              }}
-              container
-            >
-              <CardContent>
-                TOTAL APPLICATIONS
-              </CardContent>
-              <CardActions>
-                HERE ARE SOME ACTIONS IF YOU WANT
-              </CardActions>
-            </Card>
-          </Grid>
+          {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
+            ? <Grid sm={6} xl={4} item>
+              <Card
+                elevation={3}
+                sx={{
+                  maxWidth: 500,
+                  minHeight: 500,
+                  // p: 3,
+                  mb: 3,
+                  transition: 'color .5s, background .5s',
+                  background: THEME[themeMode].card,
+                  color: THEME[themeMode].textColor
+                }}
+                container
+              >
+                <CardContent>
+                  TOTAL APPLICATIONS
+                </CardContent>
+                <CardActions>
+                  HERE ARE SOME ACTIONS IF YOU WANT
+                </CardActions>
+              </Card>
+            </Grid>
+            : null}
         </Grid>
       </Grid>
     </>
