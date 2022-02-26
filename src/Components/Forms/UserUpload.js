@@ -21,8 +21,10 @@ import {
   Select,
   Switch,
   MenuItem,
-  InputLabel
+  InputLabel,
+  IconButton
 } from '@mui/material';
+import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
 import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
 import {
   updateDoc,
@@ -146,11 +148,11 @@ const UserUpload = (props) => {
           container
           direction="row"
           justifyContent="center"
-          alignItems="start"
+          alignItems="center"
           spacing={2}
         >
           <Grid item md={8}>
-            <FormControl fullWidth>
+            <FormControl size='small' fullWidth>
               <InputLabel>Cohort To Edit</InputLabel>
               <Select
                 value={cohort}
@@ -180,20 +182,11 @@ const UserUpload = (props) => {
               return (
                 <Grid md={6} item>
                   <Typography>
+                    <IconButton color='error' disabled={formValues.length > 1 ? false : true} onClick={() => deleteEntry(idx, entry.id)}>
+                      <DeleteForeverTwoToneIcon />
+                    </IconButton>
                     User # {idx + 1}
                   </Typography>
-                  <Button
-                    sx={{
-                      my: 2
-                    }}
-                    type='button'
-                    variant='contained'
-                    color='error'
-                    disabled={formValues.length > 1 ? false : true}
-                    onClick={() => deleteEntry(idx, entry.id)}
-                  >
-                    Delete
-                  </Button>
                   <TextField
                     sx={{
                       mb: 2,

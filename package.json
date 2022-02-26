@@ -7,7 +7,7 @@
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
     "@material-ui/data-grid": "*",
-    "@mui/icons-material": "^5.0.5",
+    "@mui/icons-material": "5.4.2",
     "@mui/lab": "*",
     "@mui/material": "^5.0.6",
     "@mui/styled-engine-sc": "^5.0.4",

@@ -129,7 +129,7 @@ const Home = () => {
   }
 
   const getStudents = async (userData) => {
-    if (userData.role === 'Admin') {
+    if (userData.role === 'Admin' || userData.role === 'Advisor') {
       const q = query(userReference, where('advisorId', '==', userData.id));
       const querySnapshot = await getDocs(q);
       const studentsList = querySnapshot.docs.map((student) => {
@@ -145,11 +145,11 @@ const Home = () => {
       email: user?.email,
       signedUpOn: user?.metadata.creationTime,
       accessToken: '',
-      organization: 'General',
+      organization: 'Personal',
       advisor: 'NOT YET ASSIGNED',
       advisorId: 'NOT YET ASSIGNED',
       cohort: 'NOT YET ASSIGNED',
-      role: 'General',
+      role: 'None',
       preferredTheme: 'lightMode',
       id: user?.uid,
     };
@@ -171,30 +171,66 @@ const Home = () => {
 
   const getOrganization = async (userData) => {
     if (userData.role === 'Admin' || userData.role === 'Advisor') {
+      //User will need to refresh the page if logging in for the first time if they have been made an Admin, or Advisor.
       const orgQuery = query(organizationReference, where('adminId', '==', userData.id));
       const querySnapshot = await getDocs(orgQuery);
-      const orgData = querySnapshot.docs[0].data();
-      setOrganization(orgData);
-      setCurrentUser(userData);
-    } else {
-      const orgQuery = query(collection(organizationReference, `${userData.accessToken}/approvedUsers`), where('email', '==', userData.email));
-      const querySnapshot = await getDocs(orgQuery);
       const orgData = querySnapshot.docs[0]?.data();
-      if (orgData) {
-        const newCurrentUser = {
-          ...userData,
-          role: orgData.role,
-          advisor: orgData.advisor,
-          cohort: orgData.cohort
-        };
-        await updateDoc(doc(userReference, userData.id), {
-          role: orgData.role,
-          advisor: orgData.advisor,
-          cohort: orgData.cohort
-        });
-        setCurrentUser(newCurrentUser);
+      setOrganization(orgData);
+    } else {
+      if (userData.accessToken) {
+        //Get user roles, advisor, and cohort assigned to them.
+        const userSubCollection = collection(organizationReference, `${userData.accessToken}/approvedUsers`);
+        const orgQuery = query(userSubCollection, where('email', '==', userData.email));
+        const querySnapshot = await getDocs(orgQuery);
+        const orgData = querySnapshot.docs[0]?.data();
+        console.log(orgData);
+        console.log(userData)
+
+        if (orgData) {
+          //If user has been added to an organization.
+          //Get information on the organization itself. Currently only capturing the name.
+          const orgName = query(organizationReference, where('accessToken', '==', userData.accessToken));
+          const nameSnapshot = await getDocs(orgName);
+          const orgNameData = nameSnapshot.docs[0]?.data();
+          //Get advisor information for the student.
+          const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
+          const advisorSnapshot = await getDocs(advisorQuery);
+          const advisorData = advisorSnapshot.docs[0]?.data();
+
+          const newCurrentUser = {
+            role: orgData.role,
+            advisor: orgData.advisor,
+            advisorId: advisorData.id,
+            cohort: orgData.cohort,
+            organization: orgNameData.name,
+          };
+
+          await updateDoc(doc(userReference, userData.id), newCurrentUser);
+          setOrganization(orgNameData);
+          setCurrentUser({ ...userData, newCurrentUser });
+        } else {
+          //If user has been removed from the organization, set account back to Personal.
+          const newCurrentUser = {
+            role: 'None',
+            advisor: '',
+            advisorId: '',
+            cohort: '',
+            organization: ''
+          }
+          setCurrentUser({ ...userData, newCurrentUser });
+          await updateDoc(doc(userReference, userData.id), newCurrentUser);
+        }
       } else {
-        console.log('it didnt run')
+        //If user has removed the access token and removes themsleves from the organization, set account back to Personal.
+        const newCurrentUser = {
+          role: 'None',
+          advisor: '',
+          advisorId: '',
+          cohort: '',
+          organization: ''
+        }
+        setCurrentUser({ ...userData, newCurrentUser });
+        await updateDoc(doc(userReference, userData.id), newCurrentUser);
       }
     }
   }

@@ -14,8 +14,17 @@ import {
   Fade,
   Backdrop,
   Box,
-  TextField
+  TextField,
+  IconButton,
+  Tooltip
 } from '@mui/material';
+import {
+  BackupTwoTone,
+  KeyTwoTone,
+  HighlightOffTwoTone,
+  ApartmentTwoTone,
+  PersonOutlineTwoTone
+} from '@mui/icons-material';
 import {
   collection,
   getDocs,
@@ -65,7 +74,9 @@ const Profile = (props) => {
 
   const [open, setOpen] = useState(false);
 
-  const [accessToken, setAccessToken] = useState('');
+  const [addToken, setAddToken] = useState(false);
+
+  const [accessToken, setAccessToken] = useState(currentUser?.accessToken);
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -75,6 +86,7 @@ const Profile = (props) => {
   const uploadAccessToken = async (token) => {
     const docToUpdate = doc(userReference, currentUser.id);
     await updateDoc(docToUpdate, { accessToken: token });
+    setAddToken(false);
   }
 
   const columnsTest = [
@@ -144,6 +156,18 @@ const Profile = (props) => {
               }}
               container
             >
+              <Tooltip title={addToken ? 'Cancel' : 'Add Token'}>
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    top: 125,
+                    left: 500
+                  }}
+                  color={addToken ? 'error' : 'warning'}
+                  onClick={() => addToken ? setAddToken(false) : setAddToken(true)}>
+                  {addToken ? <HighlightOffTwoTone /> : <KeyTwoTone />}
+                </IconButton>
+              </Tooltip>
               <CardMedia
                 sx={{
                   borderRadius: '100%',
@@ -178,30 +202,66 @@ const Profile = (props) => {
                 >
                   {currentUser.name}
                 </Typography>
-                <TextField
-                  label="Access Token"
-                  variant="outlined"
-                  size='small'
-                  value={accessToken}
-                  onChange={handleChange}
-                  fullWidth
-                />
-                <Button onClick={() => uploadAccessToken(accessToken)}>Upload</Button>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  spacing={2}
+                >
+                  <Grid item sm={10}>
+                    {addToken
+                      ? <TextField
+                        label="Access Token"
+                        variant="outlined"
+                        size='small'
+                        value={accessToken}
+                        onChange={handleChange}
+                        fullWidth
+                      />
+                      : null
+                    }
+                  </Grid>
+                  <Grid item sm={2}>
+                    {addToken
+                      ? <Tooltip title='Upload Token'>
+                        <IconButton
+                          color='info'
+                          onClick={() => uploadAccessToken(accessToken)}>
+                          <BackupTwoTone />
+                        </IconButton>
+                      </Tooltip>
+                      : null
+                    }
+                  </Grid>
+                </Grid>
                 <hr />
-                <Typography
-                  sx={{ textAlign: 'center', fontSize: '1.25rem' }}
-                  gutterBottom
-                  component='div'
-                >
-                  Advisor: {currentUser.advisor}
-                </Typography>
-                <Typography
-                  sx={{ textAlign: 'center', fontSize: '1.25rem' }}
-                  gutterBottom
-                  component='div'
-                >
-                  Cohort: {currentUser.cohort}
-                </Typography>
+                {currentUser.accessToken
+                  ? <Box>
+                    <Typography
+                      sx={{ textAlign: 'center', fontSize: '1.25rem' }}
+                      gutterBottom
+                      component='div'
+                    >
+                      {currentUser.organization} <ApartmentTwoTone />
+                    </Typography>
+                    <Typography
+                      sx={{ textAlign: 'center', fontSize: '1.25rem' }}
+                      gutterBottom
+                      component='div'
+                    >
+                      Advisor: {currentUser.advisor}
+                    </Typography>
+                    <Typography
+                      sx={{ textAlign: 'center', fontSize: '1.25rem' }}
+                      gutterBottom
+                      component='div'
+                    >
+                      Cohort: {currentUser.cohort}
+                    </Typography>
+
+                  </Box>
+                  : null
+                }
                 <Typography
                   sx={{ textAlign: 'center', fontSize: '1.25rem' }}
                   gutterBottom
@@ -226,7 +286,7 @@ const Profile = (props) => {
                     color='info'
                     variant='contained'
                     onClick={() => setOpen(true)}>
-                    Add Users
+                    Manage Users
                   </Button>
                   : null
                 }
