@@ -16,24 +16,25 @@ import {
   Box,
   TextField,
   IconButton,
-  Tooltip
+  Tooltip,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select
 } from '@mui/material';
 import {
   BackupTwoTone,
   KeyTwoTone,
   HighlightOffTwoTone,
   ApartmentTwoTone,
-  PersonOutlineTwoTone
 } from '@mui/icons-material';
 import {
   collection,
   getDocs,
   updateDoc,
-  deleteDoc,
   doc,
   query,
   where,
-  setDoc
 } from 'firebase/firestore';
 import { THEME } from '../Layout/Theme';
 import { DataGrid } from '@mui/x-data-grid';
@@ -48,11 +49,11 @@ const Profile = (props) => {
     jobs,
     currentUser,
     themeMode,
-    students,
     organization,
     setOrganization,
     organizationReference,
-    userReference
+    userReference,
+    getUserData
   } = props;
 
   const modalStyle = {
@@ -76,26 +77,64 @@ const Profile = (props) => {
 
   const [addToken, setAddToken] = useState(false);
 
+  const [currentCohort, setCurrentCohort] = useState('March 2022');
+
+  const [allStudents, setAllStudents] = useState([]);
+
+  const [cohortStudents, setCohortStudents] = useState([]);
+
   const [accessToken, setAccessToken] = useState(currentUser?.accessToken);
+
+  const subCollection = collection(organizationReference, `${organization.accessToken}/approvedUsers`);
+
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   const handleChange = (e) => {
     const { value } = e.target;
     setAccessToken(value);
   }
 
+  const handleSelectChange = (e) => {
+    setCurrentCohort(e.target.value);
+  }
+
   const uploadAccessToken = async (token) => {
     const docToUpdate = doc(userReference, currentUser.id);
-    await updateDoc(docToUpdate, { accessToken: token });
+    await updateDoc(docToUpdate, { accessToken: token.trim() });
     setAddToken(false);
+    getUserData();
   }
 
   const columnsTest = [
     // { field: 'id', headerName: 'ID', width: 100 },
-    { field: 'name', headerName: 'Full Name', width: 300 },
-    { field: 'role', headerName: 'Status', width: 200 },
+    { field: 'name', headerName: 'Name', width: 300 },
     { field: 'cohort', headerName: 'Cohort', width: 200 },
     { field: 'email', headerName: 'Email', width: 400 },
+    { field: 'role', headerName: 'Role', width: 200 },
   ];
+
+  const getStudents = async (userData) => {
+    if (userData?.role === 'Admin' || userData?.role === 'Advisor') {
+      try {
+        const q = query(subCollection, where('cohort', '==', currentCohort));
+        const qSnapShot = await getDocs(q);
+        const qResults = qSnapShot.docs.map((student) => ({
+          ...student.data(), id: student.id
+        }));
+        const myStudents = qResults.filter(student => student.advisor === userData?.name);
+
+        // const q2 = query(subCollection, where('advisor', '==', userData?.name));
+        // const querySnapshot = await getDocs(q2);
+        // const studentsList = querySnapshot.docs.map((student) => {
+        //   return student.data();
+        // });
+
+        setCohortStudents(myStudents);
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+  }
 
   const getTotalApplicationAverage = () => {
     const newJobs = [...jobs];
@@ -111,7 +150,8 @@ const Profile = (props) => {
 
   useEffect(() => {
     getTotalApplicationAverage();
-  }, []);
+    getStudents(currentUser);
+  }, [currentCohort]);
 
   return (
     <>
@@ -127,6 +167,7 @@ const Profile = (props) => {
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
             <UserUpload
+              setOpen={setOpen}
               organization={organization}
               organizationReference={organizationReference}
               currentUser={currentUser}
@@ -156,16 +197,16 @@ const Profile = (props) => {
               }}
               container
             >
-              <Tooltip title={addToken ? 'Cancel' : 'Add Token'}>
+              <Tooltip title='Add Token'>
                 <IconButton
                   sx={{
                     position: 'absolute',
                     top: 125,
                     left: 500
                   }}
-                  color={addToken ? 'error' : 'warning'}
-                  onClick={() => addToken ? setAddToken(false) : setAddToken(true)}>
-                  {addToken ? <HighlightOffTwoTone /> : <KeyTwoTone />}
+                  color='warning'
+                  onClick={() => setAddToken(true)}>
+                  <KeyTwoTone />
                 </IconButton>
               </Tooltip>
               <CardMedia
@@ -208,9 +249,9 @@ const Profile = (props) => {
                   justifyContent="center"
                   spacing={2}
                 >
-                  <Grid item sm={10}>
-                    {addToken
-                      ? <TextField
+                  {addToken
+                    ? <Grid item sm={10}>
+                      <TextField
                         label="Access Token"
                         variant="outlined"
                         size='small'
@@ -218,16 +259,34 @@ const Profile = (props) => {
                         onChange={handleChange}
                         fullWidth
                       />
+                    </Grid>
+                    : accessToken
+                      ? <Grid item sm={12}>
+                        <Typography sx={{ textAlign: 'center', color: 'gray' }}>
+                          Access Token: {currentUser.accessToken}
+                        </Typography>
+                      </Grid>
                       : null
-                    }
-                  </Grid>
-                  <Grid item sm={2}>
+                  }
+                  <Grid item sm={1}>
                     {addToken
                       ? <Tooltip title='Upload Token'>
                         <IconButton
                           color='info'
                           onClick={() => uploadAccessToken(accessToken)}>
                           <BackupTwoTone />
+                        </IconButton>
+                      </Tooltip>
+                      : null
+                    }
+                  </Grid>
+                  <Grid item sm={1}>
+                    {addToken
+                      ? <Tooltip title='Cancel'>
+                        <IconButton
+                          color='error'
+                          onClick={() => ((setAddToken(false), setAccessToken('')))}>
+                          <HighlightOffTwoTone />
                         </IconButton>
                       </Tooltip>
                       : null
@@ -302,18 +361,36 @@ const Profile = (props) => {
                 elevation={3}
                 sx={{
                   transition: 'color .5s, background .5s',
-                  height: 500,
+                  height: 600,
                   width: '100%',
                   background: THEME[themeMode].card,
                   mb: 4
                 }}>
+                <Box
+                  sx={{
+                    p: 2
+                  }}
+                >
+                  <FormControl
+                    sx={{ width: '30%' }}
+                    size='small'>
+                    <InputLabel>Cohort To View</InputLabel>
+                    <Select
+                      value={currentCohort}
+                      onChange={handleSelectChange}
+                    >
+                      <MenuItem value='March 2022'>March 2022</MenuItem>
+                      <MenuItem value='January 2022'>January 2022</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
                 <DataGrid
                   sx={{
                     transition: 'color .5s, background .5s',
                     color: THEME[themeMode].textColor,
                     border: 'none'
                   }}
-                  rows={students}
+                  rows={cohortStudents}
                   columns={columnsTest}
                   pageSize={5}
                   rowsPerPageOptions={[5]}
@@ -329,9 +406,9 @@ const Profile = (props) => {
                 elevation={3}
                 sx={{
                   maxWidth: 500,
-                  minHeight: 500,
-                  // p: 3,
-                  mb: 3,
+                  minHeight: 600,
+                  p: 3,
+                  mb: 10,
                   transition: 'color .5s, background .5s',
                   background: THEME[themeMode].card,
                   color: THEME[themeMode].textColor

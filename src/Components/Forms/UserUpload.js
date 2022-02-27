@@ -5,32 +5,18 @@ import {
   Grid,
   Typography,
   FormControl,
-  RadioGroup,
-  Radio,
-  FormLabel,
   FormControlLabel,
-  Modal,
-  Fade,
-  Backdrop,
   Box,
-  Tooltip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Select,
   Switch,
   MenuItem,
   InputLabel,
   IconButton
 } from '@mui/material';
-import DeleteForeverTwoToneIcon from '@mui/icons-material/DeleteForeverTwoTone';
-import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import {
-  updateDoc,
   addDoc,
   doc,
-  arrayUnion,
   query,
   where,
   collection,
@@ -38,27 +24,26 @@ import {
   setDoc,
   deleteDoc
 } from 'firebase/firestore';
-import format from 'date-fns/format';
-import { THEME } from '../../Layout/Theme';
-import { createTheme } from '@mui/material/styles';
+import { eachYearOfInterval, subYears } from 'date-fns'
 
 const UserUpload = (props) => {
 
   const {
     organization,
     organizationReference,
-    currentUser,
-    setOrganization
+    setOpen
   } = props;
 
   const initialValues =
   {
+    name: '',
     email: '',
     role: '',
     cohort: '',
     advisor: '',
     advisorId: ''
   }
+
 
   const [formValues, setFormValues] = useState([initialValues]);
 
@@ -72,16 +57,27 @@ const UserUpload = (props) => {
     setCohort(e.target.value);
   }
 
+  const getLastTenYears = () => {
+    const today = new Date();
+    const tenYears = subYears(today, 10);
+    const lastTenYears = eachYearOfInterval({
+      start: tenYears,
+      end: today
+    });
+  }
+
   const addUserList = async (e) => {
     e.preventDefault();
     try {
       if (!editing) {
         formValues.forEach(user => {
           addDoc(subCollection, user);
+          setOpen(false);
         });
       } else {
         formValues.forEach(user => {
           setDoc(doc(subCollection, user.id), user);
+          setOpen(false);
         });
       }
     } catch (error) {
@@ -120,7 +116,7 @@ const UserUpload = (props) => {
   }
 
   const deleteEntry = async (idx, id) => {
-    if (formValues.length > 1) {
+    if (id) {
       const newFormValues = [...formValues];
       newFormValues.splice(idx, 1);
       setFormValues(newFormValues);
@@ -130,6 +126,10 @@ const UserUpload = (props) => {
     }
   }
 
+  useEffect(() => {
+    getLastTenYears();
+  }, []);
+
   return (
     <Box>
       <Grid>
@@ -137,6 +137,7 @@ const UserUpload = (props) => {
           Add Users You Would Like In {organization.name}
         </Typography>
         <FormControlLabel
+          sx={{ mb: 1 }}
           control={<Switch />}
           label='Edit Existing'
           checked={editing}
@@ -145,6 +146,7 @@ const UserUpload = (props) => {
       </Grid>
       {editing
         ? <Grid
+          sx={{ mb: 3 }}
           container
           direction="row"
           justifyContent="center"
@@ -158,12 +160,12 @@ const UserUpload = (props) => {
                 value={cohort}
                 onChange={handleSelectChange}
               >
-                <MenuItem value='March 2021'>March 2021</MenuItem>
-                <MenuItem value='January 2021'>January 2021</MenuItem>
+                <MenuItem value='March 2022'>March 2022</MenuItem>
+                <MenuItem value='January 2022'>January 2022</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          <Grid item md={4}>
+          <Grid item sm={4}>
             <Button sx={{ height: '100%' }} fullWidth color='primary' variant='contained' onClick={() => getUsersToEdit(cohort)}>Find Cohort</Button>
           </Grid>
         </Grid>
@@ -180,10 +182,10 @@ const UserUpload = (props) => {
           >
             {formValues.map((entry, idx) => {
               return (
-                <Grid md={6} item>
+                <Grid sm={6} item>
                   <Typography>
-                    <IconButton color='error' disabled={formValues.length > 1 ? false : true} onClick={() => deleteEntry(idx, entry.id)}>
-                      <DeleteForeverTwoToneIcon />
+                    <IconButton color='error' disabled={editing ? false : formValues.length > 1 ? false : true} onClick={() => deleteEntry(idx, entry.id)}>
+                      <DeleteTwoToneIcon />
                     </IconButton>
                     User # {idx + 1}
                   </Typography>
@@ -194,6 +196,19 @@ const UserUpload = (props) => {
                     }}
                     autoFocus
                     type='text'
+                    name='name'
+                    label='Name'
+                    onChange={(e) => handleInputChange(e, idx)}
+                    value={entry.name}
+                    fullWidth
+                    size='small'
+                  />
+                  <TextField
+                    sx={{
+                      mb: 2,
+                      zIndex: 0
+                    }}
+                    type='text'
                     name='email'
                     label='Email'
                     onChange={(e) => handleInputChange(e, idx)}
@@ -201,19 +216,38 @@ const UserUpload = (props) => {
                     fullWidth
                     size='small'
                   />
-                  <TextField
-                    fullWidth
+                  <FormControl
                     sx={{
                       mb: 2,
                       zIndex: 0
                     }}
-                    type='text'
-                    name='role'
-                    label='Role'
-                    onChange={(e) => handleInputChange(e, idx)}
-                    value={entry.role}
                     size='small'
-                  />
+                    fullWidth>
+                    <InputLabel>Role</InputLabel>
+                    <Select
+                      name='role'
+                      onChange={(e) => handleInputChange(e, idx)}
+                    >
+                      <MenuItem value='Student'>Student</MenuItem>
+                      <MenuItem value='Alumni'>Alumni</MenuItem>
+                      <MenuItem value='Advisor'>Advisor</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* <FormControl
+                    sx={{
+                      mb: 2,
+                      zIndex: 0
+                    }}
+                    size='small'
+                    fullWidth>
+                    <InputLabel>Cohort</InputLabel>
+                    <Select
+                      name='cohort'
+                      onChange={(e) => handleInputChange(e, idx)}
+                    >
+                      <MenuItem value=''></MenuItem>
+                    </Select>
+                  </FormControl> */}
                   <TextField
                     fullWidth
                     sx={{

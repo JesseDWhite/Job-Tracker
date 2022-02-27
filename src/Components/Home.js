@@ -70,8 +70,6 @@ const Home = () => {
 
   const [currentUser, setCurrentUser] = useState({});
 
-  const [students, setStudents] = useState([]);
-
   const [viewProfile, setViewProfile] = useState(false);
 
   const [themeMode, setThemeMode] = useState('lightMode');
@@ -128,17 +126,6 @@ const Home = () => {
     }
   }
 
-  const getStudents = async (userData) => {
-    if (userData.role === 'Admin' || userData.role === 'Advisor') {
-      const q = query(userReference, where('advisorId', '==', userData.id));
-      const querySnapshot = await getDocs(q);
-      const studentsList = querySnapshot.docs.map((student) => {
-        return student.data();
-      });
-      setStudents(studentsList);
-    }
-  }
-
   const getUserData = async () => {
     const userObject = {
       name: user?.displayName,
@@ -163,7 +150,6 @@ const Home = () => {
       seedData();
     } else {
       setCurrentUser(userData);
-      getStudents(userData);
       setThemeMode(userData.preferredTheme);
       getOrganization(userData);
     }
@@ -213,6 +199,7 @@ const Home = () => {
           const newCurrentUser = {
             role: 'None',
             advisor: '',
+            accessToken: '',
             advisorId: '',
             cohort: '',
             organization: ''
@@ -221,7 +208,7 @@ const Home = () => {
           await updateDoc(doc(userReference, userData.id), newCurrentUser);
         }
       } else {
-        //If user has removed the access token and removes themsleves from the organization, set account back to Personal.
+        //If user has removed the access token and removes themselves from the organization, set account back to Personal.
         const newCurrentUser = {
           role: 'None',
           advisor: '',
@@ -441,6 +428,7 @@ const Home = () => {
               ]}
             >
               <Profile
+                getUserData={getUserData}
                 userReference={userReference}
                 organization={organization}
                 organizationReference={organizationReference}
@@ -450,7 +438,6 @@ const Home = () => {
                 logout={logout}
                 jobs={jobs}
                 themeMode={themeMode}
-                students={students}
               />
             </AnimateKeyframes>
           </Grid>
