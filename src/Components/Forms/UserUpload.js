@@ -24,14 +24,16 @@ import {
   setDoc,
   deleteDoc
 } from 'firebase/firestore';
-import { eachYearOfInterval, subYears } from 'date-fns'
 
 const UserUpload = (props) => {
 
   const {
     organization,
     organizationReference,
-    setOpen
+    setOpen,
+    setFeedback,
+    feedback,
+    cohortList
   } = props;
 
   const initialValues =
@@ -57,31 +59,42 @@ const UserUpload = (props) => {
     setCohort(e.target.value);
   }
 
-  const getLastTenYears = () => {
-    const today = new Date();
-    const tenYears = subYears(today, 10);
-    const lastTenYears = eachYearOfInterval({
-      start: tenYears,
-      end: today
-    });
-  }
-
   const addUserList = async (e) => {
     e.preventDefault();
     try {
       if (!editing) {
         formValues.forEach(user => {
           addDoc(subCollection, user);
-          setOpen(false);
+        });
+        setOpen(false);
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'success',
+          title: 'Added',
+          message: `${formValues.length} ${formValues.length > 1 ? 'users have' : 'user has'} successfully been added to ${organization.name}`
         });
       } else {
         formValues.forEach(user => {
           setDoc(doc(subCollection, user.id), user);
-          setOpen(false);
+        });
+        setOpen(false);
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'info',
+          title: 'Updated',
+          message: `Users assigned to ${organization.name} have successfully been updated`
         });
       }
     } catch (error) {
-      alert(error.message);
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `There was an issue connecting to ${organization.name}, please try again`
+      });
     }
   }
 
@@ -90,7 +103,13 @@ const UserUpload = (props) => {
       const userQuery = query(subCollection, where('cohort', '==', date));
       const querySnapshot = await getDocs(userQuery);
       if (!querySnapshot.docs[0]?.data()) {
-        alert('No users for that cohort yet');
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'error',
+          title: 'Error',
+          message: `There are no users assined to the ${date} cohort yet`
+        });
       } else {
         const results = querySnapshot.docs.map((user) => {
           return { ...user.data(), id: user.id }
@@ -98,7 +117,13 @@ const UserUpload = (props) => {
         setFormValues(results);
       }
     } catch (error) {
-      alert(error.message);
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `There was an issue connecting to ${organization.name}, please try again`
+      });
     }
   }
 
@@ -125,10 +150,6 @@ const UserUpload = (props) => {
       }
     }
   }
-
-  useEffect(() => {
-    getLastTenYears();
-  }, []);
 
   return (
     <Box>
@@ -160,8 +181,11 @@ const UserUpload = (props) => {
                 value={cohort}
                 onChange={handleSelectChange}
               >
-                <MenuItem value='March 2022'>March 2022</MenuItem>
-                <MenuItem value='January 2022'>January 2022</MenuItem>
+                {cohortList.map(cohort => {
+                  return (
+                    <MenuItem value={cohort}>{cohort}</MenuItem>
+                  )
+                })}
               </Select>
             </FormControl>
           </Grid>
@@ -208,6 +232,7 @@ const UserUpload = (props) => {
                       mb: 2,
                       zIndex: 0
                     }}
+                    required
                     type='text'
                     name='email'
                     label='Email'
@@ -233,11 +258,12 @@ const UserUpload = (props) => {
                       <MenuItem value='Advisor'>Advisor</MenuItem>
                     </Select>
                   </FormControl>
-                  {/* <FormControl
+                  <FormControl
                     sx={{
                       mb: 2,
                       zIndex: 0
                     }}
+                    required
                     size='small'
                     fullWidth>
                     <InputLabel>Cohort</InputLabel>
@@ -245,22 +271,13 @@ const UserUpload = (props) => {
                       name='cohort'
                       onChange={(e) => handleInputChange(e, idx)}
                     >
-                      <MenuItem value=''></MenuItem>
+                      {cohortList.map(cohort => {
+                        return (
+                          <MenuItem value={cohort}>{cohort}</MenuItem>
+                        )
+                      })}
                     </Select>
-                  </FormControl> */}
-                  <TextField
-                    fullWidth
-                    sx={{
-                      mb: 2,
-                      zIndex: 0
-                    }}
-                    type='text'
-                    name='cohort'
-                    label='Cohort'
-                    onChange={(e) => handleInputChange(e, idx)}
-                    value={entry.cohort}
-                    size='small'
-                  />
+                  </FormControl>
                   <TextField
                     fullWidth
                     sx={{

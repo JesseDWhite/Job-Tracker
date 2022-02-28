@@ -318,7 +318,7 @@ const Home = () => {
       type: 'warning',
       title: 'Deleted',
       message: `${name} has successfully been removed from your list`
-    })
+    });
     await deleteDoc(jobDoc);
   }
 
@@ -428,6 +428,8 @@ const Home = () => {
               ]}
             >
               <Profile
+                feedback={feedback}
+                setFeedback={setFeedback}
                 getUserData={getUserData}
                 userReference={userReference}
                 organization={organization}

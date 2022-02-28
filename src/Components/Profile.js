@@ -40,6 +40,7 @@ import { THEME } from '../Layout/Theme';
 import { DataGrid } from '@mui/x-data-grid';
 import Analytics from './Charts/Analytics';
 import UserUpload from './Forms/UserUpload';
+import { eachMonthOfInterval, subYears, format } from 'date-fns'
 
 const Profile = (props) => {
 
@@ -53,7 +54,9 @@ const Profile = (props) => {
     setOrganization,
     organizationReference,
     userReference,
-    getUserData
+    getUserData,
+    setFeedback,
+    feedback
   } = props;
 
   const modalStyle = {
@@ -77,7 +80,9 @@ const Profile = (props) => {
 
   const [addToken, setAddToken] = useState(false);
 
-  const [currentCohort, setCurrentCohort] = useState('March 2022');
+  const [cohortList, setCohortList] = useState([]);
+
+  const [currentCohort, setCurrentCohort] = useState('');
 
   const [allStudents, setAllStudents] = useState([]);
 
@@ -85,9 +90,9 @@ const Profile = (props) => {
 
   const [accessToken, setAccessToken] = useState(currentUser?.accessToken);
 
-  const subCollection = collection(organizationReference, `${organization.accessToken}/approvedUsers`);
+  const [backupToken, setBackupToken] = useState(currentUser?.accessToken);
 
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const subCollection = collection(organizationReference, `${organization.accessToken}/approvedUsers`);
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -98,9 +103,29 @@ const Profile = (props) => {
     setCurrentCohort(e.target.value);
   }
 
+  const getLastYear = () => {
+    const today = new Date();
+    const oneYear = subYears(today, 1);
+    const lastYear = eachMonthOfInterval({
+      start: oneYear,
+      end: today
+    });
+    const convertedYears = lastYear.map(year => {
+      return format(year, 'LLLL') + ' ' + format(year, 'y');
+    });
+    setCohortList(convertedYears);
+  }
+
   const uploadAccessToken = async (token) => {
     const docToUpdate = doc(userReference, currentUser.id);
     await updateDoc(docToUpdate, { accessToken: token.trim() });
+    setFeedback({
+      ...feedback,
+      open: true,
+      type: 'success',
+      title: 'Uploaded',
+      message: `Access Token successfully uploaded. Make sure your account admin has added you to the network.`
+    });
     setAddToken(false);
     getUserData();
   }
@@ -122,16 +147,15 @@ const Profile = (props) => {
           ...student.data(), id: student.id
         }));
         const myStudents = qResults.filter(student => student.advisor === userData?.name);
-
-        // const q2 = query(subCollection, where('advisor', '==', userData?.name));
-        // const querySnapshot = await getDocs(q2);
-        // const studentsList = querySnapshot.docs.map((student) => {
-        //   return student.data();
-        // });
-
         setCohortStudents(myStudents);
       } catch (error) {
-        alert(error.message);
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'error',
+          title: 'Error',
+          message: `There was an issue connecting to ${organization.name}, please try again`
+        });
       }
     }
   }
@@ -153,6 +177,10 @@ const Profile = (props) => {
     getStudents(currentUser);
   }, [currentCohort]);
 
+  useEffect(() => {
+    getLastYear();
+  }, [])
+
   return (
     <>
       <Modal
@@ -167,6 +195,9 @@ const Profile = (props) => {
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
             <UserUpload
+              cohortList={cohortList}
+              feedback={feedback}
+              setFeedback={setFeedback}
               setOpen={setOpen}
               organization={organization}
               organizationReference={organizationReference}
@@ -273,6 +304,7 @@ const Profile = (props) => {
                       ? <Tooltip title='Upload Token'>
                         <IconButton
                           color='info'
+                          disabled={accessToken ? false : true}
                           onClick={() => uploadAccessToken(accessToken)}>
                           <BackupTwoTone />
                         </IconButton>
@@ -285,7 +317,7 @@ const Profile = (props) => {
                       ? <Tooltip title='Cancel'>
                         <IconButton
                           color='error'
-                          onClick={() => ((setAddToken(false), setAccessToken('')))}>
+                          onClick={() => ((setAddToken(false), setAccessToken(backupToken)))}>
                           <HighlightOffTwoTone />
                         </IconButton>
                       </Tooltip>
@@ -373,14 +405,18 @@ const Profile = (props) => {
                 >
                   <FormControl
                     sx={{ width: '30%' }}
-                    size='small'>
+                    size='small'
+                  >
                     <InputLabel>Cohort To View</InputLabel>
                     <Select
                       value={currentCohort}
                       onChange={handleSelectChange}
                     >
-                      <MenuItem value='March 2022'>March 2022</MenuItem>
-                      <MenuItem value='January 2022'>January 2022</MenuItem>
+                      {cohortList.map(cohort => {
+                        return (
+                          <MenuItem value={cohort}>{cohort}</MenuItem>
+                        )
+                      })}
                     </Select>
                   </FormControl>
                 </Box>
