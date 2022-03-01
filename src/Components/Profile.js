@@ -39,6 +39,7 @@ import {
 import { THEME } from '../Layout/Theme';
 import { DataGrid } from '@mui/x-data-grid';
 import Analytics from './Charts/Analytics';
+import DoughnutChart from './Charts/DoughnutChart';
 import UserUpload from './Forms/UserUpload';
 import { eachMonthOfInterval, subYears, format } from 'date-fns'
 
@@ -64,7 +65,7 @@ const Profile = (props) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    minWidth: 500,
+    width: 750,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
@@ -113,6 +114,7 @@ const Profile = (props) => {
     const convertedYears = lastYear.map(year => {
       return format(year, 'LLLL') + ' ' + format(year, 'y');
     });
+    convertedYears.push('Advisor');
     setCohortList(convertedYears);
   }
 
@@ -219,7 +221,7 @@ const Profile = (props) => {
             <Card
               elevation={3}
               sx={{
-                maxWidth: 500,
+                minWidth: 500,
                 minHeight: '100%',
                 p: 3,
                 transition: 'color .5s, background .5s',
@@ -233,7 +235,7 @@ const Profile = (props) => {
                   sx={{
                     position: 'absolute',
                     top: 125,
-                    left: 500
+                    left: 550
                   }}
                   color='warning'
                   onClick={() => setAddToken(true)}>
@@ -441,8 +443,8 @@ const Profile = (props) => {
               <Card
                 elevation={3}
                 sx={{
-                  maxWidth: 500,
-                  minHeight: 600,
+                  minWidth: 500,
+                  minHeight: '100%',
                   p: 3,
                   mb: 10,
                   transition: 'color .5s, background .5s',
@@ -451,12 +453,9 @@ const Profile = (props) => {
                 }}
                 container
               >
-                <CardContent>
-                  TOTAL APPLICATIONS
+                <CardContent sx={{ height: 550 }}>
+                  <DoughnutChart jobs={jobs} themeMode={themeMode} />
                 </CardContent>
-                <CardActions>
-                  HERE ARE SOME ACTIONS IF YOU WANT
-                </CardActions>
               </Card>
             </Grid>
             : null}

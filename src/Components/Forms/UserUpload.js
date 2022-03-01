@@ -61,40 +61,50 @@ const UserUpload = (props) => {
 
   const addUserList = async (e) => {
     e.preventDefault();
-    try {
-      if (!editing) {
-        formValues.forEach(user => {
-          addDoc(subCollection, user);
-        });
-        setOpen(false);
-        setFeedback({
-          ...feedback,
-          open: true,
-          type: 'success',
-          title: 'Added',
-          message: `${formValues.length} ${formValues.length > 1 ? 'users have' : 'user has'} successfully been added to ${organization.name}`
-        });
-      } else {
-        formValues.forEach(user => {
-          setDoc(doc(subCollection, user.id), user);
-        });
-        setOpen(false);
-        setFeedback({
-          ...feedback,
-          open: true,
-          type: 'info',
-          title: 'Updated',
-          message: `Users assigned to ${organization.name} have successfully been updated`
-        });
-      }
-    } catch (error) {
+    if (formValues.some(entry => !entry.email) || formValues.some(entry => !entry.cohort)) {
       setFeedback({
         ...feedback,
         open: true,
         type: 'error',
         title: 'Error',
-        message: `There was an issue connecting to ${organization.name}, please try again`
+        message: 'Please fill out at least the "Email" and "Cohort" sections before submitting.'
       });
+    } else {
+      try {
+        if (!editing) {
+          formValues.forEach(user => {
+            addDoc(subCollection, user);
+          });
+          setOpen(false);
+          setFeedback({
+            ...feedback,
+            open: true,
+            type: 'success',
+            title: 'Added',
+            message: `${formValues.length} ${formValues.length > 1 ? 'users have' : 'user has'} successfully been added to ${organization.name}`
+          });
+        } else {
+          formValues.forEach(user => {
+            setDoc(doc(subCollection, user.id), user);
+          });
+          setOpen(false);
+          setFeedback({
+            ...feedback,
+            open: true,
+            type: 'info',
+            title: 'Updated',
+            message: `Users assigned to ${organization.name} have successfully been updated`
+          });
+        }
+      } catch (error) {
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'error',
+          title: 'Error',
+          message: `There was an issue connecting to ${organization.name}, please try again`
+        });
+      }
     }
   }
 
@@ -108,12 +118,13 @@ const UserUpload = (props) => {
           open: true,
           type: 'error',
           title: 'Error',
-          message: `There are no users assined to the ${date} cohort yet`
+          message: `There are no users assigned to the ${date} cohort yet`
         });
       } else {
         const results = querySnapshot.docs.map((user) => {
           return { ...user.data(), id: user.id }
         });
+        console.log(results)
         setFormValues(results);
       }
     } catch (error) {
@@ -141,7 +152,15 @@ const UserUpload = (props) => {
   }
 
   const deleteEntry = async (idx, id) => {
-    if (id) {
+    if (!formValues[idx].email) {
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `You must select a cohort to edit before you can delete a field`
+      });
+    } else {
       const newFormValues = [...formValues];
       newFormValues.splice(idx, 1);
       setFormValues(newFormValues);

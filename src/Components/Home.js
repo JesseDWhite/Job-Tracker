@@ -74,6 +74,8 @@ const Home = () => {
 
   const [themeMode, setThemeMode] = useState('lightMode');
 
+  const [totalApplications, setTotalApplications] = useState(0);
+
   const darkTheme = createTheme({
     palette: {
       mode: themeMode === 'darkMode' ? 'dark' : 'light'
@@ -126,7 +128,7 @@ const Home = () => {
     }
   }
 
-  const getUserData = async () => {
+  const getUserData = async (applications) => {
     const userObject = {
       name: user?.displayName,
       email: user?.email,
@@ -139,6 +141,7 @@ const Home = () => {
       role: 'None',
       preferredTheme: 'lightMode',
       id: user?.uid,
+      totalApplications: applications.length
     };
     const userQuery = query(userReference, where('id', '==', user?.uid));
     const querySnapshot = await getDocs(userQuery);
@@ -239,10 +242,14 @@ const Home = () => {
           return -1;
         }
         return 0;
-      })
+      });
+      const userToUpdate = doc(userReference, user?.uid);
+      const newTotal = { totalApplications: extractedJobsList.length };
+      await updateDoc(userToUpdate, newTotal);
       setSearchJobs(extractedJobsList);
       setJobs(extractedJobsList);
-      getUserData();
+      setTotalApplications(extractedJobsList.length);
+      getUserData(extractedJobsList);
       setLoading(false);
     }
   }
@@ -312,6 +319,7 @@ const Home = () => {
     const jobDoc = doc(subCollection, id);
     setSearchJobs(filteredSearchJobs);
     setJobs(filteredJobs);
+    setTotalApplications(newJobs.length);
     setFeedback({
       ...feedback,
       open: true,
@@ -330,6 +338,7 @@ const Home = () => {
     const jobDoc = doc(subCollection, id);
     const updateStatus = { status: newStatus };
     setSearchJobs(newJobs);
+    setJobs(newJobs);
     await updateDoc(jobDoc, updateStatus);
   }
 
