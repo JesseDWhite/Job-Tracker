@@ -23,7 +23,7 @@ import {
   Snackbar,
   Alert,
   Slide,
-  AlertTitle
+  AlertTitle,
 } from '@mui/material';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
@@ -38,7 +38,7 @@ import { THEME } from '../Layout/Theme';
 import SignIn from './SignIn';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-const Home = () => {
+const Main = () => {
 
   const jobsReference = collection(db, 'jobs');
 
@@ -79,7 +79,16 @@ const Home = () => {
   const darkTheme = createTheme({
     palette: {
       mode: themeMode === 'darkMode' ? 'dark' : 'light'
-    }
+    },
+    typography: {
+      fontFamily: 'Readex Pro',
+      h3: {
+        fontWeight: 500,
+      },
+      caption: {
+        fontWeight: 100
+      }
+    },
   });
 
   const modalStyle = {
@@ -141,7 +150,7 @@ const Home = () => {
       role: 'None',
       preferredTheme: 'lightMode',
       id: user?.uid,
-      totalApplications: applications.length
+      totalApplications: applications ? applications.length : 0
     };
     const userQuery = query(userReference, where('id', '==', user?.uid));
     const querySnapshot = await getDocs(userQuery);
@@ -159,6 +168,16 @@ const Home = () => {
   }
 
   const getOrganization = async (userData) => {
+    //standard user parameters for resetting user information
+    const defaultUserParams = {
+      role: 'Standard',
+      advisor: '',
+      accessToken: '',
+      advisorId: '',
+      cohort: '',
+      organization: ''
+    }
+
     if (userData.role === 'Admin' || userData.role === 'Advisor') {
       //User will need to refresh the page if logging in for the first time if they have been made an Admin, or Advisor.
       const orgQuery = query(organizationReference, where('adminId', '==', userData.id));
@@ -166,61 +185,64 @@ const Home = () => {
       const orgData = querySnapshot.docs[0]?.data();
       setOrganization(orgData);
     } else {
-      if (userData.accessToken) {
-        //Get user roles, advisor, and cohort assigned to them.
-        const userSubCollection = collection(organizationReference, `${userData.accessToken}/approvedUsers`);
-        const orgQuery = query(userSubCollection, where('email', '==', userData.email));
-        const querySnapshot = await getDocs(orgQuery);
-        const orgData = querySnapshot.docs[0]?.data();
-        console.log(orgData);
-        console.log(userData)
+      try {
+        if (userData.accessToken) {
+          //Get user roles, advisor, and cohort assigned to them.
+          const userSubCollection = collection(organizationReference, `${userData.accessToken}/approvedUsers`);
+          const orgQuery = query(userSubCollection, where('email', '==', userData.email));
+          const querySnapshot = await getDocs(orgQuery);
+          const orgData = querySnapshot.docs[0]?.data();
 
-        if (orgData) {
-          //If user has been added to an organization.
-          //Get information on the organization itself. Currently only capturing the name.
-          const orgName = query(organizationReference, where('accessToken', '==', userData.accessToken));
-          const nameSnapshot = await getDocs(orgName);
-          const orgNameData = nameSnapshot.docs[0]?.data();
-          //Get advisor information for the student.
-          const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
-          const advisorSnapshot = await getDocs(advisorQuery);
-          const advisorData = advisorSnapshot.docs[0]?.data();
+          if (orgData) {
+            //If user has been added to an organization by an admin.
+            //Get information on the organization itself. Currently only capturing the name.
+            const orgName = query(organizationReference, where('accessToken', '==', userData.accessToken));
+            const nameSnapshot = await getDocs(orgName);
+            const orgNameData = nameSnapshot.docs[0]?.data();
+            //Get advisor information for the student.
+            const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
+            const advisorSnapshot = await getDocs(advisorQuery);
+            const advisorData = advisorSnapshot.docs[0]?.data();
 
-          const newCurrentUser = {
-            role: orgData.role,
-            advisor: orgData.advisor,
-            advisorId: advisorData.id,
-            cohort: orgData.cohort,
-            organization: orgNameData.name,
-          };
+            const newCurrentUser = {
+              role: orgData.role,
+              advisor: orgData.advisor,
+              advisorId: advisorData.id,
+              cohort: orgData.cohort,
+              organization: orgNameData.name,
+            };
 
-          await updateDoc(doc(userReference, userData.id), newCurrentUser);
-          setOrganization(orgNameData);
-          setCurrentUser({ ...userData, newCurrentUser });
-        } else {
-          //If user has been removed from the organization, set account back to Personal.
-          const newCurrentUser = {
-            role: 'None',
-            advisor: '',
-            accessToken: '',
-            advisorId: '',
-            cohort: '',
-            organization: ''
+            await updateDoc(doc(userReference, userData.id), newCurrentUser);
+            setOrganization(orgNameData);
+            setCurrentUser({ ...userData, newCurrentUser });
+          } else {
+            //If user has been removed from the organization by an admin, set account back to Personal, or uploads a bad token.
+            setFeedback({
+              ...feedback,
+              open: true,
+              type: 'error',
+              title: 'Error',
+              message: `The Access Token you provided is either incorrect, or not associated with an organization anymore`
+            });
+            setCurrentUser({ ...userData, defaultUserParams });
+            await updateDoc(doc(userReference, userData.id), defaultUserParams);
           }
-          setCurrentUser({ ...userData, newCurrentUser });
-          await updateDoc(doc(userReference, userData.id), newCurrentUser);
+        } else {
+          //If user has removed the access token and removes themselves from the organization, set account back to Personal.
+          setCurrentUser({ ...userData, defaultUserParams });
+          await updateDoc(doc(userReference, userData.id), defaultUserParams);
         }
-      } else {
-        //If user has removed the access token and removes themselves from the organization, set account back to Personal.
-        const newCurrentUser = {
-          role: 'None',
-          advisor: '',
-          advisorId: '',
-          cohort: '',
-          organization: ''
-        }
-        setCurrentUser({ ...userData, newCurrentUser });
-        await updateDoc(doc(userReference, userData.id), newCurrentUser);
+      } catch (error) {
+        //If the user tries to upload an access token that does not exist.
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'error',
+          title: 'Error',
+          message: `Access Token ${userData.accessToken} is not associated with any organization`
+        });
+        setCurrentUser({ ...userData, defaultUserParams });
+        await updateDoc(doc(userReference, userData.id), defaultUserParams);
       }
     }
   }
@@ -437,6 +459,7 @@ const Home = () => {
               ]}
             >
               <Profile
+                totalApplications={totalApplications}
                 feedback={feedback}
                 setFeedback={setFeedback}
                 getUserData={getUserData}
@@ -575,4 +598,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Main;

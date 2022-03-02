@@ -71,7 +71,7 @@ const Analytics = (props) => {
       <Card
         elevation={3}
         sx={{
-          maxHeight: 500,
+          height: 600,
           pl: 3,
           pr: 3,
           pt: 3,

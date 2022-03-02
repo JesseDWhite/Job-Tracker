@@ -20,13 +20,17 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Select
+  Select,
+  Fab
 } from '@mui/material';
 import {
   BackupTwoTone,
   KeyTwoTone,
   HighlightOffTwoTone,
   ApartmentTwoTone,
+  PersonAddAltTwoTone,
+  VpnKeyTwoTone,
+  LogoutTwoTone
 } from '@mui/icons-material';
 import {
   collection,
@@ -57,7 +61,8 @@ const Profile = (props) => {
     userReference,
     getUserData,
     setFeedback,
-    feedback
+    feedback,
+    totalApplications
   } = props;
 
   const modalStyle = {
@@ -91,7 +96,7 @@ const Profile = (props) => {
 
   const [accessToken, setAccessToken] = useState(currentUser?.accessToken);
 
-  const [backupToken, setBackupToken] = useState(currentUser?.accessToken);
+  const [backupToken] = useState(currentUser?.accessToken);
 
   const subCollection = collection(organizationReference, `${organization.accessToken}/approvedUsers`);
 
@@ -116,6 +121,7 @@ const Profile = (props) => {
     });
     convertedYears.push('Advisor');
     setCohortList(convertedYears);
+    setCurrentCohort(convertedYears[convertedYears.length - 2]);
   }
 
   const uploadAccessToken = async (token) => {
@@ -126,10 +132,10 @@ const Profile = (props) => {
       open: true,
       type: 'success',
       title: 'Uploaded',
-      message: `Access Token successfully uploaded. Make sure your account admin has added you to the network.`
+      message: `Access Token submitted. Make sure your account admin has added you to the network and restart your program.`
     });
     setAddToken(false);
-    getUserData();
+    // getUserData();
   }
 
   const columnsTest = [
@@ -180,6 +186,7 @@ const Profile = (props) => {
   }, [currentCohort]);
 
   useEffect(() => {
+    getUserData();
     getLastYear();
   }, [])
 
@@ -197,13 +204,14 @@ const Profile = (props) => {
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
             <UserUpload
+              currentUser={currentUser}
+              getStudents={getStudents}
               cohortList={cohortList}
               feedback={feedback}
               setFeedback={setFeedback}
               setOpen={setOpen}
               organization={organization}
               organizationReference={organizationReference}
-              currentUser={currentUser}
               setOrganization={setOrganization}
             />
           </Box>
@@ -221,7 +229,7 @@ const Profile = (props) => {
             <Card
               elevation={3}
               sx={{
-                minWidth: 500,
+                // minWidth: 500,
                 minHeight: '100%',
                 p: 3,
                 transition: 'color .5s, background .5s',
@@ -230,17 +238,22 @@ const Profile = (props) => {
               }}
               container
             >
-              <Tooltip title='Add Token'>
-                <IconButton
+              <Tooltip title='Add Token' placement='right'>
+                <Fab
                   sx={{
                     position: 'absolute',
-                    top: 125,
-                    left: 550
+                    top: 260,
+                    left: 380,
+                    transition: 'border .5s',
+                    border: '4px solid',
+                    borderColor: THEME[themeMode].card,
+                    boxShadow: 'none'
                   }}
+                  size='small'
                   color='warning'
                   onClick={() => setAddToken(true)}>
                   <KeyTwoTone />
-                </IconButton>
+                </Fab>
               </Tooltip>
               <CardMedia
                 sx={{
@@ -296,7 +309,7 @@ const Profile = (props) => {
                     : accessToken
                       ? <Grid item sm={12}>
                         <Typography sx={{ textAlign: 'center', color: 'gray' }}>
-                          Access Token: {currentUser.accessToken}
+                          Access Token: {accessToken}
                         </Typography>
                       </Grid>
                       : null
@@ -328,7 +341,7 @@ const Profile = (props) => {
                   </Grid>
                 </Grid>
                 <hr />
-                {currentUser.accessToken
+                {currentUser.accessToken && currentUser.organization
                   ? <Box>
                     <Typography
                       sx={{ textAlign: 'center', fontSize: '1.25rem' }}
@@ -351,7 +364,6 @@ const Profile = (props) => {
                     >
                       Cohort: {currentUser.cohort}
                     </Typography>
-
                   </Box>
                   : null
                 }
@@ -367,6 +379,7 @@ const Profile = (props) => {
               <CardActions>
                 <Button
                   fullWidth
+                  startIcon={<LogoutTwoTone />}
                   variant='contained'
                   color='error'
                   onClick={logout}
@@ -376,6 +389,7 @@ const Profile = (props) => {
                 {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
                   ? <Button
                     fullWidth
+                    startIcon={<PersonAddAltTwoTone />}
                     color='info'
                     variant='contained'
                     onClick={() => setOpen(true)}>

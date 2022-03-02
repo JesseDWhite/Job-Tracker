@@ -33,7 +33,9 @@ const UserUpload = (props) => {
     setOpen,
     setFeedback,
     feedback,
-    cohortList
+    cohortList,
+    getStudents,
+    currentUser
   } = props;
 
   const initialValues =
@@ -57,6 +59,7 @@ const UserUpload = (props) => {
 
   const handleSelectChange = (e) => {
     setCohort(e.target.value);
+    getUsersToEdit(e.target.value);
   }
 
   const addUserList = async (e) => {
@@ -75,6 +78,7 @@ const UserUpload = (props) => {
           formValues.forEach(user => {
             addDoc(subCollection, user);
           });
+          getStudents(currentUser);
           setOpen(false);
           setFeedback({
             ...feedback,
@@ -87,6 +91,7 @@ const UserUpload = (props) => {
           formValues.forEach(user => {
             setDoc(doc(subCollection, user.id), user);
           });
+          getStudents(currentUser);
           setOpen(false);
           setFeedback({
             ...feedback,
@@ -124,7 +129,6 @@ const UserUpload = (props) => {
         const results = querySnapshot.docs.map((user) => {
           return { ...user.data(), id: user.id }
         });
-        console.log(results)
         setFormValues(results);
       }
     } catch (error) {
@@ -152,7 +156,7 @@ const UserUpload = (props) => {
   }
 
   const deleteEntry = async (idx, id) => {
-    if (!formValues[idx].email) {
+    if (!formValues[idx].email && editing) {
       setFeedback({
         ...feedback,
         open: true,
@@ -174,14 +178,14 @@ const UserUpload = (props) => {
     <Box>
       <Grid>
         <Typography variant='h4' sx={{ mb: 3, textAlign: 'center' }}>
-          Add Users You Would Like In {organization.name}
+          Manage Users Assigned To {organization.name}
         </Typography>
         <FormControlLabel
           sx={{ mb: 1 }}
           control={<Switch />}
           label='Edit Existing'
           checked={editing}
-          onChange={() => setEditing(!editing)}
+          onChange={() => editing ? (setEditing(false), setFormValues([initialValues], setCohort(''))) : setEditing(true)}
         />
       </Grid>
       {editing
@@ -189,11 +193,11 @@ const UserUpload = (props) => {
           sx={{ mb: 3 }}
           container
           direction="row"
-          justifyContent="center"
-          alignItems="center"
+          justifyContent="start"
+          alignItems="start"
           spacing={2}
         >
-          <Grid item md={8}>
+          <Grid item md={6}>
             <FormControl size='small' fullWidth>
               <InputLabel>Cohort To Edit</InputLabel>
               <Select
@@ -207,9 +211,6 @@ const UserUpload = (props) => {
                 })}
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item sm={4}>
-            <Button sx={{ height: '100%' }} fullWidth color='primary' variant='contained' onClick={() => getUsersToEdit(cohort)}>Find Cohort</Button>
           </Grid>
         </Grid>
         : null
@@ -271,6 +272,7 @@ const UserUpload = (props) => {
                     <Select
                       name='role'
                       onChange={(e) => handleInputChange(e, idx)}
+                      value={entry.role}
                     >
                       <MenuItem value='Student'>Student</MenuItem>
                       <MenuItem value='Alumni'>Alumni</MenuItem>
@@ -288,6 +290,7 @@ const UserUpload = (props) => {
                     <InputLabel>Cohort</InputLabel>
                     <Select
                       name='cohort'
+                      value={entry.cohort}
                       onChange={(e) => handleInputChange(e, idx)}
                     >
                       {cohortList.map(cohort => {

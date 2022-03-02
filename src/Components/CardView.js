@@ -67,9 +67,10 @@ const CardView = (props) => {
           border: 'solid 5px',
           transition: 'background .5s',
           borderColor: getStatus(job.status, job.score),
-          background: job.score > 89 ? `linear-gradient(135deg, ${THEME[themeMode].card} 50%, #FDD835)` : THEME[themeMode].card,
+          background: job.score > 89 ? `linear-gradient(135deg, ${THEME[themeMode].card} 60%, #FDD835)` : THEME[themeMode].card,
           borderRadius: 5,
-          color: THEME[themeMode].textColor
+          color: THEME[themeMode].textColor,
+          fontFamily: 'Urbanist'
         }}
       >
         <Grid

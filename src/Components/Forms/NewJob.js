@@ -527,10 +527,11 @@ const NewJob = (props) => {
           </Grid>
           <Button
             sx={{
-              background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
+              // background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
               fontSize: 18,
             }}
             type='submit'
+            color='info'
             variant='contained'
             startIcon={<AddBoxTwoTone />}
             fullWidth

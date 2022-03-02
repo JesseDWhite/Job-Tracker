@@ -2,6 +2,7 @@ import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { THEME } from '../../Layout/Theme';
+import { Box } from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -54,7 +55,7 @@ const DoughnutChart = (props) => {
     },
   }
 
-  return <Doughnut data={data} options={options} />;
+  return <Doughnut data={data} options={options} />
 }
 
 export default DoughnutChart;

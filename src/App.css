@@ -8,6 +8,10 @@ body {
   overflow: overlay;
 }
 
+li {
+  font-family: 'Readex Pro', sans-serif;
+}
+
 body::-webkit-scrollbar {
   background-color: rgba(0, 0, 0, 0);
   width: 0.5em;

@@ -33,12 +33,6 @@ const Header = (props) => {
     updatePreferrdTheme
   } = props;
 
-  const darkTheme = createTheme({
-    palette: {
-      mode: themeMode === 'darkMode' ? 'dark' : 'light'
-    }
-  });
-
   const [filter, setFilter] = useState(false);
 
   useEffect(() => {
@@ -85,11 +79,8 @@ const Header = (props) => {
             :
             <>
               <Chip
-                sx={{
-                  background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
-                }}
                 color='secondary'
-                variant='contained'
+                variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
                 onClick={() => applicationCount >= 1 ? setFilter(!filter) : setFilter(false)}
                 label={filter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
                 avatar={<Avatar>{applicationCount}</Avatar>}
@@ -129,8 +120,8 @@ const Header = (props) => {
               <Avatar
                 src={user?.photoURL}
               />}
-            color={THEME[themeMode].chipColor}
-            label={viewProfile ? 'Go Back' : 'My Profile'}
+            variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
+            label={viewProfile ? 'Go Back' : user?.displayName}
             clickable
             onClick={() => setViewProfile(!viewProfile)}
           />
