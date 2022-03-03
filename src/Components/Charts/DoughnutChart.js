@@ -26,13 +26,11 @@ const DoughnutChart = (props) => {
           'rgba(75, 192, 192, 0.75)',
           'rgba(53, 162, 235, 0.75)',
           'rgba(255, 99, 132, 0.75)',
-
         ],
         borderColor: [
           'rgba(75, 192, 192, 0.75)',
           'rgba(54, 162, 235, 0.75)',
           'rgba(255, 99, 132, 0.75)',
-
         ],
         borderWidth: 1,
       },
@@ -45,11 +43,13 @@ const DoughnutChart = (props) => {
       title: {
         display: true,
         text: 'Total Applications',
-        color: THEME[themeMode].textColor
+        color: THEME[themeMode].textColor,
+        font: { size: 16 }
       },
       legend: {
         labels: {
           color: THEME[themeMode].textColor,
+          font: { size: 14 }
         }
       },
     },

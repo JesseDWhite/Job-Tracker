@@ -23,6 +23,7 @@ import {
 import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
 import {
   updateDoc,
+  setDoc,
   addDoc,
   doc
 } from 'firebase/firestore';
@@ -82,6 +83,8 @@ const NewJob = (props) => {
     status: editing ? jobToEdit.status : 'Active',
     jobPosting: editing ? jobToEdit.jobPosting : '',
     ats: editing ? jobToEdit.ats : '',
+    resumeLink: editing ? jobToEdit.resumeLink : '',
+    coverLetterLink: editing ? jobToEdit.coverLetterLink : '',
     coverLetter: editing ? jobToEdit.coverLetter : '',
     resume: editing ? jobToEdit.resume : '',
     notes: editing ? jobToEdit.notes : '',
@@ -157,6 +160,8 @@ const NewJob = (props) => {
         status: formValues.status,
         jobPosting: formValues.jobPosting,
         ats: formValues.ats,
+        resumeLink: formValues.resumeLink,
+        coverLetterLink: formValues.coverLetterLink,
         coverLetter: formValues.coverLetter,
         resume: formValues.resume,
         notes: formValues.notes,
@@ -176,6 +181,8 @@ const NewJob = (props) => {
         status: formValues.status,
         jobPosting: formValues.jobPosting,
         ats: formValues.ats,
+        resumeLink: formValues.resumeLink,
+        coverLetterLink: formValues.coverLetterLink,
         coverLetter: formValues.coverLetter,
         resume: formValues.resume,
         notes: formValues.notes,
@@ -326,49 +333,13 @@ const NewJob = (props) => {
             spacing={2}
           >
             <Grid lg={6} item>
-              <TextField
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                autoFocus
-                type='text'
-                name='company'
-                label='Company'
-                onChange={handleInputChange}
-                value={formValues.company}
-                fullWidth
-              />
-              <TextField
-                fullWidth
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                type='text'
-                name='jobTitle'
-                label='Job Title'
-                onChange={handleInputChange}
-                value={formValues.jobTitle}
-              />
-              <TextField
-                fullWidth
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                type='date'
-                name='dateApplied'
-                label='Date Applied'
-                onChange={handleInputChange}
-                value={formValues.dateApplied}
-              />
+              <Typography variant='h4' sx={{ textAlign: 'center' }}>Application Info</Typography>
               <Grid
                 container
                 direction='row'
                 justifyContent='space-around'
                 sx={{
-                  mb: 2
+                  mb: 1
                 }}
               >
                 <FormControl component='fieldset'>
@@ -410,6 +381,47 @@ const NewJob = (props) => {
                   mb: 2,
                   zIndex: 0
                 }}
+                autoFocus
+                size='small'
+                type='text'
+                name='company'
+                label='Company'
+                onChange={handleInputChange}
+                value={formValues.company}
+                fullWidth
+              />
+              <TextField
+                fullWidth
+                sx={{
+                  mb: 2,
+                  zIndex: 0
+                }}
+                size='small'
+                type='text'
+                name='jobTitle'
+                label='Job Title'
+                onChange={handleInputChange}
+                value={formValues.jobTitle}
+              />
+              <TextField
+                fullWidth
+                sx={{
+                  mb: 2,
+                  zIndex: 0
+                }}
+                size='small'
+                type='date'
+                name='dateApplied'
+                label='Date Applied'
+                onChange={handleInputChange}
+                value={formValues.dateApplied}
+              />
+              <TextField
+                sx={{
+                  mb: 2,
+                  zIndex: 0
+                }}
+                size='small'
                 type='text'
                 name='jobPosting'
                 label='Link To Job Posting'
@@ -421,14 +433,42 @@ const NewJob = (props) => {
                   mb: 2,
                   zIndex: 0
                 }}
+                size='small'
                 type='text'
                 name='ats'
                 label='Application Tracking System'
                 onChange={handleInputChange}
                 value={formValues.ats}
                 fullWidth />
+              <TextField
+                fullWidth
+                sx={{
+                  mb: 2,
+                  zIndex: 0
+                }}
+                size='small'
+                type='text'
+                name='resumeLink'
+                label='Link To Resume'
+                onChange={handleInputChange}
+                value={formValues.resumeLink}
+              />
+              <TextField
+                fullWidth
+                sx={{
+                  // mb: 2,
+                  zIndex: 0
+                }}
+                size='small'
+                type='text'
+                name='coverLetterLink'
+                label='Link To Cover Letter'
+                onChange={handleInputChange}
+                value={formValues.coverLetterLink}
+              />
             </Grid>
             <Grid lg={6} item>
+              <Typography variant='h4' sx={{ textAlign: 'center', mb: 2 }}>Grade Application</Typography>
               <Grid
                 sx={{
                   mb: 2,
@@ -449,6 +489,7 @@ const NewJob = (props) => {
                       sx={{
                         zIndex: 0
                       }}
+                      size='small'
                       type='text'
                       name='jobDescription'
                       label='Job Description'
@@ -486,6 +527,7 @@ const NewJob = (props) => {
                     mb: 2,
                     zIndex: 0
                   }}
+                  size='small'
                   type='text'
                   name='resume'
                   label='Resume'
@@ -503,6 +545,7 @@ const NewJob = (props) => {
                     mb: 2,
                     zIndex: 0
                   }}
+                  size='small'
                   type='text'
                   name='coverLetter'
                   label='Cover Letter'
@@ -514,6 +557,7 @@ const NewJob = (props) => {
                 mb: 2,
                 zIndex: 0
               }}
+                size='small'
                 type='text'
                 name='notes'
                 label='Notes'
@@ -529,6 +573,7 @@ const NewJob = (props) => {
             sx={{
               // background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
               fontSize: 18,
+              mt: 4
             }}
             type='submit'
             color='info'

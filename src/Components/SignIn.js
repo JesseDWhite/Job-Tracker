@@ -27,7 +27,7 @@ const Copyright = (props) => {
 
 const theme = createTheme();
 
-const SignIn = (props) => {
+const SignIn = () => {
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>

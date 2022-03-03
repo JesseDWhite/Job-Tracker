@@ -128,7 +128,7 @@ const Main = () => {
     const legacyJobs = query(jobsReference, where('user', '==', user?.uid));
     const legacySnapshot = await getDocs(legacyJobs);
     const extractedJobsList = legacySnapshot.docs.map((doc) => ({
-      ...doc.data(), id: doc.id
+      ...doc.data(), id: doc.id, resumeLink: '', coverLetterLink: ''
     }));
     if (extractedJobsList.length > 0) {
       for (let i = 0; i < extractedJobsList.length; i++) {
@@ -584,7 +584,6 @@ const Main = () => {
           autoHideDuration={4000}
         >
           <Alert
-            variant="filled"
             severity={feedback.type}
             onClose={handleClose}
             sx={{ width: '45%' }}

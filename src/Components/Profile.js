@@ -21,7 +21,8 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Fab
+  Fab,
+  Badge
 } from '@mui/material';
 import {
   BackupTwoTone,
@@ -46,6 +47,7 @@ import Analytics from './Charts/Analytics';
 import DoughnutChart from './Charts/DoughnutChart';
 import UserUpload from './Forms/UserUpload';
 import { eachMonthOfInterval, subYears, format } from 'date-fns'
+import { styled } from '@mui/material/styles';
 
 const Profile = (props) => {
 
@@ -64,6 +66,21 @@ const Profile = (props) => {
     feedback,
     totalApplications
   } = props;
+
+  const StyledBadge = styled(Badge)(({ theme }) => ({
+    '& .MuiBadge-badge': {
+      border: `4px solid ${THEME[themeMode].card}`,
+      borderRadius: '100%',
+      width: 40,
+      height: 40,
+      transition: 'border .5s'
+    },
+    '& .MuiBadge-badge:hover': {
+      background: 'rgb(214, 142, 34)',
+      cursor: 'pointer',
+      transition: 'background .5s'
+    },
+  }));
 
   const modalStyle = {
     position: 'absolute',
@@ -229,7 +246,6 @@ const Profile = (props) => {
             <Card
               elevation={3}
               sx={{
-                // minWidth: 500,
                 minHeight: '100%',
                 p: 3,
                 transition: 'color .5s, background .5s',
@@ -238,7 +254,7 @@ const Profile = (props) => {
               }}
               container
             >
-              <Tooltip title='Add Token' placement='right'>
+              {/* <Tooltip title={addToken ? 'Cancel' : 'Add Token'} placement='right'>
                 <Fab
                   sx={{
                     position: 'absolute',
@@ -251,24 +267,30 @@ const Profile = (props) => {
                   }}
                   size='small'
                   color='warning'
-                  onClick={() => setAddToken(true)}>
+                  onClick={() => addToken ? (setAddToken(false), setAccessToken(backupToken)) : setAddToken(true)}>
                   <KeyTwoTone />
                 </Fab>
-              </Tooltip>
-              <CardMedia
-                sx={{
-                  borderRadius: '100%',
-                  width: 200,
-                  objectFit: 'contain',
-                  mr: 'auto',
-                  ml: 'auto',
-                  textAlign: 'center'
-                }}
-                component='img'
-                alt='user profile photo'
-                image={user?.photoURL.replace('s96-c', 's400-c')}
-              />
-              <CardContent>
+              </Tooltip> */}
+              <Box sx={{ textAlign: 'center' }}>
+                <StyledBadge
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  color='warning'
+                  badgeContent={<KeyTwoTone />}
+                  overlap='circular'
+                  onClick={() => addToken ? (setAddToken(false), setAccessToken(backupToken)) : setAddToken(true)}>
+                  <CardMedia
+                    sx={{
+                      borderRadius: '100%',
+                      width: 200,
+                      objectFit: 'contain',
+                    }}
+                    component='img'
+                    alt='user profile photo'
+                    image={user?.photoURL.replace('s96-c', 's400-c')}
+                  />
+                </StyledBadge>
+              </Box>
+              <CardContent sx={{ cursor: 'default' }}>
                 <Typography
                   gutterBottom
                   component='div'
@@ -405,18 +427,17 @@ const Profile = (props) => {
           </Grid>
           <Grid sm={12} xl={8} item>
             {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
-              ? <Paper
+              ?
+              <Paper
                 elevation={3}
                 sx={{
-                  transition: 'color .5s, background .5s',
-                  height: 600,
-                  width: '100%',
                   background: THEME[themeMode].card,
-                  mb: 4
-                }}>
+                }}
+              >
                 <Box
                   sx={{
-                    p: 2
+                    pt: 2,
+                    pl: 2
                   }}
                 >
                   <FormControl
@@ -436,18 +457,28 @@ const Profile = (props) => {
                     </Select>
                   </FormControl>
                 </Box>
-                <DataGrid
+                <Paper
+                  elevation={0}
                   sx={{
                     transition: 'color .5s, background .5s',
-                    color: THEME[themeMode].textColor,
-                    border: 'none'
-                  }}
-                  rows={cohortStudents}
-                  columns={columnsTest}
-                  pageSize={5}
-                  rowsPerPageOptions={[5]}
-                  checkboxSelection
-                />
+                    height: 600,
+                    width: '100%',
+                    background: THEME[themeMode].card,
+                    mb: 4
+                  }}>
+                  <DataGrid
+                    sx={{
+                      transition: 'color .5s, background .5s',
+                      color: THEME[themeMode].textColor,
+                      border: 'none'
+                    }}
+                    rows={cohortStudents}
+                    columns={columnsTest}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                    checkboxSelection
+                  />
+                </Paper>
               </Paper>
               : null
             }

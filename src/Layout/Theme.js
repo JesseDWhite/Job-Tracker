@@ -8,10 +8,10 @@ export const THEME = {
     buttonStyle: 'contained',
   },
   lightMode: {
-    header: '#ECECEC',
-    card: 'white',
-    textColor: 'black',
-    backgroundColor: '#F5F5F5',
+    header: '#ECEFF1',
+    card: '#ECEFF1',
+    textColor: '#212121',
+    backgroundColor: '#CFD8DC',
     chipColor: 'default',
     buttonStyle: 'outlined',
   }

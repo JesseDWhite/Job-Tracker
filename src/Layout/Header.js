@@ -58,6 +58,7 @@ const Header = (props) => {
         top: 0,
         p: 2,
         filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.200))',
+        cursor: 'default'
       }}
     > {user?.email ?
       <Grid>

@@ -20,7 +20,7 @@ import {
   WorkTwoTone,
   InsertChartTwoTone,
   DescriptionTwoTone,
-  DeleteForeverTwoTone,
+  DeleteTwoTone,
   CreateTwoTone,
   KeyboardArrowDownRounded
 } from '@mui/icons-material';
@@ -85,6 +85,7 @@ const CardView = (props) => {
               container
               direction="row"
               justifyContent='space-between'
+              sx={{ cursor: 'default' }}
             >
               <Typography
                 sx={{ maxWidth: '80%' }}
@@ -94,36 +95,40 @@ const CardView = (props) => {
                 variant='h4'>
                 {job.company}
               </Typography>
-              <Box item sm={4} sx={{ position: 'relative', right: 0, display: 'inline-flex' }}>
-                <CircularProgress variant="determinate" value={parseInt(job.score)} sx={{ color: getScoreColor(job.score) }} thickness={6}
-                />
-                <Box
-                  sx={{
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography variant="caption" component="div" sx={{ fontWeight: 'bold', fontSize: 'large' }}>
-                    {job.score}
-                  </Typography>
+              <Tooltip title='Score' placement='left'>
+                <Box item sm={4} sx={{ position: 'relative', right: 0, display: 'inline-flex' }}>
+                  <CircularProgress variant="determinate" value={parseInt(job.score)} sx={{ color: getScoreColor(job.score) }} thickness={5}
+                  />
+                  <Box
+                    sx={{
+                      top: 0,
+                      left: 0,
+                      bottom: 0,
+                      right: 0,
+                      position: 'absolute',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography variant="caption" component="div" sx={{ fontSize: 'large' }}>
+                      {job.score}
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
+              </Tooltip>
             </Grid>
           </Grid>
-          <Grid>
-            <Typography variant='h5'>{job.jobTitle}</Typography>
-          </Grid>
-          <Grid container>
-            <Typography>
-              {format(new Date(job.dateApplied.replace(/-/g, '/')), 'PPP')}
-            </Typography>
-          </Grid>
+          <Box sx={{ cursor: 'default' }}>
+            <Grid>
+              <Typography variant='h5'>{job.jobTitle}</Typography>
+            </Grid>
+            <Grid container>
+              <Typography>
+                {format(new Date(job.dateApplied.replace(/-/g, '/')), 'PPP')}
+              </Typography>
+            </Grid>
+          </Box>
           <Grid
             container
             direction="row"
@@ -167,8 +172,10 @@ const CardView = (props) => {
             >
               <span>
                 <IconButton
-                  // href={job.coverLetter}
-                  disabled={!job.coverLetter ? true : false}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={job.coverLetterLink}
+                  disabled={!job?.coverLetterLink ? true : false}
                   color='primary'
                 >
                   <DescriptionTwoTone />
@@ -180,8 +187,10 @@ const CardView = (props) => {
             >
               <span>
                 <IconButton
-                  // href={job.resume}
-                  disabled={!job.resume ? true : false}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  href={job.resumeLink}
+                  disabled={!job?.resumeLink ? true : false}
                   color='primary'
                 >
                   <DescriptionTwoTone />
@@ -206,7 +215,7 @@ const CardView = (props) => {
                 <IconButton
                   color='error'
                   onClick={() => deleteJob(job.id, job.company)}>
-                  <DeleteForeverTwoTone />
+                  <DeleteTwoTone />
                 </IconButton>
               </span>
             </Tooltip>

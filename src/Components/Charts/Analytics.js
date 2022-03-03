@@ -72,9 +72,7 @@ const Analytics = (props) => {
         elevation={3}
         sx={{
           height: 600,
-          pl: 3,
-          pr: 3,
-          pt: 3,
+          p: 3,
           textAlign: 'center',
           transition: 'color .5s, background .5s',
           background: THEME[themeMode].card,
@@ -128,11 +126,13 @@ const Analytics = (props) => {
               title: {
                 display: true,
                 text: '7-Day Total',
-                color: THEME[themeMode].textColor
+                color: THEME[themeMode].textColor,
+                font: { size: 16 }
               },
               legend: {
                 labels: {
                   color: THEME[themeMode].textColor,
+                  font: { size: 14 }
                 }
               }
             },
@@ -140,13 +140,13 @@ const Analytics = (props) => {
               y: {
                 ticks: {
                   color: THEME[themeMode].textColor,
-                  font: { size: 14 }
+                  font: { size: 16 }
                 }
               },
               x: {
                 ticks: {
                   color: THEME[themeMode].textColor,
-                  font: { size: 14 }
+                  font: { size: 16 }
                 }
               }
             }

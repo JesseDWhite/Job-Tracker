@@ -89,6 +89,7 @@ const MasterList = (props) => {
             sx={{
               mt: 3,
               color: THEME[themeMode].textColor,
+              cursor: 'default'
             }}
           >
             {headerTitle} <Chip sx={{ fontSize: '1.15rem', color: THEME[themeMode].textColor }} label={getTotalApplicationCount(status)} />
