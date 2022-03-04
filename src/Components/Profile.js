@@ -48,6 +48,7 @@ import DoughnutChart from './Charts/DoughnutChart';
 import UserUpload from './Forms/UserUpload';
 import { eachMonthOfInterval, subYears, format } from 'date-fns'
 import { styled } from '@mui/material/styles';
+import StudentTable from './Charts/Table';
 
 const Profile = (props) => {
 
@@ -107,9 +108,9 @@ const Profile = (props) => {
 
   const [currentCohort, setCurrentCohort] = useState('');
 
-  const [allStudents, setAllStudents] = useState([]);
-
   const [cohortStudents, setCohortStudents] = useState([]);
+
+  const [viewStudent, setViewStudent] = useState(null);
 
   const [accessToken, setAccessToken] = useState(currentUser?.accessToken);
 
@@ -155,7 +156,7 @@ const Profile = (props) => {
     // getUserData();
   }
 
-  const columnsTest = [
+  const columns = [
     // { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Name', width: 300 },
     { field: 'cohort', headerName: 'Cohort', width: 200 },
@@ -205,7 +206,9 @@ const Profile = (props) => {
   useEffect(() => {
     getUserData();
     getLastYear();
-  }, [])
+  }, []);
+
+  console.log(viewStudent)
 
   return (
     <>
@@ -440,6 +443,7 @@ const Profile = (props) => {
                     pl: 2
                   }}
                 >
+                  <Typography sx={{ float: 'right', pr: 2 }} variant='h5'>My Students</Typography>
                   <FormControl
                     sx={{ width: '30%' }}
                     size='small'
@@ -466,17 +470,20 @@ const Profile = (props) => {
                     background: THEME[themeMode].card,
                     mb: 4
                   }}>
+                  {/* <StudentTable cohortStudents={cohortStudents} themeMode={themeMode} /> */}
                   <DataGrid
                     sx={{
                       transition: 'color .5s, background .5s',
                       color: THEME[themeMode].textColor,
-                      border: 'none'
+                      border: 'none',
+                      px: 2
                     }}
                     rows={cohortStudents}
-                    columns={columnsTest}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    checkboxSelection
+                    columns={columns}
+                    pageSize={4}
+                    rowsPerPageOptions={[10]}
+                    onSelectionModelChange={(newStudent) => setViewStudent(newStudent)}
+                    selectedModel={viewStudent}
                   />
                 </Paper>
               </Paper>

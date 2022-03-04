@@ -76,6 +76,13 @@ const Main = () => {
 
   const [totalApplications, setTotalApplications] = useState(0);
 
+  const [feedback, setFeedback] = useState({
+    open: false,
+    type: null,
+    title: null,
+    message: null
+  });
+
   const darkTheme = createTheme({
     palette: {
       mode: themeMode === 'darkMode' ? 'dark' : 'light'
@@ -106,13 +113,6 @@ const Main = () => {
     overflowY: 'auto'
   };
 
-  const [feedback, setFeedback] = useState({
-    open: false,
-    type: null,
-    title: null,
-    message: null
-  });
-
   const handleClose = () => {
     setFeedback({
       ...feedback,
@@ -125,81 +125,103 @@ const Main = () => {
   });
 
   const seedData = async () => {
-    const legacyJobs = query(jobsReference, where('user', '==', user?.uid));
-    const legacySnapshot = await getDocs(legacyJobs);
-    const extractedJobsList = legacySnapshot.docs.map((doc) => ({
-      ...doc.data(), id: doc.id, resumeLink: '', coverLetterLink: ''
-    }));
-    if (extractedJobsList.length > 0) {
-      for (let i = 0; i < extractedJobsList.length; i++) {
-        await setDoc(doc(subCollection, extractedJobsList[i].id), { ...extractedJobsList[i] });
+    try {
+      const legacyJobs = query(jobsReference, where('user', '==', user?.uid));
+      const legacySnapshot = await getDocs(legacyJobs);
+      const extractedJobsList = legacySnapshot.docs.map((doc) => ({
+        ...doc.data(), id: doc.id, resumeLink: '', coverLetterLink: ''
+      }));
+      if (extractedJobsList.length > 0) {
+        for (let i = 0; i < extractedJobsList.length; i++) {
+          await setDoc(doc(subCollection, extractedJobsList[i].id), { ...extractedJobsList[i] });
+        }
       }
+    } catch (error) {
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `There was an issue connecting to the network, please try again`
+      });
     }
   }
 
   const getUserData = async (applications) => {
-    const userObject = {
-      name: user?.displayName,
-      email: user?.email,
-      signedUpOn: user?.metadata.creationTime,
-      accessToken: '',
-      organization: 'Personal',
-      advisor: 'NOT YET ASSIGNED',
-      advisorId: 'NOT YET ASSIGNED',
-      cohort: 'NOT YET ASSIGNED',
-      role: 'None',
-      preferredTheme: 'lightMode',
-      id: user?.uid,
-      totalApplications: applications ? applications.length : 0
-    };
-    const userQuery = query(userReference, where('id', '==', user?.uid));
-    const querySnapshot = await getDocs(userQuery);
-    const userData = querySnapshot.docs[0]?.data();
-    if (!userData) {
-      await setDoc(doc(userReference, user?.uid), userObject);
-      setCurrentUser(userObject);
-      getOrganization(userData);
-      seedData();
-    } else {
-      setCurrentUser(userData);
-      setThemeMode(userData.preferredTheme);
-      getOrganization(userData);
+    try {
+      const userObject = {
+        name: user?.displayName,
+        email: user?.email,
+        signedUpOn: user?.metadata.creationTime,
+        accessToken: '',
+        organization: 'Personal',
+        advisor: '',
+        advisorId: '',
+        cohort: '',
+        role: 'Personal',
+        preferredTheme: 'lightMode',
+        id: user?.uid,
+        totalApplications: applications ? applications.length : 0
+      };
+      const userQuery = query(userReference, where('id', '==', user?.uid));
+      const querySnapshot = await getDocs(userQuery);
+      const userData = querySnapshot.docs[0]?.data();
+      console.log(userData)
+      if (!userData) {
+        //If the user is logging in for the very first time.
+        await setDoc(doc(userReference, user?.uid), userObject);
+        setCurrentUser(userObject);
+        seedData();
+      } else {
+        //Will run every time after the initial sign up.
+        setCurrentUser(userData);
+        setThemeMode(userData.preferredTheme);
+        getOrganization(userData);
+      }
+    } catch (error) {
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `There was an issue connecting to the network, please try again`
+      });
     }
   }
 
   const getOrganization = async (userData) => {
     //standard user parameters for resetting user information
     const defaultUserParams = {
-      role: 'Standard',
+      role: 'Personal',
       advisor: '',
       accessToken: '',
       advisorId: '',
       cohort: '',
-      organization: ''
+      organization: 'Personal'
     }
 
-    if (userData.role === 'Admin' || userData.role === 'Advisor') {
+    if (userData?.role === 'Admin' || userData?.role === 'Advisor') {
       //User will need to refresh the page if logging in for the first time if they have been made an Admin, or Advisor.
-      const orgQuery = query(organizationReference, where('adminId', '==', userData.id));
+      const orgQuery = query(organizationReference, where('adminId', '==', userData?.id));
       const querySnapshot = await getDocs(orgQuery);
       const orgData = querySnapshot.docs[0]?.data();
       setOrganization(orgData);
     } else {
       try {
-        if (userData.accessToken) {
+        if (userData?.accessToken) {
           //Get user roles, advisor, and cohort assigned to them.
-          const userSubCollection = collection(organizationReference, `${userData.accessToken}/approvedUsers`);
-          const orgQuery = query(userSubCollection, where('email', '==', userData.email));
+          const userSubCollection = collection(organizationReference, `${userData?.accessToken}/approvedUsers`);
+          const orgQuery = query(userSubCollection, where('email', '==', userData?.email));
           const querySnapshot = await getDocs(orgQuery);
           const orgData = querySnapshot.docs[0]?.data();
 
           if (orgData) {
             //If user has been added to an organization by an admin.
             //Get information on the organization itself. Currently only capturing the name.
-            const orgName = query(organizationReference, where('accessToken', '==', userData.accessToken));
+            const orgName = query(organizationReference, where('accessToken', '==', userData?.accessToken));
             const nameSnapshot = await getDocs(orgName);
             const orgNameData = nameSnapshot.docs[0]?.data();
-            //Get advisor information for the student.
+            //Get advisor information for the student as well as the internal uid for the student
             const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
             const advisorSnapshot = await getDocs(advisorQuery);
             const advisorData = advisorSnapshot.docs[0]?.data();
@@ -210,9 +232,10 @@ const Main = () => {
               advisorId: advisorData.id,
               cohort: orgData.cohort,
               organization: orgNameData.name,
+              internalId: orgData.id
             };
 
-            await updateDoc(doc(userReference, userData.id), newCurrentUser);
+            await updateDoc(doc(userReference, userData?.id), newCurrentUser);
             setOrganization(orgNameData);
             setCurrentUser({ ...userData, newCurrentUser });
           } else {
@@ -225,12 +248,12 @@ const Main = () => {
               message: `The Access Token you provided is either incorrect, or not associated with an organization anymore`
             });
             setCurrentUser({ ...userData, defaultUserParams });
-            await updateDoc(doc(userReference, userData.id), defaultUserParams);
+            await updateDoc(doc(userReference, userData?.id), defaultUserParams);
           }
         } else {
           //If user has removed the access token and removes themselves from the organization, set account back to Personal.
           setCurrentUser({ ...userData, defaultUserParams });
-          await updateDoc(doc(userReference, userData.id), defaultUserParams);
+          await updateDoc(doc(userReference, userData?.id), defaultUserParams);
         }
       } catch (error) {
         //If the user tries to upload an access token that does not exist.
@@ -248,32 +271,51 @@ const Main = () => {
   }
 
   const getJobs = async () => {
-    setOpen(false);
-    if (user?.uid) {
-      const userJobsList = await getDocs(subCollection);
-      const extractedJobsList = userJobsList.docs.map((doc) => ({
-        ...doc.data(), id: doc.id
-      }));
-      extractedJobsList.sort((a, b) => {
-        const newA = a.dateApplied;
-        const newB = b.dateApplied;
-        if (newA < newB) {
-          return 1;
+    try {
+      setOpen(false);
+      if (user?.uid) {
+        const userJobsList = await getDocs(subCollection);
+        const extractedJobsList = userJobsList.docs.map((doc) => ({
+          ...doc.data(), id: doc.id
+        }));
+        if (extractedJobsList.length > 0) {
+          extractedJobsList.sort((a, b) => {
+            const newA = a.dateApplied;
+            const newB = b.dateApplied;
+            if (newA < newB) {
+              return 1;
+            }
+            if (newA > newB) {
+              return -1;
+            }
+            return 0;
+          });
+          const userToUpdate = doc(userReference, user?.uid);
+          const newTotal = { totalApplications: extractedJobsList.length };
+          await updateDoc(userToUpdate, newTotal);
+          setSearchJobs(extractedJobsList);
+          setJobs(extractedJobsList);
+          setTotalApplications(extractedJobsList.length);
+          getUserData(extractedJobsList);
+          setLoading(false);
+        } else {
+          setSearchJobs(extractedJobsList);
+          setJobs(extractedJobsList);
+          setTotalApplications(extractedJobsList.length);
+          getUserData(extractedJobsList);
+          setLoading(false);
         }
-        if (newA > newB) {
-          return -1;
-        }
-        return 0;
+      }
+    } catch (error) {
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `There was an issue connecting to the network, please try again`
       });
-      const userToUpdate = doc(userReference, user?.uid);
-      const newTotal = { totalApplications: extractedJobsList.length };
-      await updateDoc(userToUpdate, newTotal);
-      setSearchJobs(extractedJobsList);
-      setJobs(extractedJobsList);
-      setTotalApplications(extractedJobsList.length);
-      getUserData(extractedJobsList);
-      setLoading(false);
     }
+
   }
 
   const logout = async () => {
@@ -299,7 +341,7 @@ const Main = () => {
         return -1;
       }
       return 0;
-    })
+    });
     setSearchJobs(sortedByDate);
     setSort(!sort);
   }
