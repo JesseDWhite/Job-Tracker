@@ -110,7 +110,9 @@ const Profile = (props) => {
 
   const [cohortStudents, setCohortStudents] = useState([]);
 
-  const [viewStudent, setViewStudent] = useState(null);
+  const [viewStudent, setViewStudent] = useState([]);
+
+  const [studentApplications, setStudentApplications] = useState([]);
 
   const [accessToken, setAccessToken] = useState(currentUser?.accessToken);
 
@@ -153,15 +155,21 @@ const Profile = (props) => {
       message: `Access Token submitted. Make sure your account admin has added you to the network and restart your program.`
     });
     setAddToken(false);
-    // getUserData();
   }
 
   const columns = [
-    // { field: 'id', headerName: 'ID', width: 100 },
     { field: 'name', headerName: 'Name', width: 300 },
     { field: 'cohort', headerName: 'Cohort', width: 200 },
     { field: 'email', headerName: 'Email', width: 400 },
     { field: 'role', headerName: 'Role', width: 200 },
+  ];
+
+  const studentColumns = [
+    { field: 'dateApplied', headerName: 'Date', width: 100 },
+    { field: 'company', headerName: 'Company', width: 150 },
+    { field: 'jobTitle', headerName: 'Job Title', width: 150 },
+    { field: 'resumeLink', headerName: 'Resume', width: 100 },
+    { field: 'coverLetterLink', headerName: 'Cover Letter', width: 100 }
   ];
 
   const getStudents = async (userData) => {
@@ -186,6 +194,40 @@ const Profile = (props) => {
     }
   }
 
+  const getStudentsApplications = async () => {
+    if (viewStudent.length > 0) {
+      try {
+        const studentQuery = query(userReference, where('internalId', '==', viewStudent[0]));
+        const studentSnapshot = await getDocs(studentQuery);
+        const studentResult = studentSnapshot.docs[0]?.data();
+        if (!studentResult) {
+          setStudentApplications([]);
+          setFeedback({
+            ...feedback,
+            open: true,
+            type: 'error',
+            title: 'Error',
+            message: 'This student has not added their access key to their account yet'
+          });
+        } else {
+          const applications = await getDocs(collection(userReference, `${studentResult.id}/jobs`));
+          const applicationResults = applications.docs.map((app) => ({
+            ...app.data(), id: app.id
+          }));
+          setStudentApplications(applicationResults);
+        }
+      } catch (error) {
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'error',
+          title: 'Error',
+          message: 'There was an issue connecting to the network. Please try again.'
+        });
+      }
+    }
+  }
+
   const getTotalApplicationAverage = () => {
     const newJobs = [...jobs];
     setAverage(0);
@@ -198,6 +240,13 @@ const Profile = (props) => {
     setAverage(prevState => parseInt(prevState / averageToDivide));
   }
 
+  const handleClose = () => {
+    setOpen(false);
+    setTimeout(() => {
+      setViewStudent([]);
+    }, 500);
+  }
+
   useEffect(() => {
     getTotalApplicationAverage();
     getStudents(currentUser);
@@ -208,13 +257,15 @@ const Profile = (props) => {
     getLastYear();
   }, []);
 
-  console.log(viewStudent)
+  useEffect(() => {
+    getStudentsApplications();
+  }, [viewStudent]);
 
   return (
     <>
       <Modal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => handleClose()}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -223,17 +274,41 @@ const Profile = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            <UserUpload
-              currentUser={currentUser}
-              getStudents={getStudents}
-              cohortList={cohortList}
-              feedback={feedback}
-              setFeedback={setFeedback}
-              setOpen={setOpen}
-              organization={organization}
-              organizationReference={organizationReference}
-              setOrganization={setOrganization}
-            />
+            {!viewStudent[0]
+              ? <UserUpload
+                currentUser={currentUser}
+                getStudents={getStudents}
+                cohortList={cohortList}
+                feedback={feedback}
+                setFeedback={setFeedback}
+                setOpen={setOpen}
+                organization={organization}
+                organizationReference={organizationReference}
+                setOrganization={setOrganization}
+              />
+              : <Paper
+                elevation={0}
+                sx={{
+                  transition: 'color .5s, background .5s',
+                  height: 500,
+                  width: '100%',
+                  background: THEME[themeMode].card,
+                  // mb: 4
+                }}>
+                <DataGrid
+                  sx={{
+                    transition: 'color .5s, background .5s',
+                    color: THEME[themeMode].textColor,
+                    border: 'none',
+                    px: 2
+                  }}
+                  rows={studentApplications}
+                  columns={studentColumns}
+                  pageSize={4}
+                  rowsPerPageOptions={[10]}
+                />
+              </Paper>
+            }
           </Box>
         </Fade>
       </Modal>
@@ -257,23 +332,6 @@ const Profile = (props) => {
               }}
               container
             >
-              {/* <Tooltip title={addToken ? 'Cancel' : 'Add Token'} placement='right'>
-                <Fab
-                  sx={{
-                    position: 'absolute',
-                    top: 260,
-                    left: 380,
-                    transition: 'border .5s',
-                    border: '4px solid',
-                    borderColor: THEME[themeMode].card,
-                    boxShadow: 'none'
-                  }}
-                  size='small'
-                  color='warning'
-                  onClick={() => addToken ? (setAddToken(false), setAccessToken(backupToken)) : setAddToken(true)}>
-                  <KeyTwoTone />
-                </Fab>
-              </Tooltip> */}
               <Box sx={{ textAlign: 'center' }}>
                 <StyledBadge
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -482,7 +540,7 @@ const Profile = (props) => {
                     columns={columns}
                     pageSize={4}
                     rowsPerPageOptions={[10]}
-                    onSelectionModelChange={(newStudent) => setViewStudent(newStudent)}
+                    onSelectionModelChange={(newStudent) => ((setViewStudent(newStudent), setOpen(true)))}
                     selectedModel={viewStudent}
                   />
                 </Paper>
@@ -505,6 +563,7 @@ const Profile = (props) => {
                 }}
                 container
               >
+                <Typography variant='h5' textAlign='center'>Total Applications</Typography>
                 <CardContent sx={{ height: 550 }}>
                   <DoughnutChart jobs={jobs} themeMode={themeMode} />
                 </CardContent>

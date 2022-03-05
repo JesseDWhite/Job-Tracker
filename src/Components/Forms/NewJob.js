@@ -63,12 +63,6 @@ const NewJob = (props) => {
     overflowY: 'auto',
   };
 
-  const darkTheme = createTheme({
-    palette: {
-      mode: themeMode === 'darkMode' ? 'dark' : 'light'
-    }
-  });
-
   const [resumeKeywords, setResumeKeywords] = useState([]);
 
   const [coverLetterKeywords, setCoverLetterKeywords] = useState([]);

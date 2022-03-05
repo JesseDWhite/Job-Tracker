@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card, } from '@mui/material';
+import { Button, Card, Typography } from '@mui/material';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -78,6 +78,7 @@ const Analytics = (props) => {
           background: THEME[themeMode].card,
         }}
       >
+        {/* <Typography variant='h5' textAlign='center'>7-Day Totals</Typography> */}
         <Bar
           height={500}
           width={600}

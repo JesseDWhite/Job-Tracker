@@ -166,7 +166,6 @@ const Main = () => {
       const userQuery = query(userReference, where('id', '==', user?.uid));
       const querySnapshot = await getDocs(userQuery);
       const userData = querySnapshot.docs[0]?.data();
-      console.log(userData)
       if (!userData) {
         //If the user is logging in for the very first time.
         await setDoc(doc(userReference, user?.uid), userObject);

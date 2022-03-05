@@ -2,7 +2,6 @@ import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { THEME } from '../../Layout/Theme';
-import { Box } from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -41,10 +40,10 @@ const DoughnutChart = (props) => {
     maintainAspectRatio: false,
     plugins: {
       title: {
-        display: true,
+        display: false,
         text: 'Total Applications',
         color: THEME[themeMode].textColor,
-        font: { size: 16 }
+        font: { size: 16, family: 'Readex Pro, sans-serif, normal' }
       },
       legend: {
         labels: {
@@ -52,7 +51,17 @@ const DoughnutChart = (props) => {
           font: { size: 14 }
         }
       },
-    },
+      doughnutlabel: {
+        labels: [
+          {
+            text: 'The title',
+            font: {
+              size: '60'
+            }
+          }
+        ]
+      }
+    }
   }
 
   return <Doughnut data={data} options={options} />
