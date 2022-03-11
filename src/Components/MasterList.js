@@ -23,7 +23,8 @@ const MasterList = (props) => {
     deleteJob,
     updateJobStatus,
     updateInterviewDate,
-    themeMode
+    themeMode,
+    student
   } = props;
 
   const [interviewPage, setInterviewPage] = useState(1);
@@ -204,6 +205,7 @@ const MasterList = (props) => {
                     updateJobStatus={updateJobStatus}
                     jobidx={jobidx}
                     updateInterviewDate={updateInterviewDate}
+                    student={student}
                   />
                 </AnimateKeyframes>
               </Grid>

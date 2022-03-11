@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { signInWithGoogle } from '../firebase';
+import { signInWithGoogle } from '../../firebase';
 import GoogleIcon from '@mui/icons-material/Google';
 
 const Copyright = (props) => {

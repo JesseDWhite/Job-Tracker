@@ -2,17 +2,13 @@ import React, { useState } from 'react';
 import {
   Grid,
   Button,
-  TextField,
-  Switch,
-  FormControlLabel,
   Typography
 } from '@mui/material';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from '@firebase/auth';
-import { auth, signInWithGoogle } from '../firebase';
-import signInPage from '../assets/img/signInPage.jpg';
+import { auth, signInWithGoogle } from '../../firebase';
 import PersonOutlineTwoToneIcon from '@mui/icons-material/PersonOutlineTwoTone';
 
 const Auth = () => {
@@ -118,15 +114,6 @@ const Auth = () => {
               >
                 Sign In
               </Button> */}
-            <img
-              src={signInPage}
-              alt="computer and code on it"
-              style={{
-                width: '100%',
-                height: 500,
-                objectFit: 'cover',
-                borderRadius: 25
-              }} />
             <Typography
               variant='h3'
               sx={{

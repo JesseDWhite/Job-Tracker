@@ -31,7 +31,6 @@ import { KEYWORDS } from '../../Constants/Keywords';
 import format from 'date-fns/format';
 import strCompare from 'str-compare';
 import { THEME } from '../../Layout/Theme';
-import { createTheme } from '@mui/material/styles';
 
 const NewJob = (props) => {
 
@@ -556,7 +555,7 @@ const NewJob = (props) => {
                 name='notes'
                 label='Notes'
                 multiline
-                rows={4.5}
+                rows={6}
                 onChange={handleInputChange}
                 value={formValues.notes}
                 fullWidth
@@ -570,7 +569,7 @@ const NewJob = (props) => {
               mt: 4
             }}
             type='submit'
-            color='info'
+            color='primary'
             variant='contained'
             startIcon={<AddBoxTwoTone />}
             fullWidth

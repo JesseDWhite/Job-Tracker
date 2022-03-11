@@ -27,24 +27,18 @@ import {
 } from '@mui/material';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
-import Auth from './Auth';
+import Auth from './User/Auth';
 import { signOut, onAuthStateChanged, } from '@firebase/auth';
 import { auth } from '../firebase';
 import Header from '../Layout/Header';
-import Profile from './Profile';
+import Profile from './User/Profile';
 import MasterList from './MasterList';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
-import SignIn from './SignIn';
+import SignIn from './User/SignIn';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const Main = () => {
-
-  const jobsReference = collection(db, 'jobs');
-
-  const userReference = collection(db, 'users');
-
-  const organizationReference = collection(db, 'organizations');
 
   const [organization, setOrganization] = useState({});
 
@@ -66,8 +60,6 @@ const Main = () => {
 
   const [user, setUser] = useState({});
 
-  const subCollection = collection(userReference, `${user?.uid}/jobs`);
-
   const [currentUser, setCurrentUser] = useState({});
 
   const [viewProfile, setViewProfile] = useState(false);
@@ -75,6 +67,14 @@ const Main = () => {
   const [themeMode, setThemeMode] = useState('lightMode');
 
   const [totalApplications, setTotalApplications] = useState(0);
+
+  const jobsReference = collection(db, 'jobs');
+
+  const userReference = collection(db, 'users');
+
+  const organizationReference = collection(db, 'organizations');
+
+  const subCollection = collection(userReference, `${user?.uid}/jobs`);
 
   const [feedback, setFeedback] = useState({
     open: false,
@@ -152,6 +152,7 @@ const Main = () => {
       const userObject = {
         name: user?.displayName,
         email: user?.email,
+        profileImage: user?.photoUrl,
         signedUpOn: user?.metadata.creationTime,
         accessToken: '',
         organization: 'Personal',
@@ -189,7 +190,7 @@ const Main = () => {
   }
 
   const getOrganization = async (userData) => {
-    //standard user parameters for resetting user information
+    //Standard user parameters for resetting user information
     const defaultUserParams = {
       role: 'Personal',
       advisor: '',
@@ -513,6 +514,8 @@ const Main = () => {
                 logout={logout}
                 jobs={jobs}
                 themeMode={themeMode}
+                setSearchJobs={setSearchJobs}
+                setViewProfile={setViewProfile}
               />
             </AnimateKeyframes>
           </Grid>

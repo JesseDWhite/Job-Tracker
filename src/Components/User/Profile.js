@@ -30,7 +30,7 @@ import {
   HighlightOffTwoTone,
   ApartmentTwoTone,
   PersonAddAltTwoTone,
-  VpnKeyTwoTone,
+  CancelTwoTone,
   LogoutTwoTone
 } from '@mui/icons-material';
 import {
@@ -41,14 +41,14 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-import { THEME } from '../Layout/Theme';
+import { THEME } from '../../Layout/Theme';
 import { DataGrid } from '@mui/x-data-grid';
-import Analytics from './Charts/Analytics';
-import DoughnutChart from './Charts/DoughnutChart';
-import UserUpload from './Forms/UserUpload';
+import Analytics from '../Charts/Analytics';
+import DoughnutChart from '../Charts/DoughnutChart';
+import UserUpload from '../Forms/UserUpload';
 import { eachMonthOfInterval, subYears, format } from 'date-fns'
 import { styled } from '@mui/material/styles';
-import StudentTable from './Charts/Table';
+import MasterList from '../MasterList';
 
 const Profile = (props) => {
 
@@ -65,7 +65,6 @@ const Profile = (props) => {
     getUserData,
     setFeedback,
     feedback,
-    totalApplications
   } = props;
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -74,7 +73,8 @@ const Profile = (props) => {
       borderRadius: '100%',
       width: 40,
       height: 40,
-      transition: 'border .5s'
+      transition: 'border .5s',
+      zIndex: 0
     },
     '& .MuiBadge-badge:hover': {
       background: 'rgb(214, 142, 34)',
@@ -88,7 +88,7 @@ const Profile = (props) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 750,
+    width: 800,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
@@ -97,6 +97,13 @@ const Profile = (props) => {
     p: 4,
     overflowY: 'auto'
   };
+
+  const columns = [
+    { field: 'name', headerName: 'Name', width: 300 },
+    { field: 'cohort', headerName: 'Cohort', width: 200 },
+    { field: 'email', headerName: 'Email', width: 400 },
+    { field: 'role', headerName: 'Role', width: 200 },
+  ];
 
   const [average, setAverage] = useState(0);
 
@@ -111,6 +118,8 @@ const Profile = (props) => {
   const [cohortStudents, setCohortStudents] = useState([]);
 
   const [viewStudent, setViewStudent] = useState([]);
+
+  const [student, setStudent] = useState({});
 
   const [studentApplications, setStudentApplications] = useState([]);
 
@@ -157,21 +166,6 @@ const Profile = (props) => {
     setAddToken(false);
   }
 
-  const columns = [
-    { field: 'name', headerName: 'Name', width: 300 },
-    { field: 'cohort', headerName: 'Cohort', width: 200 },
-    { field: 'email', headerName: 'Email', width: 400 },
-    { field: 'role', headerName: 'Role', width: 200 },
-  ];
-
-  const studentColumns = [
-    { field: 'dateApplied', headerName: 'Date', width: 100 },
-    { field: 'company', headerName: 'Company', width: 150 },
-    { field: 'jobTitle', headerName: 'Job Title', width: 150 },
-    { field: 'resumeLink', headerName: 'Resume', width: 100 },
-    { field: 'coverLetterLink', headerName: 'Cover Letter', width: 100 }
-  ];
-
   const getStudents = async (userData) => {
     if (userData?.role === 'Admin' || userData?.role === 'Advisor') {
       try {
@@ -201,7 +195,6 @@ const Profile = (props) => {
         const studentSnapshot = await getDocs(studentQuery);
         const studentResult = studentSnapshot.docs[0]?.data();
         if (!studentResult) {
-          setStudentApplications([]);
           setFeedback({
             ...feedback,
             open: true,
@@ -212,9 +205,11 @@ const Profile = (props) => {
         } else {
           const applications = await getDocs(collection(userReference, `${studentResult.id}/jobs`));
           const applicationResults = applications.docs.map((app) => ({
-            ...app.data(), id: app.id
+            ...app.data(),
+            id: app.id,
           }));
           setStudentApplications(applicationResults);
+          setStudent(studentResult);
         }
       } catch (error) {
         setFeedback({
@@ -274,41 +269,17 @@ const Profile = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            {!viewStudent[0]
-              ? <UserUpload
-                currentUser={currentUser}
-                getStudents={getStudents}
-                cohortList={cohortList}
-                feedback={feedback}
-                setFeedback={setFeedback}
-                setOpen={setOpen}
-                organization={organization}
-                organizationReference={organizationReference}
-                setOrganization={setOrganization}
-              />
-              : <Paper
-                elevation={0}
-                sx={{
-                  transition: 'color .5s, background .5s',
-                  height: 500,
-                  width: '100%',
-                  background: THEME[themeMode].card,
-                  // mb: 4
-                }}>
-                <DataGrid
-                  sx={{
-                    transition: 'color .5s, background .5s',
-                    color: THEME[themeMode].textColor,
-                    border: 'none',
-                    px: 2
-                  }}
-                  rows={studentApplications}
-                  columns={studentColumns}
-                  pageSize={4}
-                  rowsPerPageOptions={[10]}
-                />
-              </Paper>
-            }
+            <UserUpload
+              currentUser={currentUser}
+              getStudents={getStudents}
+              cohortList={cohortList}
+              feedback={feedback}
+              setFeedback={setFeedback}
+              setOpen={setOpen}
+              organization={organization}
+              organizationReference={organizationReference}
+              setOrganization={setOrganization}
+            />
           </Box>
         </Fade>
       </Modal>
@@ -316,7 +287,7 @@ const Profile = (props) => {
         <Grid
           container
           direction="row"
-          justifyContent="start"
+          justifyContent="center"
           alignItems="start"
           spacing={4}
         >
@@ -528,7 +499,6 @@ const Profile = (props) => {
                     background: THEME[themeMode].card,
                     mb: 4
                   }}>
-                  {/* <StudentTable cohortStudents={cohortStudents} themeMode={themeMode} /> */}
                   <DataGrid
                     sx={{
                       transition: 'color .5s, background .5s',
@@ -540,7 +510,7 @@ const Profile = (props) => {
                     columns={columns}
                     pageSize={4}
                     rowsPerPageOptions={[10]}
-                    onSelectionModelChange={(newStudent) => ((setViewStudent(newStudent), setOpen(true)))}
+                    onSelectionModelChange={(newStudent) => (setViewStudent(newStudent))}
                     selectedModel={viewStudent}
                   />
                 </Paper>
@@ -556,7 +526,7 @@ const Profile = (props) => {
                   minWidth: 500,
                   minHeight: '100%',
                   p: 3,
-                  mb: 10,
+                  mb: 4,
                   transition: 'color .5s, background .5s',
                   background: THEME[themeMode].card,
                   color: THEME[themeMode].textColor
@@ -570,6 +540,55 @@ const Profile = (props) => {
               </Card>
             </Grid>
             : null}
+          <Grid item>
+            {Object.keys(student).length !== 0
+              ?
+              <Box
+                sx={{
+                  transition: 'color .5s',
+                  color: THEME[themeMode].textColor,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    p: 3,
+                    ml: 'auto',
+                    mr: 'auto',
+                    width: '25%',
+                    transition: 'color .5s, background .5s',
+                    background: THEME[themeMode].card,
+                    color: THEME[themeMode].textColor,
+                    textAlign: 'center',
+                    position: 'relative'
+                  }}
+                >
+                  <Tooltip title='Close'>
+                    <IconButton
+                      size='large'
+                      sx={{ position: 'absolute', top: 3, right: 3 }}
+                      onClick={() => setStudent({})}
+                    >
+                      <CancelTwoTone fontSize='inherit' />
+                    </IconButton>
+                  </Tooltip>
+                  <Box>
+                    <img src={student.profilePhoto} alt={student.name} style={{ borderRadius: '100%' }} />
+                  </Box>
+                  <Typography variant='p' textAlign='center'>Currently Viewing</Typography>
+                  <Typography variant='h5' textAlign='center'>{student.name}</Typography>
+                </Paper>
+                <MasterList
+                  themeMode={themeMode}
+                  searchJobs={studentApplications}
+                  jobs={studentApplications}
+                  student={student}
+                />
+              </Box>
+              : null
+            }
+          </Grid>
         </Grid>
       </Grid>
     </>

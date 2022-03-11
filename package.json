@@ -17,6 +17,7 @@
     "@testing-library/user-event": "^12.8.3",
     "chart.js": "^3.6.0",
     "chartjs-plugin-doughnutlabel": "^2.0.3",
+    "cheerio": "*",
     "date-fns": "^2.25.0",
     "firebase": "^9.2.0",
     "firebase-config": "^0.0.2",
@@ -30,6 +31,7 @@
     "react-paginate": "^8.0.1",
     "react-scripts": "^4.0.3",
     "react-simple-animate": "^3.3.12",
+    "request": "^2.88.2",
     "str-compare": "^0.1.2",
     "styled-components": "^5.3.3",
     "web-vitals": "^1.1.2"

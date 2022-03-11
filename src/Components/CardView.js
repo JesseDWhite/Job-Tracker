@@ -36,7 +36,8 @@ const CardView = (props) => {
     updateJobStatus,
     updateInterviewDate,
     updateJobApplication,
-    themeMode
+    themeMode,
+    student
   } = props;
 
   const getScoreColor = (score) => {
@@ -85,18 +86,17 @@ const CardView = (props) => {
               container
               direction="row"
               justifyContent='space-between'
-              sx={{ cursor: 'default' }}
+              sx={{ cursor: 'default', position: 'relative' }}
             >
               <Typography
-                sx={{ maxWidth: '80%' }}
-                noWrap
+                sx={{ maxWidth: '87%' }}
                 item
                 sm={8}
                 variant='h4'>
                 {job.company}
               </Typography>
               <Tooltip title='Score' placement='left'>
-                <Box item sm={4} sx={{ position: 'relative', right: 0, display: 'inline-flex' }}>
+                <Box item sm={4} sx={{ position: 'absolute', right: 0, top: 0, display: 'inline-flex' }}>
                   <CircularProgress variant="determinate" value={parseInt(job.score)} sx={{ color: getScoreColor(job.score) }} thickness={5}
                   />
                   <Box
@@ -197,55 +197,63 @@ const CardView = (props) => {
                 </IconButton>
               </span>
             </Tooltip>
-            <Tooltip
-              title='Edit'
-            >
-              <span>
-                <IconButton
-                  color='warning'
-                  onClick={() => updateJobApplication(job)}>
-                  <CreateTwoTone />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip
-              title='Delete'
-            >
-              <span>
-                <IconButton
-                  color='error'
-                  onClick={() => deleteJob(job.id, job.company)}>
-                  <DeleteTwoTone />
-                </IconButton>
-              </span>
-            </Tooltip>
+            {!student
+              ? <>
+                <Tooltip
+                  title='Edit'
+                >
+                  <span>
+                    <IconButton
+                      color='warning'
+                      onClick={() => updateJobApplication(job)}>
+                      <CreateTwoTone />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+                <Tooltip
+                  title='Delete'
+                >
+                  <span>
+                    <IconButton
+                      color='error'
+                      onClick={() => deleteJob(job.id, job.company)}>
+                      <DeleteTwoTone />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </>
+              : null
+            }
           </Grid>
         </Grid>
         <FormControl component='fieldset'>
-          <RadioGroup
-            row
-            id='status'
-            name='status'
-            value={job.status}
-            onChange={(e) => updateJobStatus(job.id, e)}
-          >
-            <FormControlLabel
-              value='Active'
-              control={<Radio color='success' />}
-              label='Active'
-            />
-            <FormControlLabel
-              value='Interview'
-              control={<Radio color='primary' />}
-              label='Interview'
-              color='success'
-            />
-            <FormControlLabel
-              value='Closed'
-              control={<Radio color='error' />}
-              label='Closed'
-            />
-          </RadioGroup>
+          {!student || Object.values(student).length === 0
+            ? <RadioGroup
+              row
+              id='status'
+              name='status'
+              value={job.status}
+              onChange={(e) => updateJobStatus(job.id, e)}
+            >
+              <FormControlLabel
+                value='Active'
+                control={<Radio color='success' />}
+                label='Active'
+              />
+              <FormControlLabel
+                value='Interview'
+                control={<Radio color='primary' />}
+                label='Interview'
+                color='success'
+              />
+              <FormControlLabel
+                value='Closed'
+                control={<Radio color='error' />}
+                label='Closed'
+              />
+            </RadioGroup>
+            : <Typography>{job.status}</Typography>
+          }
         </FormControl>
         {job.status === 'Interview' ?
           <TextField

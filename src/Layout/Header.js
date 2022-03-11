@@ -12,7 +12,6 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import SearchBar from '../Components/SearchBar';
 import { THEME } from './Theme';
 import { format } from 'date-fns';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const Header = (props) => {
 
@@ -58,7 +57,8 @@ const Header = (props) => {
         top: 0,
         p: 2,
         filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.200))',
-        cursor: 'default'
+        cursor: 'default',
+        zIndex: 10
       }}
     > {user?.email ?
       <Grid>
