@@ -71,6 +71,7 @@ const Analytics = (props) => {
       <Card
         elevation={3}
         sx={{
+          position: 'relative',
           height: 600,
           p: 3,
           textAlign: 'center',
@@ -153,26 +154,34 @@ const Analytics = (props) => {
             }
           }}
         />
+        <Button
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            ml: 3,
+            mt: 3
+          }}
+          startIcon={<ArrowBackIosTwoTone />}
+          onClick={() => prevWeek()}
+        >
+          Previous Week
+        </Button>
+        <Button
+          sx={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            mr: 3,
+            mt: 3
+          }}
+          onClick={() => nextWeek()}
+          disabled={weekNumber !== 0 ? false : true}
+          endIcon={<ArrowForwardIosTwoTone />}
+        >
+          Next Week
+        </Button>
       </Card>
-      <Button
-        sx={{
-          float: 'left'
-        }}
-        startIcon={<ArrowBackIosTwoTone />}
-        onClick={() => prevWeek()}
-      >
-        Previous Week
-      </Button>
-      <Button
-        sx={{
-          float: 'right'
-        }}
-        onClick={() => nextWeek()}
-        disabled={weekNumber !== 0 ? false : true}
-        endIcon={<ArrowForwardIosTwoTone />}
-      >
-        Next Week
-      </Button>
     </>
   )
 }

@@ -58,7 +58,7 @@ const Header = (props) => {
         p: 2,
         filter: 'drop-shadow(0px 5px 20px rgba(0, 0, 0, 0.200))',
         cursor: 'default',
-        zIndex: 10
+        zIndex: 10,
       }}
     > {user?.email ?
       <Grid>
@@ -67,19 +67,26 @@ const Header = (props) => {
           direction="row"
           justifyContent="start"
           alignItems='center'
+          sx={{
+            position: 'relative'
+          }}
         >
           {viewProfile
-            ? <Typography variant='h3' sx={{
-              fontSize: '2rem',
-              transition: 'color .5s, background .5s',
-              color: THEME[themeMode].textColor,
-              mx: 1
-            }}>
+            ? <Typography variant='h3'
+              sx={{
+                fontSize: '2rem',
+                transition: 'color .5s, background .5s',
+                color: THEME[themeMode].textColor,
+                mx: 1
+              }}>
               My Profile
             </Typography>
             :
-            <>
+            <Grid>
               <Chip
+                sx={{
+                  zIndex: 10
+                }}
                 color='secondary'
                 variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
                 onClick={() => applicationCount >= 1 ? setFilter(!filter) : setFilter(false)}
@@ -88,19 +95,29 @@ const Header = (props) => {
               />
               <Button
                 sx={{
-                  mx: 5,
+                  ml: 5,
+                  zIndex: 10
                 }}
                 variant='text'
                 color='secondary'
                 onClick={() => sort ? sortByDate() : sortByName()}>
-                SORTED BY: {sort ? 'NAME A-Z' : 'DATE APPLIED'}
+                SORTED BY: {sort ? 'NAME A-Z' : 'MOST RECENT'}
               </Button>
-              <SearchBar
-                themeMode={themeMode}
-                jobs={jobs}
-                setSearchJobs={setSearchJobs}
-              />
-            </>
+              <Grid
+                container
+                justifyContent='center'
+                sx={{
+                  position: 'absolute',
+                  top: 0
+                }}
+              >
+                <SearchBar
+                  themeMode={themeMode}
+                  jobs={jobs}
+                  setSearchJobs={setSearchJobs}
+                />
+              </Grid>
+            </Grid>
           }
         </Grid>
         <Grid

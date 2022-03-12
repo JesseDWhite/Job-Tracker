@@ -197,7 +197,7 @@ const CardView = (props) => {
                 </IconButton>
               </span>
             </Tooltip>
-            {!student
+            {!student || Object.values(student).length === 0
               ? <>
                 <Tooltip
                   title='Edit'
@@ -256,16 +256,18 @@ const CardView = (props) => {
           }
         </FormControl>
         {job.status === 'Interview' ?
-          <TextField
-            fullWidth
-            sx={{
-              mb: 2,
-            }}
-            value={job.interviewDate}
-            onChange={(e) => updateInterviewDate(job.id, e)}
-            type='datetime-local'
-            name='interviewDate'
-          /> : null
+          !student || Object.values(student).length === 0
+            ? <TextField
+              fullWidth
+              sx={{
+                mb: 2,
+              }}
+              value={job.interviewDate}
+              onChange={(e) => updateInterviewDate(job.id, e)}
+              type='datetime-local'
+              name='interviewDate'
+            /> : <Typography>{job.interviewDate ? format(new Date(job.interviewDate), 'Pp') : null}</Typography>
+          : null
         }
         <Typography>{job.notes}</Typography>
         <Box

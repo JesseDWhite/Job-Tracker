@@ -85,7 +85,10 @@ const Main = () => {
 
   const darkTheme = createTheme({
     palette: {
-      mode: themeMode === 'darkMode' ? 'dark' : 'light'
+      mode: themeMode === 'darkMode' ? 'dark' : 'light',
+      // primary: {
+      //   main: '#3F51B5',
+      // }
     },
     typography: {
       fontFamily: 'Readex Pro',
@@ -103,7 +106,7 @@ const Main = () => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    minWidth: 500,
+    minWidth: 525,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
@@ -152,7 +155,7 @@ const Main = () => {
       const userObject = {
         name: user?.displayName,
         email: user?.email,
-        profileImage: user?.photoUrl,
+        profilePhoto: user?.photoURL.replace('s96-c', 's400-c'),
         signedUpOn: user?.metadata.creationTime,
         accessToken: '',
         organization: 'Personal',

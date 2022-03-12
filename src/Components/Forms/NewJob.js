@@ -23,7 +23,6 @@ import {
 import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
 import {
   updateDoc,
-  setDoc,
   addDoc,
   doc
 } from 'firebase/firestore';
@@ -325,7 +324,7 @@ const NewJob = (props) => {
             alignItems="start"
             spacing={2}
           >
-            <Grid lg={6} item>
+            <Grid xl={6} item>
               <Typography variant='h4' sx={{ textAlign: 'center' }}>Application Info</Typography>
               <Grid
                 container
@@ -460,7 +459,7 @@ const NewJob = (props) => {
                 value={formValues.coverLetterLink}
               />
             </Grid>
-            <Grid lg={6} item>
+            <Grid xl={6} item>
               <Typography variant='h4' sx={{ textAlign: 'center', mb: 2 }}>Grade Application</Typography>
               <Grid
                 sx={{

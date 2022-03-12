@@ -160,6 +160,7 @@ const MasterList = (props) => {
                     deleteJob={deleteJob}
                     updateJobStatus={updateJobStatus}
                     updateInterviewDate={updateInterviewDate}
+                    student={student}
                   />
                 </AnimateKeyframes>
               </Grid>
@@ -250,6 +251,7 @@ const MasterList = (props) => {
                   updateJobStatus={updateJobStatus}
                   jobidx={jobidx}
                   updateInterviewDate={updateInterviewDate}
+                  student={student}
                 />
               </AnimateKeyframes>
             </Grid>

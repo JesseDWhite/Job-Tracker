@@ -2,16 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import {
   TextField,
+  InputAdornment,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { THEME } from '../Layout/Theme';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 
 const SearchBar = (props) => {
 
   const {
     jobs,
     setSearchJobs,
-    themeMode
   } = props;
 
   const [searchString, setSearchString] = useState('');
@@ -35,15 +34,22 @@ const SearchBar = (props) => {
   return (
     <TextField
       sx={{
-        ml: 3,
-        width: '25%',
+        width: '20%',
       }}
-      placeholder='SEARCH COMPANIES'
-      variant='standard'
-      color='secondary'
+      size='small'
+      label='Search Companies'
+      variant='outlined'
+      color='info'
       id='searchBar'
       onChange={(e) => handleInputChange(e)}
       value={searchString}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position='start'>
+            <SearchRoundedIcon />
+          </InputAdornment>
+        )
+      }}
     />
   );
 }

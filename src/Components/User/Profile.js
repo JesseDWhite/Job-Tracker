@@ -21,7 +21,6 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Fab,
   Badge
 } from '@mui/material';
 import {
@@ -283,7 +282,7 @@ const Profile = (props) => {
           </Box>
         </Fade>
       </Modal>
-      <Grid display='flex' sx={{ ml: 3, mr: 3 }}>
+      <Grid display='flex' sx={{ ml: 3, mr: 3, pt: 4 }}>
         <Grid
           container
           direction="row"
@@ -291,7 +290,7 @@ const Profile = (props) => {
           alignItems="start"
           spacing={4}
         >
-          <Grid sx={{ mt: 4 }} sm={6} xl={4} item>
+          <Grid sm={6} xl={4} item>
             <Card
               elevation={3}
               sx={{
@@ -454,7 +453,7 @@ const Profile = (props) => {
               </CardActions>
             </Card>
           </Grid>
-          <Grid sx={{ mt: 4 }} sm={12} xl={8} item>
+          <Grid sm={12} xl={8} item>
             <Analytics jobs={jobs} themeMode={themeMode} />
           </Grid>
           <Grid sm={12} xl={8} item>
@@ -462,17 +461,15 @@ const Profile = (props) => {
               ?
               <Paper
                 elevation={3}
-                sx={{
-                  background: THEME[themeMode].card,
-                }}
+                sx={{ background: THEME[themeMode].card }}
               >
                 <Box
                   sx={{
                     pt: 2,
-                    pl: 2
+                    pl: 2,
+                    position: 'relative'
                   }}
                 >
-                  <Typography sx={{ float: 'right', pr: 2 }} variant='h5'>My Students</Typography>
                   <FormControl
                     sx={{ width: '30%' }}
                     size='small'
@@ -489,6 +486,7 @@ const Profile = (props) => {
                       })}
                     </Select>
                   </FormControl>
+                  <Typography sx={{ position: 'absolute', top: 10, right: 20 }} variant='h5'>My Students</Typography>
                 </Box>
                 <Paper
                   elevation={0}
@@ -497,14 +495,12 @@ const Profile = (props) => {
                     height: 600,
                     width: '100%',
                     background: THEME[themeMode].card,
-                    mb: 4
                   }}>
                   <DataGrid
                     sx={{
                       transition: 'color .5s, background .5s',
                       color: THEME[themeMode].textColor,
                       border: 'none',
-                      px: 2
                     }}
                     rows={cohortStudents}
                     columns={columns}
@@ -523,24 +519,35 @@ const Profile = (props) => {
               <Card
                 elevation={3}
                 sx={{
-                  minWidth: 500,
-                  minHeight: '100%',
+                  height: '100%',
                   p: 3,
-                  mb: 4,
                   transition: 'color .5s, background .5s',
                   background: THEME[themeMode].card,
-                  color: THEME[themeMode].textColor
+                  color: THEME[themeMode].textColor,
+                  position: 'relative'
                 }}
                 container
               >
                 <Typography variant='h5' textAlign='center'>Total Applications</Typography>
-                <CardContent sx={{ height: 550 }}>
+                <Typography
+                  variant='h5'
+                  sx={{
+                    position: 'absolute',
+                    top: '48%',
+                    right: '45%',
+                    fontSize: '4rem',
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+                  {currentUser.totalApplications}
+                </Typography>
+                <CardContent sx={{ height: '100%' }}>
                   <DoughnutChart jobs={jobs} themeMode={themeMode} />
                 </CardContent>
               </Card>
             </Grid>
             : null}
-          <Grid item>
+          <Grid item sx={{ width: '100%' }}>
             {Object.keys(student).length !== 0
               ?
               <Box
@@ -548,7 +555,7 @@ const Profile = (props) => {
                   transition: 'color .5s',
                   color: THEME[themeMode].textColor,
                   justifyContent: 'center',
-                  alignItems: 'center'
+                  alignItems: 'center',
                 }}>
                 <Paper
                   elevation={3}
@@ -556,6 +563,7 @@ const Profile = (props) => {
                     p: 3,
                     ml: 'auto',
                     mr: 'auto',
+                    mb: 3,
                     width: '25%',
                     transition: 'color .5s, background .5s',
                     background: THEME[themeMode].card,
@@ -564,17 +572,30 @@ const Profile = (props) => {
                     position: 'relative'
                   }}
                 >
-                  <Tooltip title='Close'>
+                  <Tooltip title='Close' placement='left'>
                     <IconButton
                       size='large'
-                      sx={{ position: 'absolute', top: 3, right: 3 }}
+                      sx={{ position: 'absolute', top: 0, right: 0, p: 'inherit' }}
                       onClick={() => setStudent({})}
                     >
                       <CancelTwoTone fontSize='inherit' />
                     </IconButton>
                   </Tooltip>
+                  <Tooltip title='Total Applications' placement='right'>
+                    <Typography
+                      variant='h5' textAlign='center'
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        p: 'inherit',
+                        cursor: 'default'
+                      }}>
+                      {student.totalApplications}
+                    </Typography>
+                  </Tooltip>
                   <Box>
-                    <img src={student.profilePhoto} alt={student.name} style={{ borderRadius: '100%' }} />
+                    <img src={student.profilePhoto} alt={student.name} style={{ borderRadius: '100%', width: 100 }} />
                   </Box>
                   <Typography variant='p' textAlign='center'>Currently Viewing</Typography>
                   <Typography variant='h5' textAlign='center'>{student.name}</Typography>
