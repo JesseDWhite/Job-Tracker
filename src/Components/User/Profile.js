@@ -21,7 +21,8 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Badge
+  Badge,
+  Avatar
 } from '@mui/material';
 import {
   BackupTwoTone,
@@ -247,7 +248,7 @@ const Profile = (props) => {
   }, [currentCohort]);
 
   useEffect(() => {
-    getUserData();
+    getUserData(); //This might not need to be called here. Already being called witi getJobs.
     getLastYear();
   }, []);
 
@@ -554,52 +555,62 @@ const Profile = (props) => {
                 sx={{
                   transition: 'color .5s',
                   color: THEME[themeMode].textColor,
-                  justifyContent: 'center',
-                  alignItems: 'center',
                 }}>
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 3,
-                    ml: 'auto',
-                    mr: 'auto',
-                    mb: 3,
-                    width: '25%',
-                    transition: 'color .5s, background .5s',
-                    background: THEME[themeMode].card,
-                    color: THEME[themeMode].textColor,
-                    textAlign: 'center',
-                    position: 'relative'
-                  }}
+                <Grid
+                  container
+                  justifyContent='center'
+                  alignItems='center'
+                  direction="row"
                 >
-                  <Tooltip title='Close' placement='left'>
-                    <IconButton
-                      size='large'
-                      sx={{ position: 'absolute', top: 0, right: 0, p: 'inherit' }}
-                      onClick={() => setStudent({})}
-                    >
-                      <CancelTwoTone fontSize='inherit' />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title='Total Applications' placement='right'>
-                    <Typography
-                      variant='h5' textAlign='center'
+
+                  <Paper
+                    elevation={3}
+                    sx={{
+                      p: 3,
+                      mb: 3,
+                      width: 500,
+                      transition: 'color .5s, background .5s',
+                      background: THEME[themeMode].card,
+                      color: THEME[themeMode].textColor,
+                      textAlign: 'center',
+                      position: 'relative'
+                    }}
+                  >
+                    <Tooltip title='Close' placement='left'>
+                      <IconButton
+                        size='large'
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          mr: 1.5,
+                          mt: 1.5
+                        }}
+                        onClick={() => setStudent({})}
+                      >
+                        <CancelTwoTone fontSize='inherit' />
+                      </IconButton>
+                    </Tooltip>
+                    <Chip
+                      avatar={<Avatar>{student.totalApplications}</Avatar>}
+                      label='Total Applications'
+                      variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
                       sx={{
                         position: 'absolute',
                         top: 0,
                         left: 0,
-                        p: 'inherit',
+                        ml: 3,
+                        mt: 3,
                         cursor: 'default'
-                      }}>
-                      {student.totalApplications}
-                    </Typography>
-                  </Tooltip>
-                  <Box>
-                    <img src={student.profilePhoto} alt={student.name} style={{ borderRadius: '100%', width: 100 }} />
-                  </Box>
-                  <Typography variant='p' textAlign='center'>Currently Viewing</Typography>
-                  <Typography variant='h5' textAlign='center'>{student.name}</Typography>
-                </Paper>
+                      }}
+                    />
+                    <Box>
+                      <img src={student.profilePhoto} alt={student.name} style={{ borderRadius: '100%', width: 100 }} />
+                    </Box>
+                    <Typography variant='p' textAlign='center'>Currently Viewing</Typography>
+                    <Typography variant='h5' textAlign='center'>{student.name}</Typography>
+                  </Paper>
+                </Grid>
                 <MasterList
                   themeMode={themeMode}
                   searchJobs={studentApplications}

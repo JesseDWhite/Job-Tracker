@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   TextField,
   Button,
@@ -125,6 +125,7 @@ const UserUpload = (props) => {
           title: 'Error',
           message: `There are no users assigned to the ${date} cohort yet`
         });
+        setFormValues([initialValues]);
       } else {
         const results = querySnapshot.docs.map((user) => {
           return { ...user.data(), id: user.id }

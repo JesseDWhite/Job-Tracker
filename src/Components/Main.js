@@ -170,13 +170,16 @@ const Main = () => {
       const userQuery = query(userReference, where('id', '==', user?.uid));
       const querySnapshot = await getDocs(userQuery);
       const userData = querySnapshot.docs[0]?.data();
-      if (!userData) {
-        //If the user is logging in for the very first time.
+      if (!userData) { //If the user is logging in for the very first time.
         await setDoc(doc(userReference, user?.uid), userObject);
         setCurrentUser(userObject);
         seedData();
-      } else {
-        //Will run every time after the initial sign up.
+      } else { //Will run every time after the initial sign up.
+        //If the user has updated their profile photo for google, update to the most recent.
+        const updatedUserPhoto = { profilePhoto: user?.photoURL.replace('s96-c', 's400-c') };
+        const userToUpdate = doc(userReference, userData.id);
+        await updateDoc(userToUpdate, updatedUserPhoto);
+        //Might need to refresh to see their updated photo.
         setCurrentUser(userData);
         setThemeMode(userData.preferredTheme);
         getOrganization(userData);
@@ -200,6 +203,7 @@ const Main = () => {
       accessToken: '',
       advisorId: '',
       cohort: '',
+      internalId: '',
       organization: 'Personal'
     }
 
@@ -224,23 +228,40 @@ const Main = () => {
             const orgName = query(organizationReference, where('accessToken', '==', userData?.accessToken));
             const nameSnapshot = await getDocs(orgName);
             const orgNameData = nameSnapshot.docs[0]?.data();
+
             //Get advisor information for the student as well as the internal uid for the student
-            const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
-            const advisorSnapshot = await getDocs(advisorQuery);
-            const advisorData = advisorSnapshot.docs[0]?.data();
+            if (orgData.advisor) {
+              const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
+              const advisorSnapshot = await getDocs(advisorQuery);
+              const advisorData = advisorSnapshot.docs[0]?.data();
 
-            const newCurrentUser = {
-              role: orgData.role,
-              advisor: orgData.advisor,
-              advisorId: advisorData.id,
-              cohort: orgData.cohort,
-              organization: orgNameData.name,
-              internalId: orgData.id
-            };
+              const newCurrentUser = {
+                role: orgData.role,
+                advisor: orgData.advisor,
+                advisorId: advisorData.id,
+                cohort: orgData.cohort,
+                organization: orgNameData.name,
+                internalId: orgData.id
+              };
 
-            await updateDoc(doc(userReference, userData?.id), newCurrentUser);
-            setOrganization(orgNameData);
-            setCurrentUser({ ...userData, newCurrentUser });
+              await updateDoc(doc(userReference, userData?.id), newCurrentUser);
+              setOrganization(orgNameData);
+              setCurrentUser({ ...userData, newCurrentUser });
+            } else {
+              //If the user has been added, but was not assigned an advisor yet.
+              const newCurrentUser = {
+                role: orgData.role,
+                advisor: 'Not yet assigned',
+                advisorId: '',
+                cohort: orgData.cohort,
+                organization: orgNameData.name,
+                internalId: orgData.id
+              };
+
+              await updateDoc(doc(userReference, userData?.id), newCurrentUser);
+              setOrganization(orgNameData);
+              setCurrentUser({ ...userData, newCurrentUser });
+            }
           } else {
             //If user has been removed from the organization by an admin, set account back to Personal, or uploads a bad token.
             setFeedback({
