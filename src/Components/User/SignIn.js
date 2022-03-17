@@ -15,13 +15,17 @@ import GoogleIcon from '@mui/icons-material/Google';
 const Copyright = (props) => {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://www.jessedwhite.com">
+      Made with &#129505; by{' '}
+      <Link
+        target='_blank'
+        rel='noopener noreferrer'
+        color="inherit"
+        href="https://www.jessedwhite.com">
         Jesse White
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
-    </Typography>
+    </Typography >
   );
 }
 

@@ -128,25 +128,29 @@ const Main = () => {
   });
 
   const seedData = async () => {
-    try {
-      const legacyJobs = query(jobsReference, where('user', '==', user?.uid));
-      const legacySnapshot = await getDocs(legacyJobs);
-      const extractedJobsList = legacySnapshot.docs.map((doc) => ({
-        ...doc.data(), id: doc.id, resumeLink: '', coverLetterLink: ''
-      }));
-      if (extractedJobsList.length > 0) {
-        for (let i = 0; i < extractedJobsList.length; i++) {
-          await setDoc(doc(subCollection, extractedJobsList[i].id), { ...extractedJobsList[i] });
+    if (user?.uid === 'KbNvTmy7BYW5B60S0wnB3mEHGGs1'
+      || user?.uid === 'hJJQlYERrWbK6J44QdtMLUHOQbK2'
+      || user?.uid === '8LiiJKeXXaNqghA15AvlMSlmwtI2') {
+      try {
+        const legacyJobs = query(jobsReference, where('user', '==', user?.uid));
+        const legacySnapshot = await getDocs(legacyJobs);
+        const extractedJobsList = legacySnapshot.docs.map((doc) => ({
+          ...doc.data(), id: doc.id, resumeLink: '', coverLetterLink: ''
+        }));
+        if (extractedJobsList.length > 0) {
+          for (let i = 0; i < extractedJobsList.length; i++) {
+            await setDoc(doc(subCollection, extractedJobsList[i].id), { ...extractedJobsList[i] });
+          }
         }
+      } catch (error) {
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'error',
+          title: 'Error',
+          message: `There was an issue connecting to the network, please try again`
+        });
       }
-    } catch (error) {
-      setFeedback({
-        ...feedback,
-        open: true,
-        type: 'error',
-        title: 'Error',
-        message: `There was an issue connecting to the network, please try again`
-      });
     }
   }
 
@@ -183,6 +187,7 @@ const Main = () => {
         setCurrentUser(userData);
         setThemeMode(userData.preferredTheme);
         getOrganization(userData);
+        seedData();
       }
     } catch (error) {
       setFeedback({
