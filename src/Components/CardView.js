@@ -51,7 +51,7 @@ const CardView = (props) => {
       return '#CDDC39'
     } else if (score >= 80 && score < 90) {
       return '#64DD17'
-    } else return '#3D5AFE'
+    } else return '#00C853'
   }
 
   return (

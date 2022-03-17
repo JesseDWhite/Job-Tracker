@@ -39,7 +39,6 @@ const SearchBar = (props) => {
       size='small'
       label='Search Companies'
       variant='outlined'
-      color='info'
       id='searchBar'
       onChange={(e) => handleInputChange(e)}
       value={searchString}
