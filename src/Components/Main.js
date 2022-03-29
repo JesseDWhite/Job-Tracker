@@ -27,7 +27,6 @@ import {
 } from '@mui/material';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
-import Auth from './User/Auth';
 import { signOut, onAuthStateChanged, } from '@firebase/auth';
 import { auth } from '../firebase';
 import Header from '../Layout/Header';
@@ -37,6 +36,8 @@ import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
 import SignIn from './User/SignIn';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import EmptyState from '../Layout/EmptyState';
+import Footer from '../Layout/Footer';
 
 const Main = () => {
 
@@ -484,79 +485,44 @@ const Main = () => {
           minHeight: '100vh'
         }}
       >
-        {!user?.email ? <SignIn /> : null}
-        <Modal
-          open={open}
-          onClose={() => ((setOpen(!open), setEditing(false)))}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{ timeout: 500 }}
-        >
-          <Fade in={open}>
-            <Box container sx={modalStyle} className='modal'>
-              {!user?.email
-                ? <Auth />
-                : <NewJob
-                  themeMode={themeMode}
-                  jobsReference={jobsReference}
-                  subCollection={subCollection}
-                  getJobs={getJobs}
-                  editing={editing}
-                  setEditing={setEditing}
-                  jobToEdit={jobToEdit}
-                  jobs={jobs}
-                  setJobs={setJobs}
-                  searchJobs={searchJobs}
-                  setSearchJobs={setSearchJobs}
-                  user={user}
-                  handleSetOpen={setOpen}
-                  handleClose={handleClose}
+        {!user?.email ? <SignIn />
+          : viewProfile
+            ? <Grid>
+              <AnimateKeyframes
+                play
+                iterationCount={1}
+                keyframes={[
+                  "opacity: 0",
+                  "opacity: 1",
+                ]}
+              >
+                <Profile
+                  totalApplications={totalApplications}
                   feedback={feedback}
                   setFeedback={setFeedback}
+                  getUserData={getUserData}
+                  userReference={userReference}
+                  organization={organization}
+                  organizationReference={organizationReference}
+                  setOrganization={setOrganization}
+                  user={user}
+                  currentUser={currentUser}
+                  logout={logout}
+                  jobs={jobs}
+                  themeMode={themeMode}
+                  setSearchJobs={setSearchJobs}
+                  setViewProfile={setViewProfile}
                 />
-              }
-            </Box>
-          </Fade>
-        </Modal>
-        {user?.email && viewProfile
-          ?
-          <Grid>
-            <AnimateKeyframes
-              play
-              iterationCount={1}
-              keyframes={[
-                "opacity: 0",
-                "opacity: 1",
-              ]}
+              </AnimateKeyframes>
+            </Grid>
+            : <Grid
+              display='flex'
             >
-              <Profile
-                totalApplications={totalApplications}
-                feedback={feedback}
-                setFeedback={setFeedback}
-                getUserData={getUserData}
-                userReference={userReference}
-                organization={organization}
-                organizationReference={organizationReference}
-                setOrganization={setOrganization}
-                user={user}
-                currentUser={currentUser}
-                logout={logout}
-                jobs={jobs}
-                themeMode={themeMode}
-                setSearchJobs={setSearchJobs}
-                setViewProfile={setViewProfile}
-              />
-            </AnimateKeyframes>
-          </Grid>
-          : <Grid
-            display='flex'
-          >
-            <Grid
-              sm={12}
-            >
-              <Grid>
-                {user?.email ?
-                  loading
+              <Grid
+                sm={12}
+              >
+                <Grid>
+                  {loading
                     ? <AnimateKeyframes
                       play
                       iterationCount={1}
@@ -589,19 +555,22 @@ const Main = () => {
                       </Grid>
                     </AnimateKeyframes>
                     : <Grid sx={{ m: 3 }}>
-                      <MasterList
-                        themeMode={themeMode}
-                        searchJobs={searchJobs}
-                        jobs={jobs}
-                        updateJobApplication={updateJobApplication}
-                        jobToEdit={jobToEdit}
-                        setJobToEdit={setJobToEdit}
-                        editing={editing}
-                        setEditing={setEditing}
-                        deleteJob={deleteJob}
-                        updateJobStatus={updateJobStatus}
-                        updateInterviewDate={updateInterviewDate}
-                      />
+                      {jobs.length === 0
+                        ? <EmptyState themeMode={themeMode} />
+                        : <MasterList
+                          themeMode={themeMode}
+                          searchJobs={searchJobs}
+                          jobs={jobs}
+                          updateJobApplication={updateJobApplication}
+                          jobToEdit={jobToEdit}
+                          setJobToEdit={setJobToEdit}
+                          editing={editing}
+                          setEditing={setEditing}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                          updateInterviewDate={updateInterviewDate}
+                        />
+                      }
                       <Fab
                         variant='extended'
                         sx={{
@@ -620,32 +589,31 @@ const Main = () => {
                         ADD NEW
                       </Fab>
                     </Grid>
-                  : null
-                }
+                  }
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
         }
-        {user?.email
-          ? <Header
-            updatePreferrdTheme={updatePreferrdTheme}
-            currentUser={currentUser}
-            themeMode={themeMode}
-            viewProfile={viewProfile}
-            setViewProfile={setViewProfile}
-            user={user}
-            logout={logout}
-            sortByDate={sortByDate}
-            sortByName={sortByName}
-            sort={sort}
-            setSort={setSort}
-            jobs={jobs}
-            setSearchJobs={setSearchJobs}
-            applicationCount={applicationCount}
-            setApplicationCount={setApplicationCount}
-            open={open}
-            setOpen={setOpen}
-          />
+        {user?.email ? <Header
+          updatePreferrdTheme={updatePreferrdTheme}
+          currentUser={currentUser}
+          themeMode={themeMode}
+          viewProfile={viewProfile}
+          setViewProfile={setViewProfile}
+          user={user}
+          logout={logout}
+          sortByDate={sortByDate}
+          sortByName={sortByName}
+          sort={sort}
+          setSort={setSort}
+          jobs={jobs}
+          setSearchJobs={setSearchJobs}
+          applicationCount={applicationCount}
+          setApplicationCount={setApplicationCount}
+          open={open}
+          setOpen={setOpen}
+          loading={loading}
+        />
           : null
         }
         <Snackbar
@@ -666,6 +634,41 @@ const Main = () => {
           </Alert>
         </Snackbar>
       </Box>
+      {user?.email ? <Footer
+        themeMode={themeMode}
+      />
+        : null
+      }
+      <Modal
+        open={open}
+        onClose={() => ((setOpen(!open), setEditing(false)))}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{ timeout: 500 }}
+      >
+        <Fade in={open}>
+          <Box container sx={modalStyle} className='modal'>
+            <NewJob
+              themeMode={themeMode}
+              jobsReference={jobsReference}
+              subCollection={subCollection}
+              getJobs={getJobs}
+              editing={editing}
+              setEditing={setEditing}
+              jobToEdit={jobToEdit}
+              jobs={jobs}
+              setJobs={setJobs}
+              searchJobs={searchJobs}
+              setSearchJobs={setSearchJobs}
+              user={user}
+              handleSetOpen={setOpen}
+              handleClose={handleClose}
+              feedback={feedback}
+              setFeedback={setFeedback}
+            />
+          </Box>
+        </Fade>
+      </Modal>
     </ThemeProvider>
   );
 };
