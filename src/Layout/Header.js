@@ -7,7 +7,7 @@ import {
   Avatar,
   IconButton,
   LinearProgress,
-  Box
+  Box,
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -173,7 +173,7 @@ const Header = (props) => {
               variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
               label={viewProfile ? 'Go Back' : user?.displayName}
               clickable
-              onClick={() => setViewProfile(!viewProfile)}
+              onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}
             />
           </Grid>
         </Grid>

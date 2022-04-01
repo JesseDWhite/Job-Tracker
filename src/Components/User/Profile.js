@@ -46,9 +46,10 @@ import { DataGrid } from '@mui/x-data-grid';
 import Analytics from '../Charts/Analytics';
 import DoughnutChart from '../Charts/DoughnutChart';
 import UserUpload from '../Forms/UserUpload';
-import { eachMonthOfInterval, subYears, format } from 'date-fns'
+import { eachMonthOfInterval, format, subMonths } from 'date-fns'
 import { styled } from '@mui/material/styles';
 import MasterList from '../MasterList';
+import { Link } from 'react-scroll';
 
 const Profile = (props) => {
 
@@ -140,17 +141,18 @@ const Profile = (props) => {
 
   const getLastYear = () => {
     const today = new Date();
-    const oneYear = subYears(today, 1);
+    const yearAndAHalf = subMonths(today, 18);
     const lastYear = eachMonthOfInterval({
-      start: oneYear,
+      start: yearAndAHalf,
       end: today
     });
     const convertedYears = lastYear.map(year => {
       return format(year, 'LLLL') + ' ' + format(year, 'y');
     });
-    convertedYears.push('Advisor');
-    setCohortList(convertedYears);
-    setCurrentCohort(convertedYears[convertedYears.length - 2]);
+    convertedYears.push('Advisors');
+    const sortedList = convertedYears.reverse();
+    setCohortList(sortedList);
+    setCurrentCohort(sortedList[1]);
   }
 
   const uploadAccessToken = async (token) => {
@@ -283,7 +285,7 @@ const Profile = (props) => {
           </Box>
         </Fade>
       </Modal>
-      <Grid display='flex' sx={{ ml: 3, mr: 3, pt: 4 }}>
+      <Grid display='flex' sx={{ ml: 3, mr: 3, pt: 12 }}>
         <Grid
           container
           direction="row"
@@ -505,8 +507,8 @@ const Profile = (props) => {
                     }}
                     rows={cohortStudents}
                     columns={columns}
-                    pageSize={4}
-                    rowsPerPageOptions={[10]}
+                    pageSize={20}
+                    rowsPerPageOptions={[20]}
                     onSelectionModelChange={(newStudent) => (setViewStudent(newStudent))}
                     selectedModel={viewStudent}
                   />
@@ -529,21 +531,25 @@ const Profile = (props) => {
                 }}
                 container
               >
-                <Typography variant='h5' textAlign='center'>Total Applications</Typography>
-                <Typography
+                <Typography variant='h5' textAlign='center'>Application Breakdown</Typography>
+                {/* <Typography
                   variant='h5'
                   sx={{
                     position: 'absolute',
                     top: '48%',
-                    right: '45%',
+                    // right: '45%',
+                    left: '45%',
+                    ml: 'auto',
+                    mr: 'auto',
                     fontSize: '4rem',
                     transition: 'color .5s, background .5s',
+                    textAlign: 'center'
                   }}
                 >
-                  {currentUser.totalApplications}
-                </Typography>
+                  {Object.keys(student).length !== 0 ? studentApplications.length : jobs.length}
+                </Typography> */}
                 <CardContent sx={{ height: '100%' }}>
-                  <DoughnutChart jobs={jobs} themeMode={themeMode} />
+                  <DoughnutChart jobs={Object.keys(student).length !== 0 ? studentApplications : jobs} themeMode={themeMode} />
                 </CardContent>
               </Card>
             </Grid>

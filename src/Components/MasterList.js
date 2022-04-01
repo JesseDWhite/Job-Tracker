@@ -4,7 +4,8 @@ import {
   Typography,
   Chip,
   Pagination,
-  Stack
+  Stack,
+  Skeleton
 } from '@mui/material';
 import CardView from './CardView';
 import { AnimateKeyframes } from 'react-simple-animate';
@@ -24,7 +25,8 @@ const MasterList = (props) => {
     updateJobStatus,
     updateInterviewDate,
     themeMode,
-    student
+    student,
+    loading
   } = props;
 
   const [interviewPage, setInterviewPage] = useState(1);

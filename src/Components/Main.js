@@ -212,91 +212,82 @@ const Main = () => {
       internalId: '',
       organization: 'Personal'
     }
+    try {
+      if (userData?.accessToken) {
+        //Get user roles, advisor, and cohort assigned to them.
+        const userSubCollection = collection(organizationReference, `${userData?.accessToken}/approvedUsers`);
+        const orgQuery = query(userSubCollection, where('email', '==', userData?.email));
+        const querySnapshot = await getDocs(orgQuery);
+        const orgData = querySnapshot.docs[0]?.data();
 
-    if (userData?.role === 'Admin' || userData?.role === 'Advisor') {
-      //User will need to refresh the page if logging in for the first time if they have been made an Admin, or Advisor.
-      const orgQuery = query(organizationReference, where('adminId', '==', userData?.id));
-      const querySnapshot = await getDocs(orgQuery);
-      const orgData = querySnapshot.docs[0]?.data();
-      setOrganization(orgData);
-    } else {
-      try {
-        if (userData?.accessToken) {
-          //Get user roles, advisor, and cohort assigned to them.
-          const userSubCollection = collection(organizationReference, `${userData?.accessToken}/approvedUsers`);
-          const orgQuery = query(userSubCollection, where('email', '==', userData?.email));
-          const querySnapshot = await getDocs(orgQuery);
-          const orgData = querySnapshot.docs[0]?.data();
+        if (orgData) {
+          //If user has been added to an organization by an admin.
+          //Get information on the organization itself. Currently only using the name.
+          const orgName = query(organizationReference, where('accessToken', '==', userData?.accessToken));
+          const nameSnapshot = await getDocs(orgName);
+          const orgNameData = nameSnapshot.docs[0]?.data();
 
-          if (orgData) {
-            //If user has been added to an organization by an admin.
-            //Get information on the organization itself. Currently only capturing the name.
-            const orgName = query(organizationReference, where('accessToken', '==', userData?.accessToken));
-            const nameSnapshot = await getDocs(orgName);
-            const orgNameData = nameSnapshot.docs[0]?.data();
+          //Get advisor information for the student as well as the internal uid for the student
+          if (orgData.advisor) {
+            const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
+            const advisorSnapshot = await getDocs(advisorQuery);
+            const advisorData = advisorSnapshot.docs[0]?.data();
 
-            //Get advisor information for the student as well as the internal uid for the student
-            if (orgData.advisor) {
-              const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
-              const advisorSnapshot = await getDocs(advisorQuery);
-              const advisorData = advisorSnapshot.docs[0]?.data();
+            const newCurrentUser = {
+              role: orgData.role,
+              advisor: orgData.advisor,
+              advisorId: advisorData.id,
+              cohort: orgData.cohort,
+              organization: orgNameData.name,
+              internalId: orgData.id
+            };
 
-              const newCurrentUser = {
-                role: orgData.role,
-                advisor: orgData.advisor,
-                advisorId: advisorData.id,
-                cohort: orgData.cohort,
-                organization: orgNameData.name,
-                internalId: orgData.id
-              };
-
-              await updateDoc(doc(userReference, userData?.id), newCurrentUser);
-              setOrganization(orgNameData);
-              setCurrentUser({ ...userData, newCurrentUser });
-            } else {
-              //If the user has been added, but was not assigned an advisor yet.
-              const newCurrentUser = {
-                role: orgData.role,
-                advisor: 'Not yet assigned',
-                advisorId: '',
-                cohort: orgData.cohort,
-                organization: orgNameData.name,
-                internalId: orgData.id
-              };
-
-              await updateDoc(doc(userReference, userData?.id), newCurrentUser);
-              setOrganization(orgNameData);
-              setCurrentUser({ ...userData, newCurrentUser });
-            }
+            await updateDoc(doc(userReference, userData?.id), newCurrentUser);
+            setOrganization(orgNameData);
+            setCurrentUser({ ...userData, newCurrentUser });
           } else {
-            //If user has been removed from the organization by an admin, set account back to Personal, or uploads a bad token.
-            setFeedback({
-              ...feedback,
-              open: true,
-              type: 'error',
-              title: 'Error',
-              message: `The Access Token you provided is either incorrect, or not associated with an organization anymore`
-            });
-            setCurrentUser({ ...userData, defaultUserParams });
-            await updateDoc(doc(userReference, userData?.id), defaultUserParams);
+            //If the user has been added, but was not assigned an advisor yet.
+            const newCurrentUser = {
+              role: orgData.role,
+              advisor: 'Not yet assigned',
+              advisorId: '',
+              cohort: orgData.cohort,
+              organization: orgNameData.name,
+              internalId: orgData.id
+            };
+
+            await updateDoc(doc(userReference, userData?.id), newCurrentUser);
+            setOrganization(orgNameData);
+            setCurrentUser({ ...userData, newCurrentUser });
           }
         } else {
-          //If user has removed the access token and removes themselves from the organization, set account back to Personal.
+          //If user has been removed from the organization by an admin, set account back to Personal, or uploads a bad token.
+          setFeedback({
+            ...feedback,
+            open: true,
+            type: 'error',
+            title: 'Error',
+            message: `The Access Token you provided is either incorrect, or not associated with an organization anymore`
+          });
           setCurrentUser({ ...userData, defaultUserParams });
           await updateDoc(doc(userReference, userData?.id), defaultUserParams);
         }
-      } catch (error) {
-        //If the user tries to upload an access token that does not exist.
-        setFeedback({
-          ...feedback,
-          open: true,
-          type: 'error',
-          title: 'Error',
-          message: `Access Token ${userData.accessToken} is not associated with any organization`
-        });
+      } else {
+        //If user has removed the access token and removes themselves from the organization, set account back to Personal.
         setCurrentUser({ ...userData, defaultUserParams });
-        await updateDoc(doc(userReference, userData.id), defaultUserParams);
+        await updateDoc(doc(userReference, userData?.id), defaultUserParams);
       }
+    } catch (error) {
+      //If the user tries to upload an access token that does not exist.
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `Access Token ${userData.accessToken} is not associated with any organization`
+      });
+      setCurrentUser({ ...userData, defaultUserParams });
+      await updateDoc(doc(userReference, userData.id), defaultUserParams);
     }
   }
 
@@ -481,8 +472,9 @@ const Main = () => {
         sx={{
           transition: 'color .5s, background .5s',
           background: THEME[themeMode].backgroundColor,
-          mt: user?.email ? 8 : 0,
-          minHeight: '100vh'
+          // pt: user?.email ? 8 : 0,
+          minHeight: '100vh',
+          position: 'relative'
         }}
       >
         {!user?.email ? <SignIn />
@@ -521,7 +513,7 @@ const Main = () => {
               <Grid
                 sm={12}
               >
-                <Grid>
+                <Grid sx={{ m: 3, pt: 8 }}>
                   {loading
                     ? <AnimateKeyframes
                       play
@@ -531,9 +523,9 @@ const Main = () => {
                         "opacity: 1",
                       ]}
                     >
-                      <Grid display='flex'>
+                      <Grid display='flex' >
                         <Grid
-                          sx={{ mt: 11.50, mx: 3 }}
+                          sx={{ mt: 17, mx: 3 }}
                           container
                           direction="row"
                           justifyContent="start"
@@ -547,30 +539,31 @@ const Main = () => {
                                 spacing={2}
                                 item
                               >
-                                <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 290, borderRadius: 5 }} />
+                                <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 300, borderRadius: 5 }} />
                               </Grid>
                             )
                           })}
                         </Grid>
                       </Grid>
                     </AnimateKeyframes>
-                    : <Grid sx={{ m: 3 }}>
-                      {jobs.length === 0
-                        ? <EmptyState themeMode={themeMode} />
-                        : <MasterList
-                          themeMode={themeMode}
-                          searchJobs={searchJobs}
-                          jobs={jobs}
-                          updateJobApplication={updateJobApplication}
-                          jobToEdit={jobToEdit}
-                          setJobToEdit={setJobToEdit}
-                          editing={editing}
-                          setEditing={setEditing}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                          updateInterviewDate={updateInterviewDate}
-                        />
-                      }
+                    : <Grid >
+                      {/* {jobs.length === 0
+                        ? <EmptyState themeMode={themeMode} /> */}
+                      <MasterList
+                        loading={loading}
+                        themeMode={themeMode}
+                        searchJobs={searchJobs}
+                        jobs={jobs}
+                        updateJobApplication={updateJobApplication}
+                        jobToEdit={jobToEdit}
+                        setJobToEdit={setJobToEdit}
+                        editing={editing}
+                        setEditing={setEditing}
+                        deleteJob={deleteJob}
+                        updateJobStatus={updateJobStatus}
+                        updateInterviewDate={updateInterviewDate}
+                      />
+                      {/* } */}
                       <Fab
                         variant='extended'
                         sx={{
@@ -633,12 +626,12 @@ const Main = () => {
             {feedback.message}
           </Alert>
         </Snackbar>
+        {/* {user?.email ? <Footer
+          themeMode={themeMode}
+        />
+          : null
+        } */}
       </Box>
-      {user?.email ? <Footer
-        themeMode={themeMode}
-      />
-        : null
-      }
       <Modal
         open={open}
         onClose={() => ((setOpen(!open), setEditing(false)))}
