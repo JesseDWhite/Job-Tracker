@@ -119,7 +119,7 @@ const Header = (props) => {
                     zIndex: 10,
                     ml: 2
                   }}
-                  color='secondary'
+                  color='primary'
                   variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
                   onClick={() => applicationCount >= 1 ? setFilter(!filter) : setFilter(false)}
                   label={filter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
@@ -131,7 +131,7 @@ const Header = (props) => {
                     zIndex: 10
                   }}
                   variant='text'
-                  color='secondary'
+                  color='primary'
                   onClick={() => sort ? sortByDate() : sortByName()}>
                   SORTED BY: {sort ? 'NAME A-Z' : 'MOST RECENT'}
                 </Button>

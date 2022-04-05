@@ -107,7 +107,6 @@ const NewJob = (props) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(formValues)
     setFormValues({
       ...formValues,
       [name]: value
