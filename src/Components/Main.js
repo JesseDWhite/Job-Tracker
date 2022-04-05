@@ -464,7 +464,7 @@ const Main = () => {
 
   useEffect(() => {
     getApplicationTotal();
-  }, [getJobs])
+  }, [getJobs]);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -472,7 +472,6 @@ const Main = () => {
         sx={{
           transition: 'color .5s, background .5s',
           background: THEME[themeMode].backgroundColor,
-          // pt: user?.email ? 8 : 0,
           minHeight: '100vh',
           position: 'relative'
         }}

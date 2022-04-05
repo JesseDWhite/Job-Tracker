@@ -22,7 +22,9 @@ import {
   InputLabel,
   Select,
   Badge,
-  Avatar
+  Avatar,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
 import {
   BackupTwoTone,
@@ -118,6 +120,8 @@ const Profile = (props) => {
 
   const [cohortStudents, setCohortStudents] = useState([]);
 
+  const [viewType, setViewType] = useState('My Students');
+
   const [viewStudent, setViewStudent] = useState([]);
 
   const [student, setStudent] = useState({});
@@ -138,6 +142,10 @@ const Profile = (props) => {
   const handleSelectChange = (e) => {
     setCurrentCohort(e.target.value);
   }
+
+  const handleToggleChange = (e, newViewType) => {
+    setViewType(newViewType);
+  };
 
   const getLastYear = () => {
     const today = new Date();
@@ -177,7 +185,11 @@ const Profile = (props) => {
           ...student.data(), id: student.id
         }));
         const myStudents = qResults.filter(student => student.advisor === userData?.name);
-        setCohortStudents(myStudents);
+        if (viewType === 'My Students') {
+          setCohortStudents(myStudents);
+        } else {
+          setCohortStudents(qResults);
+        }
       } catch (error) {
         setFeedback({
           ...feedback,
@@ -245,13 +257,13 @@ const Profile = (props) => {
   }
 
   useEffect(() => {
-    getTotalApplicationAverage();
     getStudents(currentUser);
-  }, [currentCohort]);
+  }, [currentCohort, viewType]);
 
   useEffect(() => {
     getUserData(); //This might not need to be called here. Already being called witi getJobs.
     getLastYear();
+    getTotalApplicationAverage();
   }, []);
 
   useEffect(() => {
@@ -464,7 +476,10 @@ const Profile = (props) => {
               ?
               <Paper
                 elevation={3}
-                sx={{ background: THEME[themeMode].card }}
+                sx={{
+                  background: THEME[themeMode].card,
+                  transition: 'color .5s, background .5s'
+                }}
               >
                 <Box
                   sx={{
@@ -489,7 +504,18 @@ const Profile = (props) => {
                       })}
                     </Select>
                   </FormControl>
-                  <Typography sx={{ position: 'absolute', top: 10, right: 20 }} variant='h5'>My Students</Typography>
+                  <ToggleButtonGroup
+                    color='info'
+                    sx={{ position: 'absolute', top: 14, right: 16 }}
+                    value={viewType}
+                    exclusive
+                    onChange={handleToggleChange}
+                    aria-label="List of students"
+                    size='small'
+                  >
+                    <ToggleButton value="My Students" aria-label="My Students">My Students</ToggleButton>
+                    <ToggleButton value="All Students" aria-label="All Students">All Students</ToggleButton>
+                  </ToggleButtonGroup>
                 </Box>
                 <Paper
                   elevation={0}
@@ -568,7 +594,6 @@ const Profile = (props) => {
                   alignItems='center'
                   direction="row"
                 >
-
                   <Paper
                     elevation={3}
                     sx={{
