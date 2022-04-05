@@ -5,16 +5,14 @@ import {
   Paper,
   IconButton,
   Tooltip,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormControl,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Box,
   TextField,
-  CircularProgress
+  CircularProgress,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -54,6 +52,18 @@ const CardView = (props) => {
     } else return '#00C853'
   }
 
+  const getToggleButtonColor = (status) => {
+    if (status === 'Active') {
+      return 'success';
+    } else if (status === 'Interview') {
+      return 'secondary'
+    } else if (status === 'Other') {
+      return 'warning';
+    } else {
+      return 'error';
+    }
+  }
+
   return (
     <>
       <span>
@@ -68,7 +78,8 @@ const CardView = (props) => {
           border: 'solid 5px',
           transition: 'background .5s',
           borderColor: getStatus(job.status, job.score),
-          background: job.score > 89 ? `linear-gradient(135deg, ${THEME[themeMode].card} 60%, #FDD835)` : THEME[themeMode].card,
+          // background: job.score > 89 ? `linear-gradient(135deg, ${THEME[themeMode].card} 60%, #FDD835)` : THEME[themeMode].card,
+          background: THEME[themeMode].card,
           borderRadius: 5,
           color: THEME[themeMode].textColor,
           fontFamily: 'Urbanist'
@@ -226,46 +237,43 @@ const CardView = (props) => {
             }
           </Grid>
         </Grid>
-        <FormControl component='fieldset'>
+        <Grid>
           {!student || Object.values(student).length === 0
-            ? <RadioGroup
-              row
-              id='status'
-              name='status'
+            ?
+            <ToggleButtonGroup
+              sx={{
+                my: 1
+              }}
+              color={getToggleButtonColor(job.status)}
+              size='small'
               value={job.status}
+              name='status'
+              exclusive
               onChange={(e) => updateJobStatus(job.id, e)}
+              fullWidth
             >
-              <FormControlLabel
-                value='Active'
-                control={<Radio color='success' />}
-                label='Active'
-              />
-              <FormControlLabel
-                value='Interview'
-                control={<Radio color='primary' />}
-                label='Interview'
-                color='success'
-              />
-              <FormControlLabel
-                value='Closed'
-                control={<Radio color='error' />}
-                label='Closed'
-              />
-              <FormControlLabel
-                value='Other'
-                control={<Radio color='warning' />}
-                label='Other'
-              />
-            </RadioGroup>
+              <ToggleButton value='Active'>
+                Active
+              </ToggleButton>
+              <ToggleButton value='Interview'>
+                Interview
+              </ToggleButton>
+              <ToggleButton value='Other'>
+                Other
+              </ToggleButton>
+              <ToggleButton value='Closed'>
+                Closed
+              </ToggleButton>
+            </ToggleButtonGroup>
             : <Typography>{job.status}</Typography>
           }
-        </FormControl>
+        </Grid>
         {job.status === 'Interview' ?
           !student || Object.values(student).length === 0
             ? <TextField
               fullWidth
               sx={{
-                mb: 2,
+                my: 1,
               }}
               value={job.interviewDate}
               onChange={(e) => updateInterviewDate(job.id, e)}

@@ -18,7 +18,9 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  ToggleButtonGroup,
+  ToggleButton
 } from '@mui/material';
 import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
 import {
@@ -67,12 +69,14 @@ const NewJob = (props) => {
 
   const [jobPostingKeywords, setJobPostingKeywords] = useState([]);
 
+  const [status, setStatus] = useState('Active');
+
   const initialValues = {
     company: editing ? jobToEdit.company : '',
     dateApplied: editing ? format(new Date(jobToEdit.dateApplied.replace(/-/g, '/')), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
     jobDescription: editing ? jobToEdit.jobDescription : '',
     jobTitle: editing ? jobToEdit.jobTitle : '',
-    status: editing ? jobToEdit.status : 'Active',
+    status: status,
     jobPosting: editing ? jobToEdit.jobPosting : '',
     ats: editing ? jobToEdit.ats : '',
     resumeLink: editing ? jobToEdit.resumeLink : '',
@@ -93,6 +97,7 @@ const NewJob = (props) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    if (editing) { setStatus(jobToEdit.status); }
     const newFormValues = { ...initialValues };
     setFormValues({
       ...formValues,
@@ -102,12 +107,28 @@ const NewJob = (props) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
+    console.log(formValues)
     setFormValues({
       ...formValues,
       [name]: value
     });
   };
+
+  const handleToggleChange = (e, newStatus) => {
+    setStatus(newStatus);
+  }
+
+  const getToggleButtonColor = (status) => {
+    if (status === 'Active') {
+      return 'success';
+    } else if (status === 'Interview') {
+      return 'secondary'
+    } else if (status === 'Other') {
+      return 'warning';
+    } else {
+      return 'error';
+    }
+  }
 
   const validateFormFields = (e) => {
     e.preventDefault();
@@ -149,7 +170,7 @@ const NewJob = (props) => {
         dateApplied: formValues.dateApplied,
         jobDescription: formValues.jobDescription,
         jobTitle: formValues.jobTitle,
-        status: formValues.status,
+        status: status,
         jobPosting: formValues.jobPosting,
         ats: formValues.ats,
         resumeLink: formValues.resumeLink,
@@ -170,7 +191,7 @@ const NewJob = (props) => {
         dateApplied: formValues.dateApplied,
         jobDescription: formValues.jobDescription,
         jobTitle: formValues.jobTitle,
-        status: formValues.status,
+        status: status,
         jobPosting: formValues.jobPosting,
         ats: formValues.ats,
         resumeLink: formValues.resumeLink,
@@ -271,6 +292,7 @@ const NewJob = (props) => {
     }, 500);
   }
 
+
   return (
     <>
       <Modal
@@ -331,47 +353,31 @@ const NewJob = (props) => {
                 direction='row'
                 justifyContent='space-around'
                 sx={{
-                  mb: 1
+                  my: 2
                 }}
               >
-                <FormControl component='fieldset'>
-                  <FormLabel
-                    component='legend'
-                    sx={{
-                      textAlign: 'center'
-                    }}
-                  >
-                    Status
-                  </FormLabel>
-                  <RadioGroup
-                    row
-                    name='status'
-                    defaultValue='Active'
-                    value={formValues.status}
-                    onChange={handleInputChange}
-                  >
-                    <FormControlLabel
-                      value='Active'
-                      control={<Radio color='success' />}
-                      label='Active'
-                    />
-                    <FormControlLabel
-                      value='Interview'
-                      control={<Radio color='primary' />}
-                      label='Interview'
-                    />
-                    <FormControlLabel
-                      value='Closed'
-                      control={<Radio color='error' />}
-                      label='Closed'
-                    />
-                    <FormControlLabel
-                      value='Other'
-                      control={<Radio color='warning' />}
-                      label='Other'
-                    />
-                  </RadioGroup>
-                </FormControl>
+                <ToggleButtonGroup
+                  color={getToggleButtonColor(status)}
+                  size='small'
+                  value={status}
+                  name='status'
+                  exclusive
+                  onChange={handleToggleChange}
+                  fullWidth
+                >
+                  <ToggleButton value='Active'>
+                    Active
+                  </ToggleButton>
+                  <ToggleButton value='Interview'>
+                    Interview
+                  </ToggleButton>
+                  <ToggleButton value='Other'>
+                    Other
+                  </ToggleButton>
+                  <ToggleButton value='Closed'>
+                    Closed
+                  </ToggleButton>
+                </ToggleButtonGroup>
               </Grid>
               <TextField
                 sx={{
