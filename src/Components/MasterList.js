@@ -35,6 +35,8 @@ const MasterList = (props) => {
 
   const [closedPage, setClosedPage] = useState(1);
 
+  const [otherPage, setOtherPage] = useState(1);
+
   const jobsPerPage = 12;
 
   const interviewPagesVisited = interviewPage * jobsPerPage;
@@ -42,6 +44,8 @@ const MasterList = (props) => {
   const activePagesVisited = activePage * jobsPerPage;
 
   const closedPagesVisited = closedPage * jobsPerPage;
+
+  const otherPagesVisted = otherPage * jobsPerPage;
 
   const jobsToDisplay = (status, pages) => {
     const newJobs = [...searchJobs];
@@ -58,6 +62,8 @@ const MasterList = (props) => {
 
   const closedPageCount = Math.ceil(jobs.filter(job => job.status.includes('Closed')).length / jobsPerPage);
 
+  const otherPageCount = Math.ceil(jobs.filter(job => job.status.includes('Other')).length / jobsPerPage);
+
   const handleInterviewChange = (event, value) => {
     setInterviewPage(value);
   }
@@ -68,6 +74,10 @@ const MasterList = (props) => {
 
   const handleClosedChange = (event, value) => {
     setClosedPage(value);
+  }
+
+  const handleOtherChange = (event, value) => {
+    setOtherPage(value);
   }
 
   const getTotalApplicationCount = (status) => {
@@ -83,6 +93,8 @@ const MasterList = (props) => {
       headerTitle = 'Upcoming Interviews'
     } else if (status === 'Active') {
       headerTitle = 'Active Applications'
+    } else if (status === 'Other') {
+      headerTitle = 'Alternative Job Activities'
     }
     if (searchJobs.some(job => job.status === status)) {
       return (
@@ -97,12 +109,19 @@ const MasterList = (props) => {
           >
             {headerTitle} <Chip sx={{ fontSize: '1.15rem', color: THEME[themeMode].textColor }} label={getTotalApplicationCount(status)} />
           </Typography>
-          <Pagination count={pageCount} page={pageNumber} onChange={changeEvent} color={color} />
+          <Pagination
+            count={pageCount}
+            page={pageNumber}
+            onChange={changeEvent}
+            color={color}
+          // variant={themeMode === 'lightMode' ? 'contained' : 'outlined'}
+          />
         </Stack>
       )
     }
   }
 
+  //most colors are being called from the 500 level
   const getStatus = (status, score) => {
     if (score > 89) {
       return '#FDD835'
@@ -113,6 +132,8 @@ const MasterList = (props) => {
         return '#673AB7';
       } else if (status === 'Closed') {
         return '#F44336';
+      } else if (status === 'Other') {
+        return '#FF9800';
       }
     }
   };
@@ -216,49 +237,97 @@ const MasterList = (props) => {
           })}
         </Grid>
       </Grid>
-      <AnimateKeyframes
-        play
-        iterationCount={1}
-        keyframes={["opacity: 0", "opacity: 1"]}
-      >
-        {getCategoryHeader('Closed', 'error', closedPageCount, closedPage, handleClosedChange)}
-      </AnimateKeyframes>
-      <Grid
-        container
-        direction='row'
-        justifyContent='start'
-      >
-        {jobsToDisplay('Closed', closedPagesVisited).map((job, jobidx) => {
-          return (
-            <Grid
-              sm={6}
-              xl={3}
-              key={job.id}
-            >
-              <AnimateKeyframes
-                play
-                iterationCount={1}
-                keyframes={["opacity: 0", "opacity: 1"]}
+      <Grid>
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={["opacity: 0", "opacity: 1"]}
+        >
+          {getCategoryHeader('Other', 'warning', otherPageCount, otherPage, handleOtherChange)}
+        </AnimateKeyframes>
+        <Grid
+          container
+          direction='row'
+          justifyContent='start'
+        >
+          {jobsToDisplay('Other', otherPagesVisted).map((job, jobidx) => {
+            return (
+              <Grid
+                sm={6}
+                xl={3}
+                key={job.id}
               >
-                <CardView
-                  themeMode={themeMode}
-                  updateJobApplication={updateJobApplication}
-                  jobToEdit={jobToEdit}
-                  setJobToEdit={setJobToEdit}
-                  editing={editing}
-                  setEditing={setEditing}
-                  job={job}
-                  getStatus={getStatus}
-                  deleteJob={deleteJob}
-                  updateJobStatus={updateJobStatus}
-                  jobidx={jobidx}
-                  updateInterviewDate={updateInterviewDate}
-                  student={student}
-                />
-              </AnimateKeyframes>
-            </Grid>
-          );
-        })}
+                <AnimateKeyframes
+                  play
+                  iterationCount={1}
+                  keyframes={["opacity: 0", "opacity: 1"]}
+                >
+                  <CardView
+                    themeMode={themeMode}
+                    updateJobApplication={updateJobApplication}
+                    jobToEdit={jobToEdit}
+                    setJobToEdit={setJobToEdit}
+                    editing={editing}
+                    setEditing={setEditing}
+                    job={job}
+                    getStatus={getStatus}
+                    deleteJob={deleteJob}
+                    updateJobStatus={updateJobStatus}
+                    jobidx={jobidx}
+                    updateInterviewDate={updateInterviewDate}
+                    student={student}
+                  />
+                </AnimateKeyframes>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Grid>
+      <Grid>
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={["opacity: 0", "opacity: 1"]}
+        >
+          {getCategoryHeader('Closed', 'error', closedPageCount, closedPage, handleClosedChange)}
+        </AnimateKeyframes>
+        <Grid
+          container
+          direction='row'
+          justifyContent='start'
+        >
+          {jobsToDisplay('Closed', closedPagesVisited).map((job, jobidx) => {
+            return (
+              <Grid
+                sm={6}
+                xl={3}
+                key={job.id}
+              >
+                <AnimateKeyframes
+                  play
+                  iterationCount={1}
+                  keyframes={["opacity: 0", "opacity: 1"]}
+                >
+                  <CardView
+                    themeMode={themeMode}
+                    updateJobApplication={updateJobApplication}
+                    jobToEdit={jobToEdit}
+                    setJobToEdit={setJobToEdit}
+                    editing={editing}
+                    setEditing={setEditing}
+                    job={job}
+                    getStatus={getStatus}
+                    deleteJob={deleteJob}
+                    updateJobStatus={updateJobStatus}
+                    jobidx={jobidx}
+                    updateInterviewDate={updateInterviewDate}
+                    student={student}
+                  />
+                </AnimateKeyframes>
+              </Grid>
+            );
+          })}
+        </Grid>
       </Grid>
     </Grid>
   )

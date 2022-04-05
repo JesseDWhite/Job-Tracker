@@ -365,6 +365,11 @@ const NewJob = (props) => {
                       control={<Radio color='error' />}
                       label='Closed'
                     />
+                    <FormControlLabel
+                      value='Other'
+                      control={<Radio color='warning' />}
+                      label='Other'
+                    />
                   </RadioGroup>
                 </FormControl>
               </Grid>

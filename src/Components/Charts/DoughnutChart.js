@@ -16,20 +16,22 @@ const DoughnutChart = (props) => {
   }
 
   const data = {
-    labels: ['Active', 'Interviews Scheduled', 'Closed'],
+    labels: ['Active', 'Interviews Scheduled', 'Closed', 'Other'],
     datasets: [
       {
         label: 'Totals',
-        data: [jobsByStatus('Active'), jobsByStatus('Interview'), jobsByStatus('Closed')],
+        data: [jobsByStatus('Active'), jobsByStatus('Interview'), jobsByStatus('Closed'), jobsByStatus('Other')],
         backgroundColor: [
           'rgba(75, 192, 192, 0.75)',
           'rgba(53, 162, 235, 0.75)',
           'rgba(255, 99, 132, 0.75)',
+          'rgb(255, 152, 0,0.75)'
         ],
         borderColor: [
           'rgba(75, 192, 192, 0.75)',
           'rgba(54, 162, 235, 0.75)',
           'rgba(255, 99, 132, 0.75)',
+          'rgb(255, 152, 0, 0.75)'
         ],
         borderWidth: 1,
       },

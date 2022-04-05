@@ -497,11 +497,7 @@ const Profile = (props) => {
                       value={currentCohort}
                       onChange={handleSelectChange}
                     >
-                      {cohortList.map(cohort => {
-                        return (
-                          <MenuItem value={cohort}>{cohort}</MenuItem>
-                        )
-                      })}
+                      {cohortList.map(cohort => { return (<MenuItem value={cohort}>{cohort}</MenuItem>) })}
                     </Select>
                   </FormControl>
                   <ToggleButtonGroup
@@ -521,7 +517,7 @@ const Profile = (props) => {
                   elevation={0}
                   sx={{
                     transition: 'color .5s, background .5s',
-                    height: 600,
+                    height: 586,
                     width: '100%',
                     background: THEME[themeMode].card,
                   }}>

@@ -251,6 +251,11 @@ const CardView = (props) => {
                 control={<Radio color='error' />}
                 label='Closed'
               />
+              <FormControlLabel
+                value='Other'
+                control={<Radio color='warning' />}
+                label='Other'
+              />
             </RadioGroup>
             : <Typography>{job.status}</Typography>
           }
