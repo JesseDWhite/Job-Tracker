@@ -102,10 +102,11 @@ const Profile = (props) => {
   };
 
   const columns = [
-    { field: 'name', headerName: 'Name', width: 300 },
+    { field: 'name', headerName: 'Name', width: 200 },
     { field: 'cohort', headerName: 'Cohort', width: 200 },
     { field: 'email', headerName: 'Email', width: 400 },
     { field: 'role', headerName: 'Role', width: 200 },
+    { field: 'totalApplications', headerName: 'Total Apps', width: 200 },
   ];
 
   const [average, setAverage] = useState(0);
@@ -261,7 +262,7 @@ const Profile = (props) => {
   }, [currentCohort, viewType]);
 
   useEffect(() => {
-    getUserData(); //This might not need to be called here. Already being called witi getJobs.
+    getUserData(); //This might not need to be called here. Already being called within getJobs.
     getLastYear();
     getTotalApplicationAverage();
   }, []);

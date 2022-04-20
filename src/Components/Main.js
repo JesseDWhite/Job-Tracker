@@ -26,6 +26,7 @@ import {
   AlertTitle,
 } from '@mui/material';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
+import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 import { format } from 'date-fns';
 import { signOut, onAuthStateChanged, } from '@firebase/auth';
 import { auth } from '../firebase';
@@ -36,8 +37,6 @@ import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
 import SignIn from './User/SignIn';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import EmptyState from '../Layout/EmptyState';
-import Footer from '../Layout/Footer';
 
 const Main = () => {
 
@@ -87,9 +86,6 @@ const Main = () => {
   const darkTheme = createTheme({
     palette: {
       mode: themeMode === 'darkMode' ? 'dark' : 'light',
-      // primary: {
-      //   main: '#3F51B5',
-      // }
     },
     typography: {
       fontFamily: 'Readex Pro',
@@ -136,7 +132,7 @@ const Main = () => {
         const legacyJobs = query(jobsReference, where('user', '==', user?.uid));
         const legacySnapshot = await getDocs(legacyJobs);
         const extractedJobsList = legacySnapshot.docs.map((doc) => ({
-          ...doc.data(), id: doc.id, resumeLink: '', coverLetterLink: ''
+          ...doc.data(), id: doc.id, resumeLink: '', coverLetterLink: '', attendedInterview: false
         }));
         if (extractedJobsList.length > 0) {
           for (let i = 0; i < extractedJobsList.length; i++) {
@@ -170,7 +166,8 @@ const Main = () => {
         role: 'Personal',
         preferredTheme: 'lightMode',
         id: user?.uid,
-        totalApplications: applications ? applications.length : 0
+        totalApplications: applications ? applications.length : 0,
+        totalInterviews: 0
       };
       const userQuery = query(userReference, where('id', '==', user?.uid));
       const querySnapshot = await getDocs(userQuery);
@@ -226,6 +223,11 @@ const Main = () => {
           const orgName = query(organizationReference, where('accessToken', '==', userData?.accessToken));
           const nameSnapshot = await getDocs(orgName);
           const orgNameData = nameSnapshot.docs[0]?.data();
+
+          //Add the users total applications to the approved users table for the data grid to display at a glance.
+          const userToUpdate = doc(userSubCollection, orgData?.id);
+          const newTotal = { totalApplications: userData?.totalApplications };
+          await updateDoc(userToUpdate, newTotal);
 
           //Get advisor information for the student as well as the internal uid for the student
           if (orgData.advisor) {
@@ -297,7 +299,7 @@ const Main = () => {
       if (user?.uid) {
         const userJobsList = await getDocs(subCollection);
         const extractedJobsList = userJobsList.docs.map((doc) => ({
-          ...doc.data(), id: doc.id
+          ...doc.data(), id: doc.id, attendedInterview: false
         }));
         if (extractedJobsList.length > 0) {
           extractedJobsList.sort((a, b) => {
@@ -438,6 +440,18 @@ const Main = () => {
     await updateDoc(jobDoc, updateInterviewDate);
   }
 
+  const updateAttendedInterview = async (id, e) => {
+    const newStatus = e.target.value;
+    const newJobs = [...searchJobs];
+    const jobToUpdate = newJobs.find(job => job.id.includes(id));
+    jobToUpdate.attendedInterview = newStatus;
+    const jobDoc = doc(subCollection, id);
+    const updateAttendedInterview = { attendedInterview: newStatus };
+    setSearchJobs(newJobs);
+    setJobs(newJobs);
+    await updateDoc(jobDoc, updateAttendedInterview);
+  }
+
   const updatePreferrdTheme = async (id) => {
     const userToUpdate = doc(userReference, id);
     if (themeMode === 'lightMode') {
@@ -533,7 +547,8 @@ const Main = () => {
                             return (
                               <Grid
                                 key={idx}
-                                sm={6}
+                                xs={12}
+                                sm={4}
                                 xl={3}
                                 spacing={2}
                                 item
@@ -554,6 +569,7 @@ const Main = () => {
                         searchJobs={searchJobs}
                         jobs={jobs}
                         updateJobApplication={updateJobApplication}
+                        updateAttendedInterview={updateAttendedInterview}
                         jobToEdit={jobToEdit}
                         setJobToEdit={setJobToEdit}
                         editing={editing}
@@ -579,6 +595,19 @@ const Main = () => {
                       >
                         <AddCircleTwoToneIcon sx={{ mr: 1 }} />
                         ADD NEW
+                      </Fab>
+                      <Fab
+                        color='info'
+                        sx={{
+                          position: 'fixed',
+                          bottom: 30,
+                          right: 30,
+                        }}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href='https://forms.gle/cy3TvnmfxrgkZY8K6'
+                      >
+                        <CommentTwoToneIcon />
                       </Fab>
                     </Grid>
                   }

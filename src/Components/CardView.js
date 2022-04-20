@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Typography,
   Grid,
@@ -12,7 +12,9 @@ import {
   TextField,
   CircularProgress,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  Checkbox,
+  Switch
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -20,7 +22,8 @@ import {
   DescriptionTwoTone,
   DeleteTwoTone,
   CreateTwoTone,
-  KeyboardArrowDownRounded
+  KeyboardArrowDownRounded,
+  Check,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import { THEME } from '../Layout/Theme';
@@ -34,9 +37,17 @@ const CardView = (props) => {
     updateJobStatus,
     updateInterviewDate,
     updateJobApplication,
+    updateAttendedInterview,
     themeMode,
     student
   } = props;
+
+  // const [checked, setChecked] = useState(job?.attendedInterview);
+
+  // const handleCheckedChange = (id, e) => {
+  //   setChecked(!checked);
+  //   updateAttendedInterview(id, e);
+  // }
 
   const getScoreColor = (score) => {
     if (score < 20) {
@@ -78,7 +89,6 @@ const CardView = (props) => {
           border: 'solid 5px',
           transition: 'background .5s',
           borderColor: getStatus(job.status, job.score),
-          // background: job.score > 89 ? `linear-gradient(135deg, ${THEME[themeMode].card} 60%, #FDD835)` : THEME[themeMode].card,
           background: THEME[themeMode].card,
           borderRadius: 5,
           color: THEME[themeMode].textColor,
@@ -91,6 +101,7 @@ const CardView = (props) => {
           justifyContent='space-between'
         >
           <Grid
+            item
             sm={12}
           >
             <Grid
@@ -270,16 +281,41 @@ const CardView = (props) => {
         </Grid>
         {job.status === 'Interview' ?
           !student || Object.values(student).length === 0
-            ? <TextField
-              fullWidth
-              sx={{
-                my: 1,
-              }}
-              value={job.interviewDate}
-              onChange={(e) => updateInterviewDate(job.id, e)}
-              type='datetime-local'
-              name='interviewDate'
-            /> : <Typography>{job.interviewDate ? format(new Date(job.interviewDate), 'Pp') : null}</Typography>
+            ?
+            <Grid
+              container
+              spacing={2}
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item
+                md={12}
+              >
+                <TextField
+                  fullWidth
+                  sx={{
+                    my: 1,
+                  }}
+                  value={job.interviewDate}
+                  onChange={(e) => updateInterviewDate(job.id, e)}
+                  type='datetime-local'
+                  name='interviewDate'
+                />
+              </Grid>
+              {/* <Grid item md={2}>
+                <Tooltip title='Attended Interview' placement='right'>
+                  <ToggleButton
+                    value='check'
+                    color='success'
+                    selected={checked ? true : false}
+                    onChange={(e) => { handleCheckedChange(job.id, e) }}>
+                    <Check />
+                  </ToggleButton>
+                </Tooltip>
+              </Grid> */}
+            </Grid>
+            : <Typography>{job.interviewDate ? format(new Date(job.interviewDate), 'Pp') : null}</Typography>
           : null
         }
         <Typography>{job.notes}</Typography>

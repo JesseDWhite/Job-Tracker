@@ -5,7 +5,6 @@ import {
   Chip,
   Pagination,
   Stack,
-  Skeleton
 } from '@mui/material';
 import CardView from './CardView';
 import { AnimateKeyframes } from 'react-simple-animate';
@@ -17,6 +16,7 @@ const MasterList = (props) => {
     searchJobs,
     jobs,
     updateJobApplication,
+    updateAttendedInterview,
     jobToEdit,
     setJobToEdit,
     editing,
@@ -26,7 +26,6 @@ const MasterList = (props) => {
     updateInterviewDate,
     themeMode,
     student,
-    loading
   } = props;
 
   const [interviewPage, setInterviewPage] = useState(1);
@@ -45,7 +44,7 @@ const MasterList = (props) => {
 
   const closedPagesVisited = closedPage * jobsPerPage;
 
-  const otherPagesVisted = otherPage * jobsPerPage;
+  const otherPagesVisited = otherPage * jobsPerPage;
 
   const jobsToDisplay = (status, pages) => {
     const newJobs = [...searchJobs];
@@ -114,12 +113,46 @@ const MasterList = (props) => {
             page={pageNumber}
             onChange={changeEvent}
             color={color}
-          // variant={themeMode === 'lightMode' ? 'contained' : 'outlined'}
           />
         </Stack>
       )
     }
   }
+
+  const STRUCTURE = [
+    {
+      status: 'Interview',
+      color: 'primary',
+      pageCount: interviewPageCount,
+      page: interviewPage,
+      change: handleInterviewChange,
+      pagesVisited: interviewPagesVisited
+    },
+    {
+      status: 'Active',
+      color: 'success',
+      pageCount: activePageCount,
+      page: activePage,
+      change: handleActiveChange,
+      pagesVisited: activePagesVisited
+    },
+    {
+      status: 'Other',
+      color: 'warning',
+      pageCount: otherPageCount,
+      page: otherPage,
+      change: handleOtherChange,
+      pagesVisited: otherPagesVisited
+    },
+    {
+      status: 'Closed',
+      color: 'error',
+      pageCount: closedPageCount,
+      page: closedPage,
+      change: handleClosedChange,
+      pagesVisited: closedPagesVisited
+    },
+  ];
 
   //most colors are being called from the 500 level
   const getStatus = (status, score) => {
@@ -141,7 +174,61 @@ const MasterList = (props) => {
   return (
     <Grid>
       <Grid>
-        <AnimateKeyframes
+        {
+          STRUCTURE.map(skeleton => {
+            return (
+              <Grid key={skeleton.status}>
+                <AnimateKeyframes
+                  play
+                  iterationCount={1}
+                  keyframes={["opacity: 0", "opacity: 1"]}
+                >
+                  {getCategoryHeader(skeleton.status, skeleton.color, skeleton.pageCount, skeleton.page, skeleton.change)}
+                </AnimateKeyframes>
+                <Grid
+                  container
+                  direction='row'
+                  justifyContent='start'
+                >
+                  {jobsToDisplay(skeleton.status, skeleton.pagesVisited).map(job => {
+                    return (
+                      <Grid
+                        item
+                        xs={12}
+                        sm={4}
+                        xl={3}
+                        key={job.id}
+                      >
+                        <AnimateKeyframes
+                          play
+                          iterationCount={1}
+                          keyframes={["opacity: 0", "opacity: 1"]}
+                        >
+                          <CardView
+                            updateAttendedInterview={updateAttendedInterview}
+                            themeMode={themeMode}
+                            updateJobApplication={updateJobApplication}
+                            jobToEdit={jobToEdit}
+                            setJobToEdit={setJobToEdit}
+                            editing={editing}
+                            setEditing={setEditing}
+                            job={job}
+                            getStatus={getStatus}
+                            deleteJob={deleteJob}
+                            updateJobStatus={updateJobStatus}
+                            updateInterviewDate={updateInterviewDate}
+                            student={student}
+                          />
+                        </AnimateKeyframes>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Grid>
+            )
+          })
+        }
+        {/* <AnimateKeyframes
           play
           iterationCount={1}
           keyframes={[
@@ -159,6 +246,7 @@ const MasterList = (props) => {
           {jobsToDisplay('Interview', interviewPagesVisited).map((job, jobidx) => {
             return (
               <Grid
+                xs={12}
                 sm={6}
                 xl={3}
                 key={job.id}
@@ -172,6 +260,7 @@ const MasterList = (props) => {
                   ]}
                 >
                   <CardView
+                    updateAttendedInterview={updateAttendedInterview}
                     themeMode={themeMode}
                     updateJobApplication={updateJobApplication}
                     jobToEdit={jobToEdit}
@@ -207,6 +296,7 @@ const MasterList = (props) => {
           {jobsToDisplay('Active', activePagesVisited).map((job, jobidx) => {
             return (
               <Grid
+                xs={12}
                 sm={6}
                 xl={3}
                 key={job.id}
@@ -217,6 +307,7 @@ const MasterList = (props) => {
                   keyframes={["opacity: 0", "opacity: 1"]}
                 >
                   <CardView
+                    updateAttendedInterview={updateAttendedInterview}
                     themeMode={themeMode}
                     updateJobApplication={updateJobApplication}
                     jobToEdit={jobToEdit}
@@ -250,9 +341,10 @@ const MasterList = (props) => {
           direction='row'
           justifyContent='start'
         >
-          {jobsToDisplay('Other', otherPagesVisted).map((job, jobidx) => {
+          {jobsToDisplay('Other', otherPagesVisited).map((job, jobidx) => {
             return (
               <Grid
+                xs={12}
                 sm={6}
                 xl={3}
                 key={job.id}
@@ -263,6 +355,7 @@ const MasterList = (props) => {
                   keyframes={["opacity: 0", "opacity: 1"]}
                 >
                   <CardView
+                    updateAttendedInterview={updateAttendedInterview}
                     themeMode={themeMode}
                     updateJobApplication={updateJobApplication}
                     jobToEdit={jobToEdit}
@@ -299,6 +392,7 @@ const MasterList = (props) => {
           {jobsToDisplay('Closed', closedPagesVisited).map((job, jobidx) => {
             return (
               <Grid
+                xs={12}
                 sm={6}
                 xl={3}
                 key={job.id}
@@ -309,6 +403,7 @@ const MasterList = (props) => {
                   keyframes={["opacity: 0", "opacity: 1"]}
                 >
                   <CardView
+                    updateAttendedInterview={updateAttendedInterview}
                     themeMode={themeMode}
                     updateJobApplication={updateJobApplication}
                     jobToEdit={jobToEdit}
@@ -327,7 +422,7 @@ const MasterList = (props) => {
               </Grid>
             );
           })}
-        </Grid>
+        </Grid> */}
       </Grid>
     </Grid>
   )
