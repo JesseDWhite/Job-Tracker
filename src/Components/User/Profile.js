@@ -172,7 +172,7 @@ const Profile = (props) => {
       open: true,
       type: 'success',
       title: 'Uploaded',
-      message: `Access Token submitted. Make sure your account admin has added you to the network and restart your program.`
+      message: `Access Token submitted. Make sure your account admin has added you to the network and refresh your page.`
     });
     setAddToken(false);
   }
@@ -262,7 +262,7 @@ const Profile = (props) => {
   }, [currentCohort, viewType]);
 
   useEffect(() => {
-    getUserData(); //This might not need to be called here. Already being called within getJobs.
+    getUserData(jobs); //This might not need to be called here. Already being called within getJobs.
     getLastYear();
     getTotalApplicationAverage();
   }, []);

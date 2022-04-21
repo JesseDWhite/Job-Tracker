@@ -209,61 +209,46 @@ const Main = () => {
       internalId: '',
       organization: 'Personal'
     }
-    try {
-      if (userData?.accessToken) {
+    if (userData?.accessToken) {
+      try {
         //Get user roles, advisor, and cohort assigned to them.
-        const userSubCollection = collection(organizationReference, `${userData?.accessToken}/approvedUsers`);
-        const orgQuery = query(userSubCollection, where('email', '==', userData?.email));
-        const querySnapshot = await getDocs(orgQuery);
-        const orgData = querySnapshot.docs[0]?.data();
+        const approvedUsersSubCollection = collection(organizationReference, `${userData?.accessToken}/approvedUsers`);
+        const approvedUsersQuery = query(approvedUsersSubCollection, where('email', '==', userData?.email));
+        const querySnapshot = await getDocs(approvedUsersQuery);
+        const approvedUserData = querySnapshot.docs[0]?.data();
 
-        if (orgData) {
+        if (approvedUserData) {
           //If user has been added to an organization by an admin.
           //Get information on the organization itself. Currently only using the name.
           const orgName = query(organizationReference, where('accessToken', '==', userData?.accessToken));
           const nameSnapshot = await getDocs(orgName);
           const orgNameData = nameSnapshot.docs[0]?.data();
 
-          //Add the users total applications to the approved users table for the data grid to display at a glance.
-          const userToUpdate = doc(userSubCollection, orgData?.id);
-          const newTotal = { totalApplications: userData?.totalApplications };
-          await updateDoc(userToUpdate, newTotal);
+          //Grap the advisor's information for the student.
+          const advisorQuery = query(userReference, where('name', '==', approvedUserData.advisor));
+          const advisorSnapshot = await getDocs(advisorQuery);
+          const advisorData = advisorSnapshot.docs[0]?.data();
 
-          //Get advisor information for the student as well as the internal uid for the student
-          if (orgData.advisor) {
-            const advisorQuery = query(userReference, where('name', '==', orgData.advisor));
-            const advisorSnapshot = await getDocs(advisorQuery);
-            const advisorData = advisorSnapshot.docs[0]?.data();
+          //Add the approved user id and total applications to the approvedUsers doc.
+          const setInternalId = querySnapshot.docs.map((student) => ({
+            ...student.data(), id: student.id, totalApplications: userData?.totalApplications
+          }));
+          const studentToUpdate = doc(approvedUsersSubCollection, setInternalId[0].id);
+          await updateDoc(studentToUpdate, setInternalId[0]);
 
-            const newCurrentUser = {
-              role: orgData.role,
-              advisor: orgData.advisor,
-              advisorId: advisorData.id,
-              cohort: orgData.cohort,
-              organization: orgNameData.name,
-              internalId: orgData.id
-            };
-
-            await updateDoc(doc(userReference, userData?.id), newCurrentUser);
-            setOrganization(orgNameData);
-            setCurrentUser({ ...userData, newCurrentUser });
-          } else {
-            //If the user has been added, but was not assigned an advisor yet.
-            const newCurrentUser = {
-              role: orgData.role,
-              advisor: 'Not yet assigned',
-              advisorId: '',
-              cohort: orgData.cohort,
-              organization: orgNameData.name,
-              internalId: orgData.id
-            };
-
-            await updateDoc(doc(userReference, userData?.id), newCurrentUser);
-            setOrganization(orgNameData);
-            setCurrentUser({ ...userData, newCurrentUser });
-          }
+          //Update the users account with the organization info.
+          const newCurrentUser = {
+            role: approvedUserData.role,
+            advisor: approvedUserData.advisor ? approvedUserData.advisor : 'Not yet assigned',
+            advisorId: advisorData ? advisorData.id : 'Not yet assigned',
+            cohort: approvedUserData.cohort,
+            organization: orgNameData.name,
+            internalId: setInternalId[0].id,
+          };
+          await updateDoc(doc(userReference, userData?.id), newCurrentUser);
+          setOrganization(orgNameData);
+          setCurrentUser({ ...userData, newCurrentUser });
         } else {
-          //If user has been removed from the organization by an admin, set account back to Personal, or uploads a bad token.
           setFeedback({
             ...feedback,
             open: true,
@@ -271,25 +256,21 @@ const Main = () => {
             title: 'Error',
             message: `The Access Token you provided is either incorrect, or not associated with an organization anymore`
           });
-          setCurrentUser({ ...userData, defaultUserParams });
           await updateDoc(doc(userReference, userData?.id), defaultUserParams);
+          setCurrentUser({ ...userData, defaultUserParams });
         }
-      } else {
-        //If user has removed the access token and removes themselves from the organization, set account back to Personal.
+      } catch (error) {
+        //If the user tries to upload an access token that does not exist.
+        setFeedback({
+          ...feedback,
+          open: true,
+          type: 'error',
+          title: 'Error',
+          message: `Access Token ${userData.accessToken} is not associated with any organization`
+        });
         setCurrentUser({ ...userData, defaultUserParams });
-        await updateDoc(doc(userReference, userData?.id), defaultUserParams);
+        await updateDoc(doc(userReference, userData.id), defaultUserParams);
       }
-    } catch (error) {
-      //If the user tries to upload an access token that does not exist.
-      setFeedback({
-        ...feedback,
-        open: true,
-        type: 'error',
-        title: 'Error',
-        message: `Access Token ${userData.accessToken} is not associated with any organization`
-      });
-      setCurrentUser({ ...userData, defaultUserParams });
-      await updateDoc(doc(userReference, userData.id), defaultUserParams);
     }
   }
 
