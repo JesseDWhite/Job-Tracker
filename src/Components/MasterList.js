@@ -86,7 +86,7 @@ const MasterList = (props) => {
     return count;
   }
 
-  const getCategoryHeader = (status, color, pageCount, pageNumber, changeEvent) => {
+  const categoryHeader = (status, color, pageCount, pageNumber, changeEvent) => {
     let headerTitle = 'Closed Applications';
     if (status === 'Interview') {
       headerTitle = 'Upcoming Interviews'
@@ -183,7 +183,7 @@ const MasterList = (props) => {
                   iterationCount={1}
                   keyframes={["opacity: 0", "opacity: 1"]}
                 >
-                  {getCategoryHeader(skeleton.status, skeleton.color, skeleton.pageCount, skeleton.page, skeleton.change)}
+                  {categoryHeader(skeleton.status, skeleton.color, skeleton.pageCount, skeleton.page, skeleton.change)}
                 </AnimateKeyframes>
                 <Grid
                   container
@@ -228,201 +228,6 @@ const MasterList = (props) => {
             )
           })
         }
-        {/* <AnimateKeyframes
-          play
-          iterationCount={1}
-          keyframes={[
-            "opacity: 0",
-            "opacity: 1",
-          ]}
-        >
-          {getCategoryHeader('Interview', 'primary', interviewPageCount, interviewPage, handleInterviewChange)}
-        </AnimateKeyframes>
-        <Grid
-          container
-          direction='row'
-          justifyContent='start'
-        >
-          {jobsToDisplay('Interview', interviewPagesVisited).map((job, jobidx) => {
-            return (
-              <Grid
-                xs={12}
-                sm={6}
-                xl={3}
-                key={job.id}
-              >
-                <AnimateKeyframes
-                  play
-                  iterationCount={1}
-                  keyframes={[
-                    "opacity: 0",
-                    "opacity: 1",
-                  ]}
-                >
-                  <CardView
-                    updateAttendedInterview={updateAttendedInterview}
-                    themeMode={themeMode}
-                    updateJobApplication={updateJobApplication}
-                    jobToEdit={jobToEdit}
-                    setJobToEdit={setJobToEdit}
-                    editing={editing}
-                    setEditing={setEditing}
-                    job={job}
-                    getStatus={getStatus}
-                    deleteJob={deleteJob}
-                    updateJobStatus={updateJobStatus}
-                    updateInterviewDate={updateInterviewDate}
-                    student={student}
-                  />
-                </AnimateKeyframes>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Grid>
-      <Grid>
-        <AnimateKeyframes
-          play
-          iterationCount={1}
-          keyframes={["opacity: 0", "opacity: 1"]}
-        >
-          {getCategoryHeader('Active', 'success', activePageCount, activePage, handleActiveChange)}
-        </AnimateKeyframes>
-        <Grid
-          container
-          direction='row'
-          justifyContent='start'
-        >
-          {jobsToDisplay('Active', activePagesVisited).map((job, jobidx) => {
-            return (
-              <Grid
-                xs={12}
-                sm={6}
-                xl={3}
-                key={job.id}
-              >
-                <AnimateKeyframes
-                  play
-                  iterationCount={1}
-                  keyframes={["opacity: 0", "opacity: 1"]}
-                >
-                  <CardView
-                    updateAttendedInterview={updateAttendedInterview}
-                    themeMode={themeMode}
-                    updateJobApplication={updateJobApplication}
-                    jobToEdit={jobToEdit}
-                    setJobToEdit={setJobToEdit}
-                    editing={editing}
-                    setEditing={setEditing}
-                    job={job}
-                    getStatus={getStatus}
-                    deleteJob={deleteJob}
-                    updateJobStatus={updateJobStatus}
-                    jobidx={jobidx}
-                    updateInterviewDate={updateInterviewDate}
-                    student={student}
-                  />
-                </AnimateKeyframes>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Grid>
-      <Grid>
-        <AnimateKeyframes
-          play
-          iterationCount={1}
-          keyframes={["opacity: 0", "opacity: 1"]}
-        >
-          {getCategoryHeader('Other', 'warning', otherPageCount, otherPage, handleOtherChange)}
-        </AnimateKeyframes>
-        <Grid
-          container
-          direction='row'
-          justifyContent='start'
-        >
-          {jobsToDisplay('Other', otherPagesVisited).map((job, jobidx) => {
-            return (
-              <Grid
-                xs={12}
-                sm={6}
-                xl={3}
-                key={job.id}
-              >
-                <AnimateKeyframes
-                  play
-                  iterationCount={1}
-                  keyframes={["opacity: 0", "opacity: 1"]}
-                >
-                  <CardView
-                    updateAttendedInterview={updateAttendedInterview}
-                    themeMode={themeMode}
-                    updateJobApplication={updateJobApplication}
-                    jobToEdit={jobToEdit}
-                    setJobToEdit={setJobToEdit}
-                    editing={editing}
-                    setEditing={setEditing}
-                    job={job}
-                    getStatus={getStatus}
-                    deleteJob={deleteJob}
-                    updateJobStatus={updateJobStatus}
-                    jobidx={jobidx}
-                    updateInterviewDate={updateInterviewDate}
-                    student={student}
-                  />
-                </AnimateKeyframes>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Grid>
-      <Grid>
-        <AnimateKeyframes
-          play
-          iterationCount={1}
-          keyframes={["opacity: 0", "opacity: 1"]}
-        >
-          {getCategoryHeader('Closed', 'error', closedPageCount, closedPage, handleClosedChange)}
-        </AnimateKeyframes>
-        <Grid
-          container
-          direction='row'
-          justifyContent='start'
-        >
-          {jobsToDisplay('Closed', closedPagesVisited).map((job, jobidx) => {
-            return (
-              <Grid
-                xs={12}
-                sm={6}
-                xl={3}
-                key={job.id}
-              >
-                <AnimateKeyframes
-                  play
-                  iterationCount={1}
-                  keyframes={["opacity: 0", "opacity: 1"]}
-                >
-                  <CardView
-                    updateAttendedInterview={updateAttendedInterview}
-                    themeMode={themeMode}
-                    updateJobApplication={updateJobApplication}
-                    jobToEdit={jobToEdit}
-                    setJobToEdit={setJobToEdit}
-                    editing={editing}
-                    setEditing={setEditing}
-                    job={job}
-                    getStatus={getStatus}
-                    deleteJob={deleteJob}
-                    updateJobStatus={updateJobStatus}
-                    jobidx={jobidx}
-                    updateInterviewDate={updateInterviewDate}
-                    student={student}
-                  />
-                </AnimateKeyframes>
-              </Grid>
-            );
-          })}
-        </Grid> */}
       </Grid>
     </Grid>
   )

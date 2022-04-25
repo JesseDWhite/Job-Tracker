@@ -6,11 +6,6 @@ import {
   Button,
   Grid,
   Typography,
-  FormControl,
-  RadioGroup,
-  Radio,
-  FormLabel,
-  FormControlLabel,
   Modal,
   Fade,
   Backdrop,
@@ -313,9 +308,8 @@ const NewJob = (props) => {
               }
             </Typography>
             <Typography component='h3'>
-              {jobPostingKeywords.length === 0
-                ? null
-                : <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
+              {jobPostingKeywords.length !== 0 &&
+                <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
               }
             </Typography>
             <Typography sx={{ mt: 2 }}>

@@ -189,8 +189,8 @@ const UserUpload = (props) => {
           onChange={() => editing ? (setEditing(false), setFormValues([initialValues], setCohort(''))) : setEditing(true)}
         />
       </Grid>
-      {editing
-        ? <Grid
+      {editing &&
+        <Grid
           sx={{ mb: 3 }}
           container
           direction="row"
@@ -214,7 +214,6 @@ const UserUpload = (props) => {
             </FormControl>
           </Grid>
         </Grid>
-        : null
       }
       <Grid display='flex'>
         <form action="#" method='POST' onSubmit={(e) => addUserList(e)}>

@@ -338,12 +338,8 @@ const Main = () => {
     const sortedByDate = newJobs.sort((a, b) => {
       const newA = a.dateApplied;
       const newB = b.dateApplied;
-      if (newA < newB) {
-        return 1;
-      }
-      if (newA > newB) {
-        return -1;
-      }
+      if (newA < newB) return 1;
+      if (newA > newB) return -1;
       return 0;
     });
     setSearchJobs(sortedByDate);
@@ -355,14 +351,10 @@ const Main = () => {
     const sortedByName = newJobs.sort((a, b) => {
       const newA = a.company.toLowerCase();
       const newB = b.company.toLowerCase();
-      if (newA < newB) {
-        return -1;
-      }
-      if (newA > newB) {
-        return 1;
-      }
+      if (newA < newB) return -1;
+      if (newA > newB) return 1;
       return 0;
-    })
+    });
     setSearchJobs(sortedByName);
     setSort(!sort);
   }
@@ -421,13 +413,13 @@ const Main = () => {
     await updateDoc(jobDoc, updateInterviewDate);
   }
 
-  const updateAttendedInterview = async (id, e) => {
-    const newStatus = e.target.value;
+  const updateAttendedInterview = async (id, attended) => {
+    const newAttended = !attended;
     const newJobs = [...searchJobs];
     const jobToUpdate = newJobs.find(job => job.id.includes(id));
-    jobToUpdate.attendedInterview = newStatus;
+    jobToUpdate.attendedInterview = newAttended;
     const jobDoc = doc(subCollection, id);
-    const updateAttendedInterview = { attendedInterview: newStatus };
+    const updateAttendedInterview = { attendedInterview: newAttended };
     setSearchJobs(newJobs);
     setJobs(newJobs);
     await updateDoc(jobDoc, updateAttendedInterview);
@@ -542,8 +534,6 @@ const Main = () => {
                       </Grid>
                     </AnimateKeyframes>
                     : <Grid >
-                      {/* {jobs.length === 0
-                        ? <EmptyState themeMode={themeMode} /> */}
                       <MasterList
                         loading={loading}
                         themeMode={themeMode}
@@ -559,7 +549,6 @@ const Main = () => {
                         updateJobStatus={updateJobStatus}
                         updateInterviewDate={updateInterviewDate}
                       />
-                      {/* } */}
                       <Fab
                         variant='extended'
                         sx={{
@@ -596,7 +585,7 @@ const Main = () => {
               </Grid>
             </Grid>
         }
-        {user?.email ? <Header
+        {user?.email && <Header
           updatePreferrdTheme={updatePreferrdTheme}
           currentUser={currentUser}
           themeMode={themeMode}
@@ -615,9 +604,7 @@ const Main = () => {
           open={open}
           setOpen={setOpen}
           loading={loading}
-        />
-          : null
-        }
+        />}
         <Snackbar
           sx={{ width: '100%' }}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -635,11 +622,6 @@ const Main = () => {
             {feedback.message}
           </Alert>
         </Snackbar>
-        {/* {user?.email ? <Footer
-          themeMode={themeMode}
-        />
-          : null
-        } */}
       </Box>
       <Modal
         open={open}

@@ -91,7 +91,7 @@ const Header = (props) => {
           cursor: 'default',
           zIndex: 10,
         }}
-      > {user?.email ?
+      > {user?.email &&
         <Grid>
           <Grid
             container
@@ -177,7 +177,6 @@ const Header = (props) => {
             />
           </Grid>
         </Grid>
-        : null
         }
         <Box
           sx={{

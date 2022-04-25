@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Typography,
   Grid,
@@ -13,8 +13,6 @@ import {
   CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
-  Checkbox,
-  Switch
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -23,7 +21,6 @@ import {
   DeleteTwoTone,
   CreateTwoTone,
   KeyboardArrowDownRounded,
-  Check,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import { THEME } from '../Layout/Theme';
@@ -42,12 +39,6 @@ const CardView = (props) => {
     student
   } = props;
 
-  // const [checked, setChecked] = useState(job?.attendedInterview);
-
-  // const handleCheckedChange = (id, e) => {
-  //   setChecked(!checked);
-  //   updateAttendedInterview(id, e);
-  // }
 
   const getScoreColor = (score) => {
     if (score < 20) {
@@ -141,10 +132,11 @@ const CardView = (props) => {
               </Tooltip>
             </Grid>
           </Grid>
-          <Box sx={{ cursor: 'default' }}>
+          <Box sx={{ cursor: 'default', width: '100%' }}>
             <Grid>
               <Typography variant='h5'>{job.jobTitle}</Typography>
             </Grid>
+            <hr />
             <Grid container>
               <Typography>
                 {format(new Date(job.dateApplied.replace(/-/g, '/')), 'PPP')}
@@ -154,16 +146,13 @@ const CardView = (props) => {
           <Grid
             container
             direction="row"
-            justifyContent="flex-start"
+            justifyContent="start"
           >
             <Tooltip
               title='Job Posting'
             >
               <span>
                 <IconButton
-                  sx={{
-                    pl: 0
-                  }}
                   target='_blank'
                   rel='noopener noreferrer'
                   href={job.jobPosting}
@@ -303,15 +292,20 @@ const CardView = (props) => {
                   name='interviewDate'
                 />
               </Grid>
-              {/* <Grid item md={2}>
-                <Tooltip title='Attended Interview' placement='right'>
-                  <ToggleButton
-                    value='check'
+              {/* <Grid
+                item
+                md={2}
+              >
+                <Tooltip
+                  title='Attended Interview'
+                >
+                  <IconButton
                     color='success'
-                    selected={checked ? true : false}
-                    onChange={(e) => { handleCheckedChange(job.id, e) }}>
-                    <Check />
-                  </ToggleButton>
+                    onClick={() => updateAttendedInterview(job.id, job?.attendedInterview)}
+                    size='large'
+                  >
+                    {job.attendedInterview ? <CheckCircleRounded /> : <RadioButtonUncheckedTwoTone />}
+                  </IconButton>
                 </Tooltip>
               </Grid> */}
             </Grid>

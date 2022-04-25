@@ -375,17 +375,16 @@ const Profile = (props) => {
                         fullWidth
                       />
                     </Grid>
-                    : accessToken
-                      ? <Grid item sm={12}>
-                        <Typography sx={{ textAlign: 'center', color: 'gray' }}>
-                          Access Token: {accessToken}
-                        </Typography>
-                      </Grid>
-                      : null
+                    : accessToken &&
+                    <Grid item sm={12}>
+                      <Typography sx={{ textAlign: 'center', color: 'gray' }}>
+                        Access Token: {accessToken}
+                      </Typography>
+                    </Grid>
                   }
                   <Grid item sm={1}>
-                    {addToken
-                      ? <Tooltip title='Upload Token'>
+                    {addToken &&
+                      <Tooltip title='Upload Token'>
                         <IconButton
                           color='info'
                           disabled={accessToken ? false : true}
@@ -393,19 +392,17 @@ const Profile = (props) => {
                           <BackupTwoTone />
                         </IconButton>
                       </Tooltip>
-                      : null
                     }
                   </Grid>
                   <Grid item sm={1}>
-                    {addToken
-                      ? <Tooltip title='Cancel'>
+                    {addToken &&
+                      <Tooltip title='Cancel'>
                         <IconButton
                           color='error'
                           onClick={() => ((setAddToken(false), setAccessToken(backupToken)))}>
                           <HighlightOffTwoTone />
                         </IconButton>
                       </Tooltip>
-                      : null
                     }
                   </Grid>
                 </Grid>
@@ -555,22 +552,6 @@ const Profile = (props) => {
                 container
               >
                 <Typography variant='h5' textAlign='center'>Application Breakdown</Typography>
-                {/* <Typography
-                  variant='h5'
-                  sx={{
-                    position: 'absolute',
-                    top: '48%',
-                    // right: '45%',
-                    left: '45%',
-                    ml: 'auto',
-                    mr: 'auto',
-                    fontSize: '4rem',
-                    transition: 'color .5s, background .5s',
-                    textAlign: 'center'
-                  }}
-                >
-                  {Object.keys(student).length !== 0 ? studentApplications.length : jobs.length}
-                </Typography> */}
                 <CardContent sx={{ height: '100%' }}>
                   <DoughnutChart jobs={Object.keys(student).length !== 0 ? studentApplications : jobs} themeMode={themeMode} />
                 </CardContent>
@@ -578,8 +559,7 @@ const Profile = (props) => {
             </Grid>
             : null}
           <Grid item sx={{ width: '100%' }}>
-            {Object.keys(student).length !== 0
-              ?
+            {Object.keys(student).length !== 0 &&
               <Box
                 sx={{
                   transition: 'color .5s',
@@ -645,9 +625,7 @@ const Profile = (props) => {
                   jobs={studentApplications}
                   student={student}
                 />
-              </Box>
-              : null
-            }
+              </Box>}
           </Grid>
         </Grid>
       </Grid>
