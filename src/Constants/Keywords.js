@@ -97,5 +97,15 @@ export const KEYWORDS = [
   'blockchain',
   'pair-programming',
   'firebase',
-  'graphql'
+  'graphql',
+  'lambda',
+  's3',
+  'sqs',
+  'devops',
+  'engineer',
+  'dynamodb',
+  'splunk',
+  'apache',
+  'postgresql',
+  'tailwind'
 ];
