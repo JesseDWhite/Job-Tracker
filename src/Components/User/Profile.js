@@ -24,7 +24,8 @@ import {
   Badge,
   Avatar,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  CircularProgress
 } from '@mui/material';
 import {
   BackupTwoTone,
@@ -223,6 +224,13 @@ const Profile = (props) => {
             ...app.data(),
             id: app.id,
           }));
+          applicationResults.sort((a, b) => {
+            const newA = a.dateApplied;
+            const newB = b.dateApplied;
+            if (newA < newB) return 1;
+            if (newA > newB) return -1;
+            return 0;
+          });
           setStudentApplications(applicationResults);
           setStudent(studentResult);
         }
@@ -310,6 +318,7 @@ const Profile = (props) => {
             <Card
               elevation={3}
               sx={{
+                borderRadius: 5,
                 minHeight: '100%',
                 p: 3,
                 transition: 'color .5s, background .5s',
@@ -407,6 +416,77 @@ const Profile = (props) => {
                   </Grid>
                 </Grid>
                 <hr />
+                {/* <Grid
+                  container
+                  justifyContent='space-around'
+                  direction='row'
+                >
+                  <Card
+                    item
+                    xs={6}
+                    sx={{
+                      p: 1,
+                      width: '40%',
+                      height: 75,
+                      borderRadius: 3,
+                      position: 'relative'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        left: 0,
+                      }}
+                    >
+                      <ApartmentTwoTone sx={{ fontSize: 50 }} />
+                    </Box>
+                    <Box
+
+                    >
+                      <Typography>
+                        {currentUser.organization}
+                      </Typography>
+                    </Box>
+                  </Card>
+                  <Card
+                    item
+                    xs={6}
+                    sx={{
+                      p: 1,
+                      width: '40%',
+                      height: 75,
+                      borderRadius: 3
+                    }}
+                  >
+                    Content
+                  </Card>
+                  <Card
+                    item
+                    xs={6}
+                    sx={{
+                      mt: 1,
+                      p: 1,
+                      width: '40%',
+                      height: 75,
+                      borderRadius: 3
+                    }}
+                  >
+                    Content
+                  </Card>
+                  <Card
+                    item
+                    xs={6}
+                    sx={{
+                      mt: 1,
+                      p: 1,
+                      width: '40%',
+                      height: 75,
+                      borderRadius: 3
+                    }}
+                  >
+                    Content
+                  </Card>
+                </Grid> */}
                 {currentUser.accessToken && currentUser.organization
                   ? <Box>
                     <Typography
@@ -430,6 +510,7 @@ const Profile = (props) => {
                     >
                       Cohort: {currentUser.cohort}
                     </Typography>
+
                   </Box>
                   : null
                 }
@@ -475,6 +556,7 @@ const Profile = (props) => {
               <Paper
                 elevation={3}
                 sx={{
+                  borderRadius: 5,
                   background: THEME[themeMode].card,
                   transition: 'color .5s, background .5s'
                 }}
@@ -514,6 +596,7 @@ const Profile = (props) => {
                 <Paper
                   elevation={0}
                   sx={{
+                    borderRadius: 5,
                     transition: 'color .5s, background .5s',
                     height: 586,
                     width: '100%',
@@ -542,6 +625,7 @@ const Profile = (props) => {
               <Card
                 elevation={3}
                 sx={{
+                  borderRadius: 5,
                   height: '100%',
                   p: 3,
                   transition: 'color .5s, background .5s',
@@ -574,6 +658,7 @@ const Profile = (props) => {
                   <Paper
                     elevation={3}
                     sx={{
+                      borderRadius: 5,
                       p: 3,
                       mb: 3,
                       width: 500,

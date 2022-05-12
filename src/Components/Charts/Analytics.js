@@ -71,6 +71,7 @@ const Analytics = (props) => {
       <Card
         elevation={3}
         sx={{
+          borderRadius: 5,
           position: 'relative',
           height: 600,
           p: 3,
