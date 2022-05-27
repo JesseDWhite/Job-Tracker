@@ -154,23 +154,6 @@ const MasterList = (props) => {
     },
   ];
 
-  //most colors are being called from the 500 level
-  const getStatus = (status, score) => {
-    if (score > 89) {
-      return '#FDD835'
-    } else {
-      if (status === 'Active') {
-        return '#4CAF50';
-      } else if (status === 'Interview') {
-        return '#673AB7';
-      } else if (status === 'Closed') {
-        return '#F44336';
-      } else if (status === 'Other') {
-        return '#FF9800';
-      }
-    }
-  };
-
   return (
     <Grid>
       <Grid>
@@ -199,27 +182,26 @@ const MasterList = (props) => {
                         xl={3}
                         key={job.id}
                       >
-                        <AnimateKeyframes
+                        {/* <AnimateKeyframes
                           play
                           iterationCount={1}
                           keyframes={["opacity: 0", "opacity: 1"]}
-                        >
-                          <CardView
-                            updateAttendedInterview={updateAttendedInterview}
-                            themeMode={themeMode}
-                            updateJobApplication={updateJobApplication}
-                            jobToEdit={jobToEdit}
-                            setJobToEdit={setJobToEdit}
-                            editing={editing}
-                            setEditing={setEditing}
-                            job={job}
-                            getStatus={getStatus}
-                            deleteJob={deleteJob}
-                            updateJobStatus={updateJobStatus}
-                            updateInterviewDate={updateInterviewDate}
-                            student={student}
-                          />
-                        </AnimateKeyframes>
+                        > */}
+                        <CardView
+                          updateAttendedInterview={updateAttendedInterview}
+                          themeMode={themeMode}
+                          updateJobApplication={updateJobApplication}
+                          jobToEdit={jobToEdit}
+                          setJobToEdit={setJobToEdit}
+                          editing={editing}
+                          setEditing={setEditing}
+                          job={job}
+                          deleteJob={deleteJob}
+                          updateJobStatus={updateJobStatus}
+                          updateInterviewDate={updateInterviewDate}
+                          student={student}
+                        />
+                        {/* </AnimateKeyframes> */}
                       </Grid>
                     );
                   })}

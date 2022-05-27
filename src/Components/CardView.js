@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Typography,
   Grid,
@@ -24,12 +24,12 @@ import {
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import { THEME } from '../Layout/Theme';
+import { motion } from 'framer-motion';
 
 const CardView = (props) => {
 
   const {
     job,
-    getStatus,
     deleteJob,
     updateJobStatus,
     updateInterviewDate,
@@ -39,6 +39,7 @@ const CardView = (props) => {
     student
   } = props;
 
+  const [viewComments, setViewCommnts] = useState(false);
 
   const getScoreColor = (score) => {
     if (score < 20) {
@@ -54,6 +55,23 @@ const CardView = (props) => {
     } else return '#00C853'
   }
 
+  //most colors are being called from the 500 level
+  const getStatus = (status, score) => {
+    if (score > 89) {
+      return '#FDD835'
+    } else {
+      if (status === 'Active') {
+        return '#4CAF50';
+      } else if (status === 'Interview') {
+        return '#673AB7';
+      } else if (status === 'Closed') {
+        return '#F44336';
+      } else if (status === 'Other') {
+        return '#FF9800';
+      }
+    }
+  };
+
   const getToggleButtonColor = (status) => {
     if (status === 'Active') {
       return 'success';
@@ -68,10 +86,12 @@ const CardView = (props) => {
 
   return (
     <>
-      <span>
-        {job.score > 89 ? <img src="https://media.giphy.com/media/YTJYm96ivBVIlHNRq7/source.gif" alt="sparkles" style={{ position: 'absolute', width: 100, }} /> : null}
-      </span>
       <Paper
+        component={motion.div}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', bounce: 0.20 }}
+        whileHover={{ scale: 1.03 }}
         elevation={3}
         sx={{
           m: 3,
@@ -150,6 +170,7 @@ const CardView = (props) => {
           >
             <Tooltip
               title='Job Posting'
+              disableInteractive
             >
               <span>
                 <IconButton
@@ -165,6 +186,7 @@ const CardView = (props) => {
             </Tooltip>
             <Tooltip
               title='Application Tracking System'
+              disableInteractive
             >
               <span>
                 <IconButton
@@ -180,6 +202,7 @@ const CardView = (props) => {
             </Tooltip>
             <Tooltip
               title='Cover Letter'
+              disableInteractive
             >
               <span>
                 <IconButton
@@ -195,6 +218,7 @@ const CardView = (props) => {
             </Tooltip>
             <Tooltip
               title='Resume'
+              disableInteractive
             >
               <span>
                 <IconButton
@@ -212,6 +236,7 @@ const CardView = (props) => {
               ? <>
                 <Tooltip
                   title='Edit'
+                  disableInteractive
                 >
                   <span>
                     <IconButton
@@ -223,6 +248,7 @@ const CardView = (props) => {
                 </Tooltip>
                 <Tooltip
                   title='Delete'
+                  disableInteractive
                 >
                   <span>
                     <IconButton
