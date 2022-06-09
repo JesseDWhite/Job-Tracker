@@ -69,6 +69,7 @@ const Profile = (props) => {
     getUserData,
     setFeedback,
     feedback,
+    handleViewComments
   } = props;
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -709,6 +710,7 @@ const Profile = (props) => {
                   searchJobs={studentApplications}
                   jobs={studentApplications}
                   student={student}
+                  handleViewComments={handleViewComments}
                 />
               </Box>}
           </Grid>

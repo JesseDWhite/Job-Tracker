@@ -1,134 +1,164 @@
-// import React, { useState, useEffect } from 'react';
-// import { db } from '../firebase';
-// import {
-//   collection,
-//   getDocs,
-//   updateDoc,
-//   deleteDoc,
-//   doc,
-//   query,
-//   where,
-//   setDoc
-// } from 'firebase/firestore';
-// import NewJob from './Forms/NewJob';
-// import {
-//   Grid,
-//   Modal,
-//   Fade,
-//   Backdrop,
-//   Box,
-//   Fab,
-//   Skeleton,
-//   Snackbar,
-//   Alert,
-//   Slide,
-//   AlertTitle,
-// } from '@mui/material';
-// import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
-// import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
-// import { format } from 'date-fns';
-// import { signOut, onAuthStateChanged, } from '@firebase/auth';
-// import { auth } from '../firebase';
-// import Header from '../Layout/Header';
-// import Profile from './User/Profile';
-// import MasterList from './MasterList';
-// import { AnimateKeyframes } from 'react-simple-animate';
-// import { THEME } from '../Layout/Theme';
-// import SignIn from './User/SignIn';
-// import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React, { useState } from 'react';
+import {
+  collection,
+  addDoc,
+} from 'firebase/firestore';
+import {
+  Grid,
+  Box,
+  TextField,
+  Typography,
+  Avatar,
+  Tooltip,
+  Fab
+} from '@mui/material';
+import { SendRounded } from '@mui/icons-material';
+import { AnimateKeyframes } from 'react-simple-animate';
 
-// const Comments = (props) => {
+const Comments = (props) => {
 
-//   const { themeMode } = props;
+  const {
+    comments,
+    setComments,
+    user,
+    jobToEdit,
+    userReference
+  } = props;
 
-//   const [comments, setComments] = useState([]);
+  const initialValues = {
+    name: user.displayName,
+    userId: user.uid,
+    photoUrl: user.photoURL,
+    response: '',
+    timeStamp: new Date(),
+  }
 
-//   const [response, setResponse] = useState('');
+  const [formValues, setFormValues] = useState(initialValues);
 
-//   const jobsReference = collection(db, 'jobs');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value
+    });
+  };
 
-//   const [open, setOpen] = useState(false);
+  const addComment = async (e) => {
+    e.preventDefault();
+    const newComments = [...comments];
+    newComments.push(formValues);
+    setComments(newComments);
+    const jobsSubCollection = collection(userReference, `${jobToEdit.user}/jobs`);
+    const commentsSubCollection = collection(jobsSubCollection, `${jobToEdit.id}/comments`)
+    await addDoc(commentsSubCollection, {
+      ...formValues
+    });
+    setFormValues(initialValues);
+  }
 
-//   const [user] = useState('Jesse');
+  return (
+    <>
+      <Box container>
+        <Typography
+          variant='h4'
+          sx={{
+            textAlign: 'center',
+            mb: 3
+          }}
+        >
+          {jobToEdit.company}
+        </Typography>
 
-//   const modalStyle = {
-//     position: 'absolute',
-//     top: '50%',
-//     left: '50%',
-//     transform: 'translate(-50%, -50%)',
-//     minWidth: 525,
-//     maxHeight: '85%',
-//     bgcolor: THEME[themeMode].card,
-//     color: THEME[themeMode].textColor,
-//     borderRadius: 5,
-//     boxShadow: 24,
-//     p: 4,
-//     overflowY: 'auto'
-//   };
+        {comments.map((comment, idx) => {
+          return (
+            <Box
+              sx={{ py: 1 }}
+            >
+              <AnimateKeyframes
+                play
+                iterationCount={1}
+                keyframes={["opacity: 0", "opacity: 1"]}
+              >
+                <Grid
+                  container
+                  direction={comment.userId === user.uid ? 'row' : 'row-reverse'}
+                  justifyContent='flex-start'
+                  alignItems='flex-center'
+                >
+                  <Tooltip
+                    title={comment.name}
+                    placement={comment.userId === user.uid ? 'left' : 'right'}
+                    disableInteractive>
+                    <Avatar
+                      alt={comment.name}
+                      src={comment.photoUrl}
+                      sx={{
+                        mt: 1
+                      }}
+                    />
+                  </Tooltip>
+                  <Typography
+                    sx={{
+                      p: 2,
+                      mx: 2,
+                      maxWidth: '78%',
+                      color: comment.userId === user.uid ? 'white' : 'black',
+                      backgroundColor: comment.userId === user.uid ? 'rgb(33, 150, 243)' : 'rgb(207, 216, 220)',
+                      borderRadius: 3
+                    }}
+                  >
+                    {comment.response}
+                  </Typography>
+                </Grid>
+              </AnimateKeyframes>
+            </Box>
+          )
+        })}
+        <div>
+          <form onSubmit={(e) => addComment(e)}>
+            <Grid
+              container
+            >
+              <Grid
+                item
+                xs={10}
+              >
+                <TextField
+                  fullWidth
+                  autoFocus
+                  multiline
+                  type='text'
+                  name='response'
+                  placeholder='Message'
+                  value={formValues.response}
+                  onChange={handleInputChange}
+                  sx={{
+                    mt: 2,
+                  }}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={2}
+              >
+                <Fab
+                  type='submit'
+                  color='primary'
+                  disabled={formValues.response.length > 0 ? false : true}
+                  sx={{
+                    mt: 2,
+                    ml: 4
+                  }}
+                >
+                  <SendRounded />
+                </Fab>
+              </Grid>
+            </Grid>
+          </form>
+        </div>
+      </Box>
+    </>
+  )
+}
 
-//   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setResponse({
-//       ...response,
-//       [name]: value
-//     });
-//   };
-
-//   const addComment = () => {
-//     const newComments = [...comments];
-//     const newResponse = {
-//       name: user,
-//       userId: '',
-//       photoUrl: '',
-//       comment: response,
-//       timeStamp: new Date(),
-//     }
-//     newComments.push(newResponse);
-//     setComments(newComments);
-//   }
-
-//   const handleViewComments = async (job) => {
-//     const commentsSubCollection = collection(jobsReference, `${job.id}/comments`);
-//     const commentsQuery = await getDocs(commentsSubCollection);
-//     const extractedComments = commentsQuery.docs.map((doc) => ({
-//       ...doc.data(), id: doc.id
-//     }));
-//     setComments(extractedComments);
-//     setOpen(true);
-//   }
-
-//   useEffect(() => {
-//     const newComments = [...comments];
-//     setComments(newComments);
-//   }, [comments]);
-
-//   return (
-//     <>
-//       <Modal
-//         open={open}
-//         onClose={() => setOpen(!open)}
-//         closeAfterTransition
-//         BackdropComponent={Backdrop}
-//         BackdropProps={{ timeout: 500 }}
-//       >
-//         <Fade in={open}>
-//           <Box container sx={modalStyle} className='modal'>
-//             {comments.map((comment, idx) => {
-//               return (
-//                 <p>comment</p>
-//               )
-//             })}
-//             <div>
-//               <form action="POST">
-//                 <input type="text" name='comment' value={response} onChange={handleInputChange} />
-//                 <button onSubmit={() => addComment()}>Send</button>
-//               </form>
-//             </div>
-//           </Box>
-//         </Fade>
-//       </Modal>
-//     </>
-//   )
-// }
-
-// export default Comments;
+export default Comments;

@@ -37,6 +37,7 @@ import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
 import SignIn from './User/SignIn';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Comments from './Comments';
 
 const Main = () => {
 
@@ -68,6 +69,10 @@ const Main = () => {
 
   const [totalApplications, setTotalApplications] = useState(0);
 
+  const [viewComments, setViewComments] = useState(false);
+
+  const [comments, setComments] = useState([]);
+
   const jobsReference = collection(db, 'jobs');
 
   const userReference = collection(db, 'users');
@@ -75,6 +80,8 @@ const Main = () => {
   const organizationReference = collection(db, 'organizations');
 
   const subCollection = collection(userReference, `${user?.uid}/jobs`);
+
+  const commentsSubCollection = collection(subCollection, `${jobToEdit.id}/comments`);
 
   const [feedback, setFeedback] = useState({
     open: false,
@@ -104,6 +111,7 @@ const Main = () => {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     minWidth: 525,
+    maxWidth: viewComments ? 525 : null,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
@@ -445,6 +453,38 @@ const Main = () => {
     setOpen(true);
   }
 
+  const handleViewComments = async (id, job) => {
+    setViewComments(true);
+    setOpen(true);
+    setJobToEdit(job);
+    const subCollection = collection(userReference, `${id}/jobs`);
+    const commentsQuery = await getDocs(collection(subCollection, `${job.id}/comments`));
+    if (commentsQuery) {
+      const extractedComments = commentsQuery.docs.map((doc) => ({
+        ...doc.data(), id: doc.id
+      }));
+      const sortedByDate = extractedComments.sort((a, b) => {
+        const newA = a.timeStamp;
+        const newB = b.timeStamp;
+        if (newA < newB) return -1;
+        if (newA > newB) return 1;
+        return 0;
+      });
+      setComments(sortedByDate);
+    }
+  }
+
+
+  const handleModalClose = () => {
+    setOpen(false);
+    setTimeout(() => {
+      setEditing(false);
+      setJobToEdit({});
+      setComments([]);
+      setViewComments(false);
+    }, 500);
+  }
+
   useEffect(() => {
     getJobs();
   }, [user]);
@@ -490,6 +530,7 @@ const Main = () => {
                   themeMode={themeMode}
                   setSearchJobs={setSearchJobs}
                   setViewProfile={setViewProfile}
+                  handleViewComments={handleViewComments}
                 />
               </AnimateKeyframes>
             </Grid>
@@ -548,6 +589,11 @@ const Main = () => {
                         deleteJob={deleteJob}
                         updateJobStatus={updateJobStatus}
                         updateInterviewDate={updateInterviewDate}
+                        viewComments={viewComments}
+                        setViewComments={setViewComments}
+                        handleViewComments={handleViewComments}
+                        user={user}
+                        userReference={userReference}
                       />
                       <Fab
                         variant='extended'
@@ -625,31 +671,42 @@ const Main = () => {
       </Box>
       <Modal
         open={open}
-        onClose={() => ((setOpen(!open), setEditing(false)))}
+        onClose={() => handleModalClose()}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{ timeout: 500 }}
       >
         <Fade in={open}>
           <Box container sx={modalStyle} className='modal'>
-            <NewJob
-              themeMode={themeMode}
-              jobsReference={jobsReference}
-              subCollection={subCollection}
-              getJobs={getJobs}
-              editing={editing}
-              setEditing={setEditing}
-              jobToEdit={jobToEdit}
-              jobs={jobs}
-              setJobs={setJobs}
-              searchJobs={searchJobs}
-              setSearchJobs={setSearchJobs}
-              user={user}
-              handleSetOpen={setOpen}
-              handleClose={handleClose}
-              feedback={feedback}
-              setFeedback={setFeedback}
-            />
+            {viewComments
+              ? <Comments
+                comments={comments}
+                setComments={setComments}
+                user={user}
+                jobToEdit={jobToEdit}
+                jobsReference={jobsReference}
+                commentsSubCollection={commentsSubCollection}
+                userReference={userReference}
+              />
+              : <NewJob
+                themeMode={themeMode}
+                jobsReference={jobsReference}
+                subCollection={subCollection}
+                getJobs={getJobs}
+                editing={editing}
+                setEditing={setEditing}
+                jobToEdit={jobToEdit}
+                jobs={jobs}
+                setJobs={setJobs}
+                searchJobs={searchJobs}
+                setSearchJobs={setSearchJobs}
+                user={user}
+                handleSetOpen={setOpen}
+                handleClose={handleClose}
+                feedback={feedback}
+                setFeedback={setFeedback}
+              />
+            }
           </Box>
         </Fade>
       </Modal>

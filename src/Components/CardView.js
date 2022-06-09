@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Typography,
   Grid,
@@ -13,6 +13,8 @@ import {
   CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
+  Button,
+  Fab
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -21,6 +23,7 @@ import {
   DeleteTwoTone,
   CreateTwoTone,
   KeyboardArrowDownRounded,
+  EmailTwoTone
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import { THEME } from '../Layout/Theme';
@@ -36,10 +39,12 @@ const CardView = (props) => {
     updateJobApplication,
     updateAttendedInterview,
     themeMode,
-    student
+    student,
+    viewComments,
+    setViewComments,
+    handleViewComments,
+    user
   } = props;
-
-  const [viewComments, setViewCommnts] = useState(false);
 
   const getScoreColor = (score) => {
     if (score < 20) {
@@ -121,6 +126,21 @@ const CardView = (props) => {
               justifyContent='space-between'
               sx={{ cursor: 'default', position: 'relative' }}
             >
+              <Fab
+                color='primary'
+                onClick={() => !student || Object.values(student).length === 0
+                  ? handleViewComments(user.uid, job)
+                  : handleViewComments(student.id, job)
+                }
+                size='medium'
+                sx={{
+                  position: 'absolute',
+                  left: -40,
+                  top: -40
+                }}
+              >
+                <EmailTwoTone />
+              </Fab>
               <Typography
                 sx={{ maxWidth: '87%' }}
                 item
