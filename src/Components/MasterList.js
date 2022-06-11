@@ -16,18 +16,11 @@ const MasterList = (props) => {
     searchJobs,
     jobs,
     updateJobApplication,
-    updateAttendedInterview,
-    jobToEdit,
-    setJobToEdit,
-    editing,
-    setEditing,
     deleteJob,
     updateJobStatus,
     updateInterviewDate,
     themeMode,
     student,
-    viewComments,
-    setViewComments,
     handleViewComments,
     user,
   } = props;
@@ -192,20 +185,13 @@ const MasterList = (props) => {
                           keyframes={["opacity: 0", "opacity: 1"]}
                         > */}
                         <CardView
-                          updateAttendedInterview={updateAttendedInterview}
                           themeMode={themeMode}
                           updateJobApplication={updateJobApplication}
-                          jobToEdit={jobToEdit}
-                          setJobToEdit={setJobToEdit}
-                          editing={editing}
-                          setEditing={setEditing}
                           job={job}
                           deleteJob={deleteJob}
                           updateJobStatus={updateJobStatus}
                           updateInterviewDate={updateInterviewDate}
                           student={student}
-                          viewComments={viewComments}
-                          setViewComments={setViewComments}
                           handleViewComments={handleViewComments}
                           user={user}
                         />

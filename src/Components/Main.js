@@ -9,7 +9,11 @@ import {
   doc,
   query,
   where,
-  setDoc
+  setDoc,
+  limit,
+  orderBy,
+  startAfter,
+  getDoc
 } from 'firebase/firestore';
 import NewJob from './Forms/NewJob';
 import {
@@ -288,18 +292,14 @@ const Main = () => {
       if (user?.uid) {
         const userJobsList = await getDocs(subCollection);
         const extractedJobsList = userJobsList.docs.map((doc) => ({
-          ...doc.data(), id: doc.id, attendedInterview: false
+          ...doc.data(), id: doc.id
         }));
         if (extractedJobsList.length > 0) {
           extractedJobsList.sort((a, b) => {
             const newA = a.dateApplied;
             const newB = b.dateApplied;
-            if (newA < newB) {
-              return 1;
-            }
-            if (newA > newB) {
-              return -1;
-            }
+            if (newA < newB) return 1;
+            if (newA > newB) return -1;
             return 0;
           });
           const userToUpdate = doc(userReference, user?.uid);
@@ -457,12 +457,19 @@ const Main = () => {
     setViewComments(true);
     setOpen(true);
     setJobToEdit(job);
-    const subCollection = collection(userReference, `${id}/jobs`);
-    const commentsQuery = await getDocs(collection(subCollection, `${job.id}/comments`));
-    if (commentsQuery) {
-      const extractedComments = commentsQuery.docs.map((doc) => ({
+
+    //Gather comments from a specific user's job application as well as the job document.
+    const commentsSubColletion = collection(userReference, `${id}/jobs/${job.id}/comments`);
+
+    //Only grab a certain number of the most recent comments as to not overload the servers.
+    const commentsSnapshot = query(commentsSubColletion, orderBy('timeStamp', 'desc'), limit(25));
+    const commentsResults = await getDocs(commentsSnapshot);
+
+    if (commentsResults) {
+      const extractedComments = commentsResults.docs.map((doc) => ({
         ...doc.data(), id: doc.id
       }));
+
       const sortedByDate = extractedComments.sort((a, b) => {
         const newA = a.timeStamp;
         const newB = b.timeStamp;
@@ -470,6 +477,87 @@ const Main = () => {
         if (newA > newB) return 1;
         return 0;
       });
+
+      //Mark any comments not tied to the current user as read when viewing them.
+      sortedByDate.forEach(comment => {
+        if (comment.userId !== user.uid) {
+          comment.read = true;
+          updateDoc(doc(commentsSubColletion, comment.id), { read: true });
+        }
+      });
+      setComments(sortedByDate);
+
+      //Update state for unread count only for the main view. Loosly apply the same rule to the advisro view.
+      if (!viewProfile) {
+        const newJobs = [...searchJobs];
+        const jobToUpdate = newJobs.find(app => app.id.includes(job.id));
+        jobToUpdate.unreadMessages = 0;
+        setJobs(newJobs);
+        setSearchJobs(newJobs);
+        // if (newJobs.every(app => app.unreadMessages === 0 || !app.unreadMessages)) {
+        //   const newCurrentUser = { ...currentUser };
+        //   newCurrentUser.notifcations = false;
+        //   await updateDoc(doc(userReference, user.uid), {
+        //     notifications: false
+        //   });
+        // }
+      } else {
+        job.unreadMessages = 0;
+      }
+
+      const jobDoc = doc(userReference, `${id}/jobs`, job.id);
+      const jobResults = await getDoc(jobDoc);
+      const extractedJob = jobResults.data();
+
+      //Update the unread messages to 0 if this user was not the last to leave a message and if there are current unread messages.
+      if (extractedJob.lastResponseFrom !== user.uid && extractedJob.unreadMessages > 0) {
+        await updateDoc(jobDoc, {
+          unreadMessages: 0
+        });
+      }
+    }
+  }
+
+  const handleShowMoreComments = async (id, job) => {
+    //Gather comments from a specific user's job application.
+    const commentsSubColletion = collection(userReference, `${id}/jobs/${job.id}/comments`);
+
+    //Only grab a certain number of the most recent comments as to not overload the servers.
+    const commentsSnapshot = query(commentsSubColletion, orderBy('timeStamp', 'desc'), limit(comments.length));
+    const snapshotResults = await getDocs(commentsSnapshot);
+
+    //Use the last comment as the starting point for the following query.
+    const lastVisibleComment = snapshotResults.docs[snapshotResults.docs.length - 1];
+
+    //Gather the 10 previous comments from the already displaying comments.
+    const nextCommentsSnapshot = query(commentsSubColletion, orderBy('timeStamp', 'desc'), startAfter(lastVisibleComment), limit(10));
+    const nextCommentsResults = await getDocs(nextCommentsSnapshot);
+
+    if (nextCommentsResults) {
+
+      const extractedComments = nextCommentsResults.docs.map((doc) => ({
+        ...doc.data(), id: doc.id
+      }));
+
+      //Add the older 10 comments to the comments array for sorting.
+      const newComments = comments.concat(extractedComments);
+
+      const sortedByDate = newComments.sort((a, b) => {
+        const newA = a.timeStamp;
+        const newB = b.timeStamp;
+        if (newA < newB) return -1;
+        if (newA > newB) return 1;
+        return 0;
+      });
+
+      //Mark any comments not tied to the current user as read when viewing them.
+      sortedByDate.forEach(comment => {
+        if (comment.userId !== user.uid) {
+          comment.read = true;
+          updateDoc(doc(commentsSubColletion, comment.id), { read: true })
+        }
+      });
+
       setComments(sortedByDate);
     }
   }
@@ -581,16 +669,9 @@ const Main = () => {
                         searchJobs={searchJobs}
                         jobs={jobs}
                         updateJobApplication={updateJobApplication}
-                        updateAttendedInterview={updateAttendedInterview}
-                        jobToEdit={jobToEdit}
-                        setJobToEdit={setJobToEdit}
-                        editing={editing}
-                        setEditing={setEditing}
                         deleteJob={deleteJob}
                         updateJobStatus={updateJobStatus}
                         updateInterviewDate={updateInterviewDate}
-                        viewComments={viewComments}
-                        setViewComments={setViewComments}
                         handleViewComments={handleViewComments}
                         user={user}
                         userReference={userReference}
@@ -638,17 +719,12 @@ const Main = () => {
           viewProfile={viewProfile}
           setViewProfile={setViewProfile}
           user={user}
-          logout={logout}
           sortByDate={sortByDate}
           sortByName={sortByName}
           sort={sort}
-          setSort={setSort}
           jobs={jobs}
           setSearchJobs={setSearchJobs}
           applicationCount={applicationCount}
-          setApplicationCount={setApplicationCount}
-          open={open}
-          setOpen={setOpen}
           loading={loading}
         />}
         <Snackbar
@@ -684,9 +760,10 @@ const Main = () => {
                 setComments={setComments}
                 user={user}
                 jobToEdit={jobToEdit}
-                jobsReference={jobsReference}
-                commentsSubCollection={commentsSubCollection}
                 userReference={userReference}
+                handleShowMoreComments={handleShowMoreComments}
+                setJobToEdit={setJobToEdit}
+                currentUser={currentUser}
               />
               : <NewJob
                 themeMode={themeMode}

@@ -8,9 +8,12 @@ import {
   IconButton,
   LinearProgress,
   Box,
+  Badge
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
+import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import SearchBar from '../Components/SearchBar';
 import { THEME } from './Theme';
 import { format } from 'date-fns';
@@ -159,6 +162,19 @@ const Header = (props) => {
               top: 15
             }}
           >
+            <IconButton
+              sx={{
+                mr: 2
+              }}
+            >
+              {/* {currentUser?.notifications
+                ?
+                <Badge badgeContent='!' color='error'>
+                  <NotificationsRoundedIcon />
+                </Badge>
+                : <NotificationsNoneRoundedIcon />
+              } */}
+            </IconButton>
             <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
               {themeMode === 'darkMode'
                 ? <LightModeIcon sx={{ color: 'white' }} />

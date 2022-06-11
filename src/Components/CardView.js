@@ -14,7 +14,8 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Button,
-  Fab
+  Fab,
+  Badge
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -37,11 +38,8 @@ const CardView = (props) => {
     updateJobStatus,
     updateInterviewDate,
     updateJobApplication,
-    updateAttendedInterview,
     themeMode,
     student,
-    viewComments,
-    setViewComments,
     handleViewComments,
     user
   } = props;
@@ -127,7 +125,11 @@ const CardView = (props) => {
               sx={{ cursor: 'default', position: 'relative' }}
             >
               <Fab
-                color='primary'
+                color={job.lastResponseFrom
+                  && job.lastResponseFrom !== user.uid
+                  && job.unreadMessages > 0
+                  ? 'error' : 'primary'}
+                variant="extended"
                 onClick={() => !student || Object.values(student).length === 0
                   ? handleViewComments(user.uid, job)
                   : handleViewComments(student.id, job)
@@ -140,6 +142,18 @@ const CardView = (props) => {
                 }}
               >
                 <EmailTwoTone />
+                <Typography
+                  sx={{
+                    ml: job.lastResponseFrom
+                      && job.lastResponseFrom !== user.uid
+                      && job.unreadMessages > 0
+                      ? 0.5 : 0
+                  }}>
+                  {job.lastResponseFrom
+                    && job.lastResponseFrom !== user.uid
+                    && job.unreadMessages > 0
+                    ? job.unreadMessages : null}
+                </Typography>
               </Fab>
               <Typography
                 sx={{ maxWidth: '87%' }}

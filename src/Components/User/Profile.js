@@ -52,7 +52,6 @@ import UserUpload from '../Forms/UserUpload';
 import { eachMonthOfInterval, format, subMonths } from 'date-fns'
 import { styled } from '@mui/material/styles';
 import MasterList from '../MasterList';
-import { Link } from 'react-scroll';
 
 const Profile = (props) => {
 
@@ -69,7 +68,7 @@ const Profile = (props) => {
     getUserData,
     setFeedback,
     feedback,
-    handleViewComments
+    handleViewComments,
   } = props;
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -680,7 +679,7 @@ const Profile = (props) => {
                           mr: 1.5,
                           mt: 1.5
                         }}
-                        onClick={() => setStudent({})}
+                        onClick={() => ((setStudent({}), setStudentApplications([])))}
                       >
                         <CancelTwoTone fontSize='inherit' />
                       </IconButton>
@@ -711,6 +710,7 @@ const Profile = (props) => {
                   jobs={studentApplications}
                   student={student}
                   handleViewComments={handleViewComments}
+                  user={user}
                 />
               </Box>}
           </Grid>
