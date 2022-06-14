@@ -25,7 +25,8 @@ import {
   Avatar,
   ToggleButtonGroup,
   ToggleButton,
-  CircularProgress
+  CircularProgress,
+  LinearProgress
 } from '@mui/material';
 import {
   BackupTwoTone,
@@ -258,6 +259,20 @@ const Profile = (props) => {
     setAverage(prevState => parseInt(prevState / averageToDivide));
   }
 
+  const getScoreColor = (score) => {
+    if (score < 20) {
+      return '#FF3D00'
+    } else if (score >= 20 && score < 40) {
+      return '#FF9100'
+    } else if (score >= 40 && score < 60) {
+      return '#FFC400'
+    } else if (score >= 60 && score < 80) {
+      return '#CDDC39'
+    } else if (score >= 80 && score < 90) {
+      return '#64DD17'
+    } else return '#00C853'
+  }
+
   const handleClose = () => {
     setOpen(false);
     setTimeout(() => {
@@ -416,6 +431,12 @@ const Profile = (props) => {
                   </Grid>
                 </Grid>
                 <hr />
+                {/* <Box sx={{
+                  mb: 1
+                }}
+                >
+                  <LinearProgress variant="determinate" value={average} />
+                </Box> */}
                 {/* <Grid
                   container
                   justifyContent='space-around'

@@ -13,9 +13,7 @@ import {
   CircularProgress,
   ToggleButtonGroup,
   ToggleButton,
-  Button,
   Fab,
-  Badge
 } from '@mui/material';
 import {
   WorkTwoTone,
@@ -24,7 +22,8 @@ import {
   DeleteTwoTone,
   CreateTwoTone,
   KeyboardArrowDownRounded,
-  EmailTwoTone
+  EmailTwoTone,
+  DraftsTwoTone
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import { THEME } from '../Layout/Theme';
@@ -41,7 +40,8 @@ const CardView = (props) => {
     themeMode,
     student,
     handleViewComments,
-    user
+    user,
+    currentUser
   } = props;
 
   const getScoreColor = (score) => {
@@ -124,37 +124,45 @@ const CardView = (props) => {
               justifyContent='space-between'
               sx={{ cursor: 'default', position: 'relative' }}
             >
-              <Fab
-                color={job.lastResponseFrom
-                  && job.lastResponseFrom !== user.uid
-                  && job.unreadMessages > 0
-                  ? 'error' : 'primary'}
-                variant="extended"
-                onClick={() => !student || Object.values(student).length === 0
-                  ? handleViewComments(user.uid, job)
-                  : handleViewComments(student.id, job)
-                }
-                size='medium'
-                sx={{
-                  position: 'absolute',
-                  left: -40,
-                  top: -40
-                }}
-              >
-                <EmailTwoTone />
-                <Typography
+              {currentUser?.organization !== 'Personal'
+                ? <Fab
+                  color={job.lastResponseFrom
+                    && job.lastResponseFrom !== user.uid
+                    && job.unreadMessages > 0
+                    ? 'error' : 'primary'}
+                  variant="extended"
+                  onClick={() => !student || Object.values(student).length === 0
+                    ? handleViewComments(user.uid, job)
+                    : handleViewComments(student.id, job)
+                  }
+                  size='medium'
                   sx={{
-                    ml: job.lastResponseFrom
-                      && job.lastResponseFrom !== user.uid
-                      && job.unreadMessages > 0
-                      ? 0.5 : 0
-                  }}>
+                    position: 'absolute',
+                    left: -40,
+                    top: -40
+                  }}
+                >
                   {job.lastResponseFrom
                     && job.lastResponseFrom !== user.uid
                     && job.unreadMessages > 0
-                    ? job.unreadMessages : null}
-                </Typography>
-              </Fab>
+                    ? <EmailTwoTone />
+                    : <DraftsTwoTone />
+                  }
+                  <Typography
+                    sx={{
+                      ml: job.lastResponseFrom
+                        && job.lastResponseFrom !== user.uid
+                        && job.unreadMessages > 0
+                        ? 0.5 : 0
+                    }}>
+                    {job.lastResponseFrom
+                      && job.lastResponseFrom !== user.uid
+                      && job.unreadMessages > 0
+                      ? job.unreadMessages : null}
+                  </Typography>
+                </Fab>
+                : null
+              }
               <Typography
                 sx={{ maxWidth: '87%' }}
                 item
@@ -188,7 +196,14 @@ const CardView = (props) => {
           </Grid>
           <Box sx={{ cursor: 'default', width: '100%' }}>
             <Grid>
-              <Typography variant='h5'>{job.jobTitle}</Typography>
+              <Typography
+                variant='h5'
+                sx={{
+                  opacity: 0.65
+                }}
+              >
+                {job.jobTitle}
+              </Typography>
             </Grid>
             <hr />
             <Grid container>

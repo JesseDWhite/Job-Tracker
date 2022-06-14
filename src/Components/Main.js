@@ -85,8 +85,6 @@ const Main = () => {
 
   const subCollection = collection(userReference, `${user?.uid}/jobs`);
 
-  const commentsSubCollection = collection(subCollection, `${jobToEdit.id}/comments`);
-
   const [feedback, setFeedback] = useState({
     open: false,
     type: null,
@@ -489,18 +487,11 @@ const Main = () => {
 
       //Update state for unread count only for the main view. Loosly apply the same rule to the advisro view.
       if (!viewProfile) {
-        const newJobs = [...searchJobs];
+        const newJobs = [...jobs];
         const jobToUpdate = newJobs.find(app => app.id.includes(job.id));
         jobToUpdate.unreadMessages = 0;
         setJobs(newJobs);
         setSearchJobs(newJobs);
-        // if (newJobs.every(app => app.unreadMessages === 0 || !app.unreadMessages)) {
-        //   const newCurrentUser = { ...currentUser };
-        //   newCurrentUser.notifcations = false;
-        //   await updateDoc(doc(userReference, user.uid), {
-        //     notifications: false
-        //   });
-        // }
       } else {
         job.unreadMessages = 0;
       }
@@ -626,6 +617,7 @@ const Main = () => {
               display='flex'
             >
               <Grid
+                item
                 sm={12}
               >
                 <Grid sx={{ m: 3, pt: 8 }}>
@@ -652,7 +644,6 @@ const Main = () => {
                                 xs={12}
                                 sm={4}
                                 xl={3}
-                                spacing={2}
                                 item
                               >
                                 <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 300, borderRadius: 5 }} />
@@ -675,6 +666,7 @@ const Main = () => {
                         handleViewComments={handleViewComments}
                         user={user}
                         userReference={userReference}
+                        currentUser={currentUser}
                       />
                       <Fab
                         variant='extended'
@@ -726,6 +718,7 @@ const Main = () => {
           setSearchJobs={setSearchJobs}
           applicationCount={applicationCount}
           loading={loading}
+          searchJobs={searchJobs}
         />}
         <Snackbar
           sx={{ width: '100%' }}
@@ -763,7 +756,6 @@ const Main = () => {
                 userReference={userReference}
                 handleShowMoreComments={handleShowMoreComments}
                 setJobToEdit={setJobToEdit}
-                currentUser={currentUser}
               />
               : <NewJob
                 themeMode={themeMode}

@@ -23,6 +23,7 @@ const MasterList = (props) => {
     student,
     handleViewComments,
     user,
+    currentUser
   } = props;
 
   const [interviewPage, setInterviewPage] = useState(1);
@@ -179,11 +180,6 @@ const MasterList = (props) => {
                         xl={3}
                         key={job.id}
                       >
-                        {/* <AnimateKeyframes
-                          play
-                          iterationCount={1}
-                          keyframes={["opacity: 0", "opacity: 1"]}
-                        > */}
                         <CardView
                           themeMode={themeMode}
                           updateJobApplication={updateJobApplication}
@@ -194,8 +190,8 @@ const MasterList = (props) => {
                           student={student}
                           handleViewComments={handleViewComments}
                           user={user}
+                          currentUser={currentUser}
                         />
-                        {/* </AnimateKeyframes> */}
                       </Grid>
                     );
                   })}

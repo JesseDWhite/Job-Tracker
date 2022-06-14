@@ -33,27 +33,45 @@ const Header = (props) => {
     themeMode,
     currentUser,
     updatePreferrdTheme,
-    loading
+    loading,
   } = props;
 
-  const [filter, setFilter] = useState(false);
+  const [dailyFilter, setDailyFilter] = useState(false);
+
+  const [notificationFilter, setNotificationFilter] = useState(false);
 
   const [progress, setProgress] = useState(0);
 
   const [progressColor, setProgressColor] = useState('info');
 
+  const [notifications, setNotifications] = useState(false);
+
+  const [notificationCount, setNotificationCount] = useState(0);
+
+  //Only show job apps that have been added today.
   useEffect(() => {
     const newJobs = [...jobs];
-    if (filter) {
+    if (dailyFilter) {
       const todaysDate = format(new Date(), 'yyyy-MM-dd');
       const todaysJobs = newJobs.filter(job => job.dateApplied === todaysDate);
       setSearchJobs(todaysJobs);
     } else {
       setSearchJobs(newJobs);
     }
-  }, [filter]);
+  }, [dailyFilter]);
 
+  //Only show jobs apps that have unread messages on them.
+  useEffect(() => {
+    const newJobs = [...jobs];
+    if (notificationFilter) {
+      const unreadJobs = newJobs.filter(job => job.unreadMessages > 0 && job.lastResponseFrom !== user.uid);
+      setSearchJobs(unreadJobs);
+    } else {
+      setSearchJobs(newJobs);
+    }
+  }, [notificationFilter])
 
+  //Set the loading bar progress depending on the state of loading. Totally fake bar, don't believe it.
   useEffect(() => {
     if (!loading) {
       setProgress(100);
@@ -77,6 +95,25 @@ const Header = (props) => {
       };
     }
   }, [loading]);
+
+  //Get the total number of notifications if there are any for the user.
+  useEffect(() => {
+    let newTotal = 0;
+    const newJobs = [...jobs];
+    if (newJobs.some(job => job.unreadMessages > 0 && job.lastResponseFrom !== user.uid)) {
+      const filteredJobs = newJobs.filter(job => job.unreadMessages > 0 && job.lastResponseFrom !== user.uid);
+      if (filteredJobs.length > 1) {
+        filteredJobs.forEach(job => { newTotal += job.unreadMessages; })
+      } else if (filteredJobs.length === 1) {
+        newTotal = filteredJobs[0].unreadMessages;
+      }
+      setNotificationCount(newTotal);
+      setNotifications(true);
+    } else {
+      setNotificationCount(newTotal);
+      setNotifications(false);
+    }
+  }, [jobs]);
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -124,8 +161,8 @@ const Header = (props) => {
                   }}
                   color='primary'
                   variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
-                  onClick={() => applicationCount >= 1 ? setFilter(!filter) : setFilter(false)}
-                  label={filter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+                  onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
+                  label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
                   avatar={<Avatar>{applicationCount}</Avatar>}
                 />
                 <Button
@@ -163,17 +200,18 @@ const Header = (props) => {
             }}
           >
             <IconButton
+              onClick={() => notifications ? setNotificationFilter(!notificationFilter) : setNotificationFilter(false)}
               sx={{
                 mr: 2
               }}
             >
-              {/* {currentUser?.notifications
+              {notifications
                 ?
-                <Badge badgeContent='!' color='error'>
+                <Badge badgeContent={notificationCount} color='error' overlap='circular'>
                   <NotificationsRoundedIcon />
                 </Badge>
                 : <NotificationsNoneRoundedIcon />
-              } */}
+              }
             </IconButton>
             <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
               {themeMode === 'darkMode'

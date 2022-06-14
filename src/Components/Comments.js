@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   collection,
   addDoc,
@@ -17,7 +17,8 @@ import {
 } from '@mui/material';
 import { SendRounded } from '@mui/icons-material';
 import { AnimateKeyframes } from 'react-simple-animate';
-import { THEME } from '../Layout/Theme';
+import { format } from 'date-fns';
+
 
 const Comments = (props) => {
 
@@ -29,7 +30,6 @@ const Comments = (props) => {
     userReference,
     handleShowMoreComments,
     setJobToEdit,
-    currentUser
   } = props;
 
   const initialValues = {
@@ -43,16 +43,20 @@ const Comments = (props) => {
 
   const [formValues, setFormValues] = useState(initialValues);
 
+  let bottomOfChat = document.querySelector('#bottom');
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({
       ...formValues,
       [name]: value
     });
+    if (e.nativeEvent.inputType === "insertLineBreak") return addComment(e);
   };
 
   const addComment = async (e) => {
     e.preventDefault();
+    document.querySelector('.scroll').setAttribute('id', 'bottom');
     const newComments = [...comments];
     const newJobToEdit = { ...jobToEdit };
     newJobToEdit.unreadMessages = 0;
@@ -64,13 +68,8 @@ const Comments = (props) => {
         newJobToEdit.unreadMessages += 1;
       }
     });
+
     setComments(newComments);
-
-    // if (jobToEdit.lastResponseFrom !== user.uid) {
-    //   const userToNotify = doc(userReference, jobToEdit.lastResponseFrom);
-    //   await updateDoc(userToNotify, { notifications: true });
-    // }
-
     setJobToEdit(newJobToEdit);
 
     const commentsSubCollection = collection(userReference, `${jobToEdit.user}/jobs/${jobToEdit.id}/comments`);
@@ -86,6 +85,12 @@ const Comments = (props) => {
     setFormValues(initialValues);
   }
 
+  useEffect(() => {
+    if (bottomOfChat) {
+      bottomOfChat.scrollIntoView();
+    };
+  }, [comments]);
+
   return (
     <>
       <Box
@@ -98,6 +103,7 @@ const Comments = (props) => {
           variant='h4'
           sx={{
             textAlign: 'center',
+            cursor: 'default',
             // mb: 3,
             position: 'sticky',
             top: 0,
@@ -111,8 +117,8 @@ const Comments = (props) => {
         </Typography>
         <Button
           fullWidth
-          disabled={comments.length === 0 ? true : false}
-          onClick={() => handleShowMoreComments(jobToEdit.user, jobToEdit)}
+          disabled={comments.length < 25 ? true : false}
+          onClick={() => ((handleShowMoreComments(jobToEdit.user, jobToEdit), bottomOfChat && document.querySelector('.scroll').removeAttribute('id')))}
           sx={{
             my: 1
           }}
@@ -124,6 +130,7 @@ const Comments = (props) => {
             sx={{
               my: 3,
               textAlign: 'center',
+              cursor: 'default',
               opacity: 0.35
             }}
           ><em>message directly with your advisor or student about this job application</em></Typography>
@@ -144,7 +151,14 @@ const Comments = (props) => {
                     alignItems='flex-center'
                   >
                     <Tooltip
-                      title={comment.name}
+                      arrow
+                      title={`${comment.name} sent on ${comment.timeStamp instanceof Date
+                        ? format(comment.timeStamp, 'PP')
+                        : format(comment.timeStamp.toDate(), 'PP')} at ${comment.timeStamp instanceof Date
+                          ? format(comment.timeStamp, 'p')
+                          : format(comment.timeStamp.toDate(), 'p')
+                        }`}
+                      // title={comment.name}
                       placement={comment.userId === user.uid ? 'left' : 'right'}
                       disableInteractive>
                       <Avatar
@@ -162,7 +176,8 @@ const Comments = (props) => {
                         maxWidth: '78%',
                         color: comment.userId === user.uid ? 'white' : 'black',
                         backgroundColor: comment.userId === user.uid ? 'rgb(33, 150, 243)' : 'rgb(207, 216, 220)',
-                        borderRadius: 3
+                        borderRadius: 3,
+                        cursor: 'default'
                       }}
                     >
                       {comment.response}
@@ -173,48 +188,46 @@ const Comments = (props) => {
             )
           })
         }
-
-        <div>
-          <form onSubmit={(e) => addComment(e)}>
-            <Grid container>
-              <Grid
-                item
-                xs={10}
-              >
-                <TextField
-                  fullWidth
-                  autoFocus
-                  multiline
-                  variant='outlined'
-                  type='text'
-                  name='response'
-                  placeholder='Message'
-                  value={formValues.response}
-                  onChange={handleInputChange}
-                  sx={{
-                    mt: 2,
-                  }}
-                />
-              </Grid>
-              <Grid
-                item
-                xs={2}
-              >
-                <Fab
-                  type='submit'
-                  color='primary'
-                  disabled={formValues.response.length > 0 ? false : true}
-                  sx={{
-                    mt: 2,
-                    ml: 4
-                  }}
-                >
-                  <SendRounded />
-                </Fab>
-              </Grid>
+        <form onSubmit={(e) => addComment(e)}>
+          <Grid container>
+            <Grid
+              item
+              xs={10}
+            >
+              <TextField
+                fullWidth
+                autoFocus
+                multiline
+                variant='outlined'
+                type='text'
+                name='response'
+                placeholder='Message'
+                value={formValues.response}
+                onChange={handleInputChange}
+                sx={{
+                  mt: 2,
+                }}
+              />
             </Grid>
-          </form>
-        </div>
+            <Grid
+              item
+              xs={2}
+            >
+              <Fab
+                type='submit'
+                color='primary'
+                disabled={formValues.response.length > 0 ? false : true}
+                sx={{
+                  mt: 2,
+                  ml: 4
+                }}
+              >
+                <SendRounded />
+              </Fab>
+            </Grid>
+          </Grid>
+        </form>
+        <div id='bottom' className='scroll' />
       </Box>
     </>
   )
