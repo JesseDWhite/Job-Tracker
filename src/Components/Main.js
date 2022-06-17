@@ -241,7 +241,10 @@ const Main = () => {
 
           //Add the approved user id and total applications to the approvedUsers doc.
           const setInternalId = querySnapshot.docs.map((student) => ({
-            ...student.data(), id: student.id, totalApplications: userData?.totalApplications
+            ...student.data(),
+            id: student.id,
+            totalApplications: userData?.totalApplications,
+            photo: userData?.profilePhoto
           }));
           const studentToUpdate = doc(approvedUsersSubCollection, setInternalId[0].id);
           await updateDoc(studentToUpdate, setInternalId[0]);

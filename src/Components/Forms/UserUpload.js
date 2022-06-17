@@ -176,7 +176,7 @@ const UserUpload = (props) => {
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       <Grid>
         <Typography variant='h4' sx={{ mb: 3, textAlign: 'center' }}>
           Manage Users Assigned To {organization.name}
@@ -196,12 +196,13 @@ const UserUpload = (props) => {
           direction="row"
           justifyContent="start"
           alignItems="start"
-          spacing={2}
+          spacing={3}
         >
-          <Grid item md={6}>
+          <Grid item sm={6}>
             <FormControl size='small' fullWidth>
               <InputLabel>Cohort To Edit</InputLabel>
               <Select
+                label='Cohort To Edit'
                 value={cohort}
                 onChange={handleSelectChange}
               >
@@ -222,7 +223,7 @@ const UserUpload = (props) => {
             direction="row"
             justifyContent="start"
             alignItems="start"
-            spacing={2}
+            spacing={3}
           >
             {formValues.map((entry, idx) => {
               return (
@@ -271,6 +272,7 @@ const UserUpload = (props) => {
                     <InputLabel>Role</InputLabel>
                     <Select
                       name='role'
+                      label='Role'
                       onChange={(e) => handleInputChange(e, idx)}
                       value={entry.role}
                     >
@@ -290,6 +292,7 @@ const UserUpload = (props) => {
                     <InputLabel>Cohort</InputLabel>
                     <Select
                       name='cohort'
+                      label='Cohort'
                       value={entry.cohort}
                       onChange={(e) => handleInputChange(e, idx)}
                     >
@@ -322,7 +325,7 @@ const UserUpload = (props) => {
             direction="row"
             justifyContent="center"
             alignItems="start"
-            spacing={2}
+            spacing={3}
           >
             <Grid item sm={6}>
               <Button

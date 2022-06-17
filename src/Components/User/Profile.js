@@ -93,7 +93,7 @@ const Profile = (props) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 800,
+    width: 750,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
@@ -104,11 +104,61 @@ const Profile = (props) => {
   };
 
   const columns = [
-    { field: 'name', headerName: 'Name', width: 200 },
-    { field: 'cohort', headerName: 'Cohort', width: 200 },
-    { field: 'email', headerName: 'Email', width: 400 },
-    { field: 'role', headerName: 'Role', width: 200 },
-    { field: 'totalApplications', headerName: 'Total Apps', width: 200 },
+    {
+      field: 'photo',
+      headerName: 'Photo',
+      width: 100,
+      align: 'center',
+      filterable: false,
+      sortable: false,
+      renderCell: (params) => {
+        return <Avatar src={params.value} />
+      }
+    },
+    {
+      field: 'name',
+      headerName: 'Name',
+      width: 200,
+      renderCell: (params) => {
+        return <span style={{ cursor: 'default' }}>{params.value}</span>
+      }
+    },
+    {
+      field:
+        'cohort',
+      headerName:
+        'Cohort',
+      width: 200,
+      renderCell: (params) => {
+        return <span style={{ cursor: 'default' }}>{params.value}</span>
+      }
+    },
+    {
+      field: 'email',
+      headerName: 'Email',
+      width: 400,
+      renderCell: (params) => {
+        return <span style={{ cursor: 'default' }}>{params.value}</span>
+      }
+    },
+    {
+      field: 'role',
+      headerName: 'Role',
+      width: 200,
+      align: 'center',
+      renderCell: (params) => {
+        return <Chip label={params.value} variant='filled' />
+      }
+    },
+    {
+      field: 'totalApplications',
+      headerName: 'Total Apps',
+      width: 100,
+      align: 'center',
+      renderCell: (params) => {
+        return <span style={{ cursor: 'default' }}>{params.value}</span>
+      }
+    },
   ];
 
   const [average, setAverage] = useState(0);
@@ -278,6 +328,14 @@ const Profile = (props) => {
     setTimeout(() => {
       setViewStudent([]);
     }, 500);
+  }
+
+  const handleViewStudentClose = () => {
+    setTimeout(() => {
+      setStudent({});
+      setStudentApplications([]);
+    }, 500);
+    document.getElementById('dataGrid').scrollIntoView({ behavior: 'smooth', block: 'end' });
   }
 
   useEffect(() => {
@@ -575,6 +633,7 @@ const Profile = (props) => {
             {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
               ?
               <Paper
+                id='dataGrid'
                 elevation={3}
                 sx={{
                   borderRadius: 5,
@@ -595,6 +654,7 @@ const Profile = (props) => {
                   >
                     <InputLabel>Cohort To View</InputLabel>
                     <Select
+                      label='Cohort To View'
                       value={currentCohort}
                       onChange={handleSelectChange}
                     >
@@ -628,6 +688,14 @@ const Profile = (props) => {
                       transition: 'color .5s, background .5s',
                       color: THEME[themeMode].textColor,
                       border: 'none',
+                      "& ::-webkit-scrollbar": {
+                        backgroundColor: 'rgba(0, 0, 0, 0)',
+                        width: '0.5em'
+                      },
+                      "& ::-webkit-scrollbar-thumb": {
+                        backgroundColor: 'rgb(169, 169, 169)',
+                        borderRadius: '1em'
+                      }
                     }}
                     rows={cohortStudents}
                     columns={columns}
@@ -664,6 +732,7 @@ const Profile = (props) => {
             </Grid>
             : null}
           <Grid item sx={{ width: '100%' }}>
+            <div id='studentApplications' />
             {Object.keys(student).length !== 0 &&
               <Box
                 sx={{
@@ -700,7 +769,7 @@ const Profile = (props) => {
                           mr: 1.5,
                           mt: 1.5
                         }}
-                        onClick={() => ((setStudent({}), setStudentApplications([])))}
+                        onClick={() => handleViewStudentClose()}
                       >
                         <CancelTwoTone fontSize='inherit' />
                       </IconButton>
