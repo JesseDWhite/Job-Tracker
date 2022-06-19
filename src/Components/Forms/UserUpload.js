@@ -5,13 +5,12 @@ import {
   Grid,
   Typography,
   FormControl,
-  FormControlLabel,
   Box,
   Select,
-  Switch,
   MenuItem,
   InputLabel,
-  IconButton
+  IconButton,
+  CircularProgress
 } from '@mui/material';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import {
@@ -24,6 +23,10 @@ import {
   setDoc,
   deleteDoc
 } from 'firebase/firestore';
+import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
+import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import * as XLSX from 'xlsx';
 
 const UserUpload = (props) => {
 
@@ -52,6 +55,8 @@ const UserUpload = (props) => {
   const [formValues, setFormValues] = useState([initialValues]);
 
   const [editing, setEditing] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const [cohort, setCohort] = useState('');
 
@@ -115,6 +120,7 @@ const UserUpload = (props) => {
 
   const getUsersToEdit = async (date) => {
     try {
+      setLoading(true);
       const userQuery = query(subCollection, where('cohort', '==', date));
       const querySnapshot = await getDocs(userQuery);
       if (!querySnapshot.docs[0]?.data()) {
@@ -125,14 +131,17 @@ const UserUpload = (props) => {
           title: 'Error',
           message: `There are no users assigned to the ${date} cohort yet`
         });
+        setLoading(false);
         setFormValues([initialValues]);
       } else {
         const results = querySnapshot.docs.map((user) => {
           return { ...user.data(), id: user.id }
         });
+        setLoading(false);
         setFormValues(results);
       }
     } catch (error) {
+      setLoading(false);
       setFeedback({
         ...feedback,
         open: true,
@@ -175,31 +184,89 @@ const UserUpload = (props) => {
     }
   }
 
+  const handleFile = async (e) => {
+    try {
+      setLoading(true);
+      const file = e.target.files[0];
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      const updatedForm = [...formValues];
+      const bulkStudents = jsonData.map((student, idx) => {
+        return {
+          ...updatedForm[idx],
+          name: student.Name,
+          email: student.Email,
+          role: student.Role,
+          cohort: student.Cohort,
+          advisor: student.Advisor,
+        }
+      });
+      setFormValues(bulkStudents);
+      setLoading(false);
+    } catch {
+      setLoading(false);
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: `There was an issue uploading this file. You may need to re-format how the data is being provided.`
+      });
+    }
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
       <Grid>
         <Typography variant='h4' sx={{ mb: 3, textAlign: 'center' }}>
           Manage Users Assigned To {organization.name}
         </Typography>
-        <FormControlLabel
-          sx={{ mb: 1 }}
-          control={<Switch />}
-          label='Edit Existing'
-          checked={editing}
-          onChange={() => editing ? (setEditing(false), setFormValues([initialValues], setCohort(''))) : setEditing(true)}
-        />
-      </Grid>
-      {editing &&
         <Grid
-          sx={{ mb: 3 }}
           container
           direction="row"
           justifyContent="start"
-          alignItems="start"
+          alignItems="center"
+          sx={{
+            mb: 2
+          }}
+        >
+          <Button
+            variant='contained'
+            component='label'
+            endIcon={<PeopleAltTwoToneIcon />}
+          >
+            <input type="file" onChange={(e) => handleFile(e)} accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' hidden />
+            Bulk Upload
+          </Button>
+          <Button
+            onClick={() => editing ? (setEditing(false), setFormValues([initialValues], setCohort(''))) : setEditing(true)}
+            variant='contained'
+            endIcon={editing ? <CloseRoundedIcon /> : <EditTwoToneIcon />}
+            sx={{
+              ml: 2
+            }}
+          >
+            {editing ? 'Cancel' : 'Edit Existing'}
+          </Button>
+          {loading && <CircularProgress color='success' sx={{ ml: 2 }} disableShrink />}
+        </Grid>
+      </Grid>
+      {editing &&
+        <Grid
+          sx={{ mb: 2 }}
+          container
+          direction="row"
+          justifyContent="start"
+          alignItems="center"
           spacing={3}
         >
           <Grid item sm={6}>
-            <FormControl size='small' fullWidth>
+            <FormControl
+              size='small'
+              fullWidth
+            >
               <InputLabel>Cohort To Edit</InputLabel>
               <Select
                 label='Cohort To Edit'
@@ -333,7 +400,7 @@ const UserUpload = (props) => {
                 variant='contained'
                 color='success'
                 type='button'
-                disabled={editing ? true : false}
+                disabled={editing || loading ? true : false}
                 onClick={() => addNewEntry()}
               >
                 Add Entry
@@ -344,6 +411,7 @@ const UserUpload = (props) => {
                 type='submit'
                 variant='contained'
                 fullWidth
+                disabled={loading ? true : false}
               >
                 Submit
               </Button>

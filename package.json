@@ -36,7 +36,8 @@
     "request": "^2.88.2",
     "str-compare": "^0.1.2",
     "styled-components": "^5.3.3",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
