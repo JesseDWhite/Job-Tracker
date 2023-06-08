@@ -67,6 +67,8 @@ const NewJob = (props) => {
 
   const [status, setStatus] = useState('Active');
 
+  const [error, setError] = useState({})
+
   const initialValues = {
     company: editing ? jobToEdit.company : '',
     dateApplied: editing ? format(new Date(jobToEdit.dateApplied.replace(/-/g, '/')), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
@@ -101,6 +103,15 @@ const NewJob = (props) => {
     });
   }, [editing]);
 
+  const handleErrorState = () => {
+    const formValuesCopy = { ...formValues };
+    const keys = Object.keys(formValuesCopy);
+    const newErrorState = Object.assign(...keys.map(key => ({
+      [key]: !formValuesCopy[key] ? true : false
+    })));
+    setError(newErrorState);
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormValues({
@@ -111,6 +122,10 @@ const NewJob = (props) => {
 
   const handleToggleChange = (e, newStatus) => {
     setStatus(newStatus);
+    setFormValues({
+      ...formValues,
+      status: newStatus
+    })
   }
 
   const getToggleButtonColor = (status) => {
@@ -126,14 +141,15 @@ const NewJob = (props) => {
   }
 
   const validateFormFields = (e) => {
+    handleErrorState();
     e.preventDefault();
-    if (!formValues.company || !formValues.jobTitle) {
+    if (!error.company || !error.jobTitle || !error.dateApplied || !error.status) {
       setFeedback({
         ...feedback,
         open: true,
         type: 'error',
         title: 'Error',
-        message: 'Please fill out at least the "Company" and "Job Title" sections before submitting.'
+        message: 'Please complete the required fields before submitting.'
       });
     } else {
       if (editing) {
@@ -143,7 +159,7 @@ const NewJob = (props) => {
           open: true,
           type: 'info',
           title: 'Updated',
-          message: `${formValues.company} has successfully been updated in your list`
+          message: `${formValues.jobTitle} has successfully been updated in your list`
         });
       } else {
         createJob();
@@ -152,7 +168,7 @@ const NewJob = (props) => {
           open: true,
           type: 'success',
           title: 'Added',
-          message: `${formValues.company} has successfully been added to your list!`
+          message: `${formValues.jobTitle} has successfully been added to your list!`
         });
       }
     }
@@ -358,6 +374,9 @@ const NewJob = (props) => {
                   exclusive
                   onChange={handleToggleChange}
                   fullWidth
+                  sx={{
+                    border: error.status && '1px solid red'
+                  }}
                 >
                   <ToggleButton value='Active'>
                     Active
@@ -386,6 +405,7 @@ const NewJob = (props) => {
                 onChange={handleInputChange}
                 value={formValues.company}
                 fullWidth
+                error={error.company}
               />
               <TextField
                 fullWidth
@@ -399,6 +419,7 @@ const NewJob = (props) => {
                 label='Job Title'
                 onChange={handleInputChange}
                 value={formValues.jobTitle}
+                error={error.jobTitle}
               />
               <TextField
                 fullWidth
@@ -412,6 +433,10 @@ const NewJob = (props) => {
                 label='Date Applied'
                 onChange={handleInputChange}
                 value={formValues.dateApplied}
+                error={error.dateApplied}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               <TextField
                 sx={{

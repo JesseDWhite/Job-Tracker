@@ -245,7 +245,7 @@ const UserUpload = (props) => {
             variant='contained'
             endIcon={editing ? <CloseRoundedIcon /> : <EditTwoToneIcon />}
             sx={{
-              ml: 2
+              ml: 5
             }}
           >
             {editing ? 'Cancel' : 'Edit Existing'}
