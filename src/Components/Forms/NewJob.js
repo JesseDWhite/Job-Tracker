@@ -143,7 +143,7 @@ const NewJob = (props) => {
   const validateFormFields = (e) => {
     handleErrorState();
     e.preventDefault();
-    if (!error.company || !error.jobTitle || !error.dateApplied || !error.status) {
+    if (!formValues.company || !formValues.jobTitle || !formValues.dateApplied || !formValues.status) {
       setFeedback({
         ...feedback,
         open: true,
