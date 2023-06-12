@@ -41,7 +41,8 @@ const NewJob = (props) => {
     handleSetOpen,
     feedback,
     setFeedback,
-    themeMode
+    themeMode,
+    currentUser
   } = props;
 
   const modalStyle = {
@@ -80,7 +81,7 @@ const NewJob = (props) => {
     resumeLink: editing ? jobToEdit.resumeLink : '',
     coverLetterLink: editing ? jobToEdit.coverLetterLink : '',
     coverLetter: editing ? jobToEdit.coverLetter : '',
-    resume: editing ? jobToEdit.resume : '',
+    resume: editing ? jobToEdit.resume : currentUser?.storedResume ? currentUser.storedResume : '',
     notes: editing ? jobToEdit.notes : '',
     jobPostingKeyWords: editing ? jobToEdit.jobPostingKeyWords : [],
     coverLetterKeyWords: editing ? jobToEdit.coverLetterKeyWords : [],

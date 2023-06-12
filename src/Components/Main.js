@@ -177,7 +177,8 @@ const Main = () => {
         preferredTheme: 'lightMode',
         id: user?.uid,
         totalApplications: applications ? applications.length : 0,
-        totalInterviews: 0
+        totalInterviews: 0,
+        storedResume: ''
       };
       const userQuery = query(userReference, where('id', '==', user?.uid));
       const querySnapshot = await getDocs(userQuery);
@@ -613,6 +614,7 @@ const Main = () => {
                   setSearchJobs={setSearchJobs}
                   setViewProfile={setViewProfile}
                   handleViewComments={handleViewComments}
+                  getJobs={getJobs}
                 />
               </AnimateKeyframes>
             </Grid>
@@ -773,6 +775,7 @@ const Main = () => {
                 searchJobs={searchJobs}
                 setSearchJobs={setSearchJobs}
                 user={user}
+                currentUser={currentUser}
                 handleSetOpen={setOpen}
                 handleClose={handleClose}
                 feedback={feedback}

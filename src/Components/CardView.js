@@ -28,6 +28,7 @@ import {
 import format from 'date-fns/format';
 import { THEME } from '../Layout/Theme';
 import { motion } from 'framer-motion';
+import { AnimateKeyframes } from 'react-simple-animate';
 
 const CardView = (props) => {
 
@@ -88,10 +89,17 @@ const CardView = (props) => {
   }
 
   return (
-    <>
+    <AnimateKeyframes
+      play
+      iterationCount={1}
+      keyframes={[
+        "opacity: 0",
+        "opacity: 1",
+      ]}
+    >
       <Paper
         component={motion.div}
-        initial={{ scale: 0 }}
+        initial={{ scale: 0.75 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', bounce: 0.20 }}
         whileHover={{ scale: 1.03 }}
@@ -424,7 +432,7 @@ const CardView = (props) => {
           </Accordion>
         </Box>
       </Paper>
-    </>
+    </AnimateKeyframes>
   )
 }
 

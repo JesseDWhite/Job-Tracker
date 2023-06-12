@@ -18,6 +18,10 @@ import {
   IconButton,
   Tooltip,
   MenuItem,
+  MenuList,
+  Menu,
+  ListItemIcon,
+  ListItemText,
   FormControl,
   InputLabel,
   Select,
@@ -26,7 +30,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   CircularProgress,
-  LinearProgress
+  LinearProgress,
 } from '@mui/material';
 import {
   BackupTwoTone,
@@ -35,7 +39,9 @@ import {
   ApartmentTwoTone,
   PersonAddAltTwoTone,
   CancelTwoTone,
-  LogoutTwoTone
+  LogoutTwoTone,
+  MoreVert,
+  UploadFileTwoTone
 } from '@mui/icons-material';
 import {
   collection,
@@ -50,9 +56,11 @@ import { DataGrid } from '@mui/x-data-grid';
 import Analytics from '../Charts/Analytics';
 import DoughnutChart from '../Charts/DoughnutChart';
 import UserUpload from '../Forms/UserUpload';
+import ResumeUpload from '../Forms/ResumeUpload';
 import { eachMonthOfInterval, format, subMonths } from 'date-fns'
 import { styled } from '@mui/material/styles';
 import MasterList from '../MasterList';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 const Profile = (props) => {
 
@@ -70,6 +78,7 @@ const Profile = (props) => {
     setFeedback,
     feedback,
     handleViewComments,
+    getJobs
   } = props;
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -95,6 +104,7 @@ const Profile = (props) => {
     transform: 'translate(-50%, -50%)',
     width: 750,
     maxHeight: '85%',
+    minHeight: '25%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
     borderRadius: 5,
@@ -107,6 +117,7 @@ const Profile = (props) => {
     {
       field: 'photo',
       headerName: 'Photo',
+      headerAlign: 'center',
       width: 100,
       align: 'center',
       filterable: false,
@@ -136,14 +147,15 @@ const Profile = (props) => {
     {
       field: 'email',
       headerName: 'Email',
-      width: 400,
+      width: 350,
       renderCell: (params) => {
         return <span style={{ cursor: 'default' }}>{params.value}</span>
       }
     },
     {
-      field: 'role',
-      headerName: 'Role',
+      field: 'advisor',
+      headerName: 'Advisor',
+      headerAlign: 'center',
       width: 200,
       align: 'center',
       renderCell: (params) => {
@@ -153,6 +165,7 @@ const Profile = (props) => {
     {
       field: 'totalApplications',
       headerName: 'Total Apps',
+      headerAlign: 'center',
       width: 100,
       align: 'center',
       renderCell: (params) => {
@@ -164,6 +177,8 @@ const Profile = (props) => {
   const [average, setAverage] = useState(0);
 
   const [open, setOpen] = useState(false);
+
+  const [resumeUpload, setResumeUpload] = useState(false);
 
   const [addToken, setAddToken] = useState(false);
 
@@ -186,6 +201,8 @@ const Profile = (props) => {
   const [backupToken] = useState(currentUser?.accessToken);
 
   const subCollection = collection(organizationReference, `${organization.accessToken}/approvedUsers`);
+
+  const [resume, setResume] = useState(currentUser?.storedResume);
 
   const handleChange = (e) => {
     const { value } = e.target;
@@ -326,6 +343,7 @@ const Profile = (props) => {
   const handleClose = () => {
     setOpen(false);
     setTimeout(() => {
+      setResumeUpload(false)
       setViewStudent([]);
     }, 500);
   }
@@ -365,17 +383,30 @@ const Profile = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            <UserUpload
-              currentUser={currentUser}
-              getStudents={getStudents}
-              cohortList={cohortList}
-              feedback={feedback}
-              setFeedback={setFeedback}
-              setOpen={setOpen}
-              organization={organization}
-              organizationReference={organizationReference}
-              setOrganization={setOrganization}
-            />
+            {resumeUpload
+              ? <ResumeUpload
+                resume={resume}
+                setResume={setResume}
+                userReference={userReference}
+                currentUser={currentUser}
+                feedback={feedback}
+                setFeedback={setFeedback}
+                handleClose={handleClose}
+                getJobs={getJobs}
+                jobs={jobs}
+              />
+              : <UserUpload
+                currentUser={currentUser}
+                getStudents={getStudents}
+                cohortList={cohortList}
+                feedback={feedback}
+                setFeedback={setFeedback}
+                setOpen={setOpen}
+                organization={organization}
+                organizationReference={organizationReference}
+                setOrganization={setOrganization}
+              />
+            }
           </Box>
         </Fade>
       </Modal>
@@ -393,13 +424,94 @@ const Profile = (props) => {
               sx={{
                 borderRadius: 5,
                 minHeight: '100%',
-                p: 3,
+                pt: 3,
+                pl: 3,
+                pr: 3,
+                pb: 1,
                 transition: 'color .5s, background .5s',
                 background: THEME[themeMode].card,
-                color: THEME[themeMode].textColor
+                color: THEME[themeMode].textColor,
+                position: 'relative'
               }}
               container
             >
+              <PopupState variant="popover">
+                {(popupState) => (
+                  <Box>
+                    <IconButton
+                      id='options-button'
+                      aria-label='options'
+                      sx={{
+                        position: 'absolute',
+                        top: 15,
+                        right: 10
+                      }}
+                      {...bindTrigger(popupState)}
+                    >
+                      <MoreVert />
+                    </IconButton>
+                    <Menu
+                      id='options-menu'
+                      anchorEl='options-button'
+                      MenuListProps={{
+                        'aria-labelledby': 'options-button'
+                      }}
+                      {...bindMenu(popupState)}
+                      TransitionComponent={Fade}
+                      TransitionProps={{ timeout: 500 }}
+                      onClose={() => ((popupState.close(), setResumeUpload(false)))}
+                    >
+                      <MenuList>
+                        <MenuItem
+                          onClick={() => ((setResumeUpload(true), setOpen(true)
+                          ))}
+                        >
+                          <ListItemIcon>
+                            <UploadFileTwoTone />
+                            <ListItemText
+                              sx={{
+                                pl: 2,
+                              }}
+                            >
+                              Upload Resume
+                            </ListItemText>
+                          </ListItemIcon>
+                        </MenuItem>
+                        {currentUser.role === 'Admin' || currentUser.role === 'Advisor' ?
+                          <MenuItem
+                            onClick={() => ((setResumeUpload(false), setOpen(true)
+                            ))}
+                          >
+                            <ListItemIcon>
+                              <PersonAddAltTwoTone />
+                              <ListItemText
+                                sx={{
+                                  pl: 2,
+                                }}
+                              >
+                                Manage Users
+                              </ListItemText>
+                            </ListItemIcon>
+                          </MenuItem>
+                          : null}
+                        <MenuItem
+                          onClick={logout}>
+                          <ListItemIcon>
+                            <LogoutTwoTone />
+                            <ListItemText
+                              sx={{
+                                pl: 2
+                              }}
+                            >
+                              Sign Out
+                            </ListItemText>
+                          </ListItemIcon>
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
+                  </Box>
+                )}
+              </PopupState>
               <Box sx={{ textAlign: 'center' }}>
                 <StyledBadge
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -488,142 +600,160 @@ const Profile = (props) => {
                     }
                   </Grid>
                 </Grid>
-                <hr />
-                {/* <Box sx={{
-                  mb: 1
-                }}
-                >
-                  <LinearProgress variant="determinate" value={average} />
-                </Box> */}
-                {/* <Grid
-                  container
-                  justifyContent='space-around'
-                  direction='row'
-                >
-                  <Card
-                    item
-                    xs={6}
-                    sx={{
-                      p: 1,
-                      width: '40%',
-                      height: 75,
-                      borderRadius: 3,
-                      position: 'relative'
-                    }}
-                  >
-                    <Box
+                {currentUser.accessToken && currentUser.organization
+                  ?
+                  <Box>
+                    <hr />
+                    <Grid
+                      container
+                      justifyContent='space-around'
+                      direction='row'
                       sx={{
-                        position: 'absolute',
-                        left: 0,
+                        mt: 3
                       }}
                     >
-                      <ApartmentTwoTone sx={{ fontSize: 50 }} />
-                    </Box>
-                    <Box
-
-                    >
-                      <Typography>
-                        {currentUser.organization}
-                      </Typography>
-                    </Box>
-                  </Card>
-                  <Card
-                    item
-                    xs={6}
-                    sx={{
-                      p: 1,
-                      width: '40%',
-                      height: 75,
-                      borderRadius: 3
-                    }}
-                  >
-                    Content
-                  </Card>
-                  <Card
-                    item
-                    xs={6}
-                    sx={{
-                      mt: 1,
-                      p: 1,
-                      width: '40%',
-                      height: 75,
-                      borderRadius: 3
-                    }}
-                  >
-                    Content
-                  </Card>
-                  <Card
-                    item
-                    xs={6}
-                    sx={{
-                      mt: 1,
-                      p: 1,
-                      width: '40%',
-                      height: 75,
-                      borderRadius: 3
-                    }}
-                  >
-                    Content
-                  </Card>
-                </Grid> */}
-                {currentUser.accessToken && currentUser.organization
-                  ? <Box>
-                    <Typography
-                      sx={{ textAlign: 'center', fontSize: '1.25rem' }}
-                      gutterBottom
-                      component='div'
-                    >
-                      {currentUser.organization} <ApartmentTwoTone />
-                    </Typography>
-                    <Typography
-                      sx={{ textAlign: 'center', fontSize: '1.25rem' }}
-                      gutterBottom
-                      component='div'
-                    >
-                      Advisor: {currentUser.advisor}
-                    </Typography>
-                    <Typography
-                      sx={{ textAlign: 'center', fontSize: '1.25rem' }}
-                      gutterBottom
-                      component='div'
-                    >
-                      Cohort: {currentUser.cohort}
-                    </Typography>
-
+                      <Card
+                        item
+                        xs={6}
+                        sx={{
+                          p: 1,
+                          width: '40%',
+                          height: 75,
+                          borderRadius: 3,
+                          position: 'relative',
+                          transition: 'color .5s, background .5s',
+                          background: THEME[themeMode].subCard,
+                          color: THEME[themeMode].textColor,
+                        }}
+                      >
+                        <Typography
+                          variant='h5'
+                          sx={{
+                            textAlign: 'center',
+                            fontSize: '15px'
+                          }}
+                        >
+                          Organization
+                        </Typography>
+                        <hr />
+                        <Typography
+                          sx={{
+                            textAlign: 'center',
+                            mt: 1,
+                            fontSize: '18px'
+                          }}
+                        >
+                          {currentUser.organization}
+                        </Typography>
+                      </Card>
+                      <Card
+                        item
+                        xs={6}
+                        sx={{
+                          p: 1,
+                          width: '40%',
+                          height: 75,
+                          borderRadius: 3,
+                          position: 'relative',
+                          transition: 'color .5s, background .5s',
+                          background: THEME[themeMode].subCard,
+                          color: THEME[themeMode].textColor,
+                        }}
+                      >
+                        <Typography
+                          variant='h5'
+                          sx={{
+                            textAlign: 'center',
+                            fontSize: '15px'
+                          }}
+                        >
+                          Advisor
+                        </Typography>
+                        <hr />
+                        <Typography
+                          sx={{
+                            textAlign: 'center',
+                            mt: 1,
+                            fontSize: '18px'
+                          }}
+                        >
+                          {currentUser.advisor}
+                        </Typography>
+                      </Card>
+                      <Card
+                        item
+                        xs={6}
+                        sx={{
+                          mt: 1,
+                          p: 1,
+                          width: '40%',
+                          height: 75,
+                          borderRadius: 3,
+                          position: 'relative',
+                          transition: 'color .5s, background .5s',
+                          background: THEME[themeMode].subCard,
+                          color: THEME[themeMode].textColor,
+                        }}
+                      >
+                        <Typography
+                          variant='h5'
+                          sx={{
+                            textAlign: 'center',
+                            fontSize: '15px'
+                          }}
+                        >
+                          Cohort
+                        </Typography>
+                        <hr />
+                        <Typography
+                          sx={{
+                            textAlign: 'center',
+                            mt: 1,
+                            fontSize: '18px'
+                          }}
+                        >
+                          {currentUser.cohort}
+                        </Typography>
+                      </Card>
+                      <Card
+                        item
+                        xs={6}
+                        sx={{
+                          mt: 1,
+                          p: 1,
+                          width: '40%',
+                          height: 75,
+                          borderRadius: 3,
+                          position: 'relative',
+                          transition: 'color .5s, background .5s',
+                          background: THEME[themeMode].subCard,
+                          color: THEME[themeMode].textColor,
+                        }}
+                      >
+                        <Typography
+                          variant='h5'
+                          sx={{
+                            textAlign: 'center',
+                            fontSize: '15px'
+                          }}
+                        >
+                          Average Score
+                        </Typography>
+                        <hr />
+                        <Typography
+                          sx={{
+                            textAlign: 'center',
+                            mt: 1,
+                            fontSize: '18px'
+                          }}
+                        >
+                          {average > 0 ? average : 0}
+                        </Typography>
+                      </Card>
+                    </Grid>
                   </Box>
-                  : null
-                }
-                <Typography
-                  sx={{ textAlign: 'center', fontSize: '1.25rem' }}
-                  gutterBottom
-                  variant='h5'
-                  component='div'
-                >
-                  {`Average Score: ${average > 0 ? average : 0}/100`}
-                </Typography>
+                  : null}
               </CardContent>
-              <CardActions>
-                <Button
-                  fullWidth
-                  startIcon={<LogoutTwoTone />}
-                  variant='contained'
-                  color='error'
-                  onClick={logout}
-                >
-                  Sign Out
-                </Button>
-                {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
-                  ? <Button
-                    fullWidth
-                    startIcon={<PersonAddAltTwoTone />}
-                    color='info'
-                    variant='contained'
-                    onClick={() => setOpen(true)}>
-                    Manage Users
-                  </Button>
-                  : null
-                }
-              </CardActions>
             </Card>
           </Grid>
           <Grid sm={12} xl={8} item>
@@ -805,7 +935,7 @@ const Profile = (props) => {
               </Box>}
           </Grid>
         </Grid>
-      </Grid>
+      </Grid >
     </>
   )
 }

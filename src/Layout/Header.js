@@ -238,6 +238,8 @@ const Header = (props) => {
             position: 'absolute',
             bottom: 0,
             zIndex: 10,
+            opacity: loading ? 1 : 0,
+            transition: 'color .5s, background .5s, opacity 2s',
           }}>
           <LinearProgress variant="determinate" value={progress} color={progressColor} />
         </Box>
