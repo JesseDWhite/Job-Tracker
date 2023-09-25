@@ -247,12 +247,11 @@ const Profile = (props) => {
     cohorts.sort((a, b) => {
       const newA = new Date(a.cohort);
       const newB = new Date(b.cohort);
-      if (newA < newB) return -1;
-      if (newA > newB) return 1;
+      if (newA < newB) return 1;
+      if (newA > newB) return -1;
       return 0;
     });
-    const sortedList = cohorts.reverse();
-    setCohortList(sortedList);
+    setCohortList(cohorts);
   }
 
   const uploadAccessToken = async (token) => {
