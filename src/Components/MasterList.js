@@ -5,10 +5,14 @@ import {
   Chip,
   Pagination,
   Stack,
+  // Paper,
+  // Box,
+  // Button
 } from '@mui/material';
 import CardView from './CardView';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
+// import { DataGrid } from '@mui/x-data-grid';
 
 const MasterList = (props) => {
 
@@ -23,7 +27,9 @@ const MasterList = (props) => {
     student,
     handleViewComments,
     user,
-    currentUser
+    currentUser,
+    // open,
+    // setOpen
   } = props;
 
   const [interviewPage, setInterviewPage] = useState(1);
@@ -83,6 +89,18 @@ const MasterList = (props) => {
     const count = filteredJobs.length;
     return count;
   }
+
+  const getStatus = (status) => {
+    if (status === 'Active') {
+      return 'success';
+    } else if (status === 'Interview') {
+      return 'secondary';
+    } else if (status === 'Closed') {
+      return 'error';
+    } else if (status === 'Other') {
+      return 'warning';
+    }
+  };
 
   const categoryHeader = (status, color, pageCount, pageNumber, changeEvent) => {
     let headerTitle = 'Closed Applications';
@@ -152,56 +170,160 @@ const MasterList = (props) => {
     },
   ];
 
+  const columns = [
+    {
+      field: 'company',
+      headerName: 'Company',
+      headerAlign: 'center',
+      width: 300,
+      align: 'left',
+      filterable: false,
+      sortable: true,
+    },
+    {
+      field: 'jobTitle',
+      headerName: 'Job Title',
+      headerAlign: 'center',
+      width: 300,
+      renderCell: (params) => {
+        return <span style={{ cursor: 'default' }}>{params.value}</span>
+      }
+    },
+    {
+      field:
+        'status',
+      headerName:
+        'Status',
+      headerAlign: 'center',
+      align: 'center',
+      width: 100,
+      renderCell: (params) => {
+        return <Chip label={params.value} variant={THEME[themeMode].buttonStyle} color={getStatus(params.value)} />
+      }
+    },
+    {
+      field: 'score',
+      headerName: 'Score',
+      headerAlign: 'center',
+      width: 100,
+      align: 'center',
+      filterable: true,
+      sortable: true,
+    },
+    {
+      field: 'dateApplied',
+      headerName: 'Date Applied',
+      headerAlign: 'center',
+      width: 125,
+      align: 'center',
+      filterable: true,
+      sortable: true,
+    },
+  ];
+
   return (
     <Grid>
-      <Grid>
-        {
-          STRUCTURE.map(skeleton => {
-            return (
-              <Grid key={skeleton.status}>
-                <AnimateKeyframes
-                  play
-                  iterationCount={1}
-                  keyframes={["opacity: 0", "opacity: 1"]}
-                >
-                  {categoryHeader(skeleton.status, skeleton.color, skeleton.pageCount, skeleton.page, skeleton.change)}
-                </AnimateKeyframes>
-                <Grid
-                  container
-                  direction='row'
-                  justifyContent='start'
-                >
-                  {jobsToDisplay(skeleton.status, skeleton.pagesVisited).map(job => {
-                    return (
-                      <Grid
-                        item
-                        xs={12}
-                        sm={4}
-                        xl={3}
-                        key={job.id}
-                      >
-                        <CardView
-                          themeMode={themeMode}
-                          updateJobApplication={updateJobApplication}
-                          job={job}
-                          deleteJob={deleteJob}
-                          updateJobStatus={updateJobStatus}
-                          updateInterviewDate={updateInterviewDate}
-                          student={student}
-                          handleViewComments={handleViewComments}
-                          user={user}
-                          currentUser={currentUser}
-                        />
-                      </Grid>
-                    );
-                  })}
-                </Grid>
+      {/* <Paper
+        id='dataGrid'
+        sx={{
+          position: 'relative',
+          borderRadius: 5,
+          background: THEME[themeMode].card,
+          transition: 'color .5s, background .5s'
+        }}
+      >
+        <Button
+          elevation={3}
+          variant={THEME[themeMode].buttonStyle}
+          color='success'
+          onClick={() => setOpen(true)}
+          sx={{
+            position: 'absolute',
+            top: 20,
+            right: 20
+          }}
+        >
+          Add New
+        </Button>
+        <Box
+          sx={{
+            borderRadius: 5,
+            transition: 'color .5s, background .5s',
+            height: '80vh',
+            width: '100%',
+            background: THEME[themeMode].card,
+            pt: 5
+          }}
+        >
+          <DataGrid
+            sx={{
+              transition: 'color .5s, background .5s',
+              color: THEME[themeMode].textColor,
+              border: 'none',
+              "& ::-webkit-scrollbar": {
+                backgroundColor: 'rgba(0, 0, 0, 0)',
+                width: '0.5em'
+              },
+              "& ::-webkit-scrollbar-thumb": {
+                backgroundColor: 'rgb(169, 169, 169)',
+                borderRadius: '1em'
+              }
+            }}
+            rows={searchJobs}
+            columns={columns}
+            pageSize={20}
+            rowsPerPageOptions={[20]}
+          // onSelectionModelChange={(newStudent) => (setViewStudent(newStudent))}
+          // selectedModel={viewStudent}
+          />
+        </Box>
+      </Paper> */}
+      {
+        STRUCTURE.map(skeleton => {
+          return (
+            <Grid key={skeleton.status}>
+              <AnimateKeyframes
+                play
+                iterationCount={1}
+                keyframes={["opacity: 0", "opacity: 1"]}
+              >
+                {categoryHeader(skeleton.status, skeleton.color, skeleton.pageCount, skeleton.page, skeleton.change)}
+              </AnimateKeyframes>
+              <Grid
+                container
+                direction='row'
+                justifyContent='start'
+              >
+                {jobsToDisplay(skeleton.status, skeleton.pagesVisited).map(job => {
+                  return (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={4}
+                      xl={3}
+                      key={job.id}
+                    >
+                      <CardView
+                        themeMode={themeMode}
+                        updateJobApplication={updateJobApplication}
+                        job={job}
+                        deleteJob={deleteJob}
+                        updateJobStatus={updateJobStatus}
+                        updateInterviewDate={updateInterviewDate}
+                        student={student}
+                        handleViewComments={handleViewComments}
+                        user={user}
+                        currentUser={currentUser}
+                      />
+                    </Grid>
+                  );
+                })}
               </Grid>
-            )
-          })
-        }
-      </Grid>
-    </Grid>
+            </Grid>
+          )
+        })
+      }
+    </Grid >
   )
 }
 

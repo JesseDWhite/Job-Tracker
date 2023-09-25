@@ -6,7 +6,7 @@ export const THEME = {
     textColor: 'white',
     backgroundColor: '#37474F',
     chipColor: 'secondary',
-    buttonStyle: 'contained',
+    buttonStyle: 'outlined',
   },
   lightMode: {
     header: '#ECEFF1',
@@ -15,6 +15,6 @@ export const THEME = {
     textColor: '#212121',
     backgroundColor: '#CFD8DC',
     chipColor: 'default',
-    buttonStyle: 'outlined',
+    buttonStyle: 'contained',
   }
 }

@@ -10,7 +10,8 @@ import {
   MenuItem,
   InputLabel,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Chip
 } from '@mui/material';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import {
@@ -27,6 +28,7 @@ import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import * as XLSX from 'xlsx';
+import { eachMonthOfInterval, format, subMonths } from 'date-fns'
 
 const UserUpload = (props) => {
 
@@ -64,6 +66,22 @@ const UserUpload = (props) => {
   const handleSelectChange = (e) => {
     setCohort(e.target.value);
     getUsersToEdit(e.target.value);
+  }
+
+  const getLastYear = () => {
+    const today = new Date();
+    const yearAndAHalf = subMonths(today, 18);
+    const lastYear = eachMonthOfInterval({
+      start: yearAndAHalf,
+      end: today
+    });
+    const convertedYears = lastYear.map(year => {
+      return format(year, 'LLLL') + ' ' + format(year, 'y');
+    });
+    convertedYears.push('Advisors');
+    const sortedList = convertedYears.reverse();
+
+    return sortedList;
   }
 
   const addUserList = async (e) => {
@@ -269,13 +287,23 @@ const UserUpload = (props) => {
               <InputLabel>Cohort To Edit</InputLabel>
               <Select
                 label='Cohort To Edit'
-                value={cohort}
+                value={cohort.cohort}
                 onChange={handleSelectChange}
               >
                 {cohortList.map(cohort => {
-                  return (
-                    <MenuItem value={cohort}>{cohort}</MenuItem>
-                  )
+                  return (<MenuItem value={cohort.cohort}>
+                    {cohort.cohort}
+                    {cohort.count > 0
+                      && <Chip
+                        sx={{
+                          ml: 1
+                        }}
+                        label={cohort.count}
+                        variant='contained'
+                        size='small'
+                      />
+                    }
+                  </MenuItem>)
                 })}
               </Select>
             </FormControl>
@@ -362,7 +390,7 @@ const UserUpload = (props) => {
                       value={entry.cohort}
                       onChange={(e) => handleInputChange(e, idx)}
                     >
-                      {cohortList.map(cohort => {
+                      {getLastYear().map(cohort => {
                         return (
                           <MenuItem value={cohort}>{cohort}</MenuItem>
                         )

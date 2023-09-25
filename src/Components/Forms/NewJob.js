@@ -16,7 +16,8 @@ import {
   ListItemIcon,
   ListItemText,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  CircularProgress,
 } from '@mui/material';
 import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
 import {
@@ -326,7 +327,7 @@ const NewJob = (props) => {
             </Typography>
             <Typography component='h3'>
               {jobPostingKeywords.length !== 0 &&
-                <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been address so far.</em>
+                <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been addressed so far.</em>
               }
             </Typography>
             <Typography sx={{ mt: 2 }}>
@@ -349,6 +350,10 @@ const NewJob = (props) => {
       <Grid
         display='flex'
       >
+        {/* {formValues.jobDescription && (formValues.coverLetter || formValues.resume)
+          ? <CircularProgress variant='determinate' value={50} />
+          : null
+        } */}
         <form method='POST' action='#' onSubmit={(e) => validateFormFields(e)}>
           <Grid
             container
@@ -357,6 +362,8 @@ const NewJob = (props) => {
             alignItems="start"
             spacing={2}
           >
+            {/* <CircularProgress variant="determinate" value={parseInt(job.score)} sx={{ color: getScoreColor(job.score) }} thickness={5}
+                  /> */}
             <Grid xl={6} item>
               <Typography variant='h4' sx={{ textAlign: 'center' }}>Application Info</Typography>
               <Grid

@@ -41,7 +41,9 @@ import {
   CancelTwoTone,
   LogoutTwoTone,
   MoreVert,
-  UploadFileTwoTone
+  UploadFileTwoTone,
+  ForumTwoTone,
+  EditTwoTone
 } from '@mui/icons-material';
 import {
   collection,
@@ -50,6 +52,7 @@ import {
   doc,
   query,
   where,
+  getCountFromServer
 } from 'firebase/firestore';
 import { THEME } from '../../Layout/Theme';
 import { DataGrid } from '@mui/x-data-grid';
@@ -57,6 +60,7 @@ import Analytics from '../Charts/Analytics';
 import DoughnutChart from '../Charts/DoughnutChart';
 import UserUpload from '../Forms/UserUpload';
 import ResumeUpload from '../Forms/ResumeUpload';
+import UpdateProfile from '../Forms/UpdateProfile';
 import { eachMonthOfInterval, format, subMonths } from 'date-fns'
 import { styled } from '@mui/material/styles';
 import MasterList from '../MasterList';
@@ -104,7 +108,7 @@ const Profile = (props) => {
     transform: 'translate(-50%, -50%)',
     width: 750,
     maxHeight: '85%',
-    minHeight: '25%',
+    minHeight: '10%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
     borderRadius: 5,
@@ -180,6 +184,8 @@ const Profile = (props) => {
 
   const [resumeUpload, setResumeUpload] = useState(false);
 
+  const [updateProfile, setUpdateProfile] = useState(false);
+
   const [addToken, setAddToken] = useState(false);
 
   const [cohortList, setCohortList] = useState([]);
@@ -204,6 +210,8 @@ const Profile = (props) => {
 
   const [resume, setResume] = useState(currentUser?.storedResume);
 
+  const [username, setUsername] = useState(currentUser.name);
+
   const handleChange = (e) => {
     const { value } = e.target;
     setAccessToken(value);
@@ -217,20 +225,34 @@ const Profile = (props) => {
     setViewType(newViewType);
   };
 
-  const getLastYear = () => {
+  const getLastYear = async () => {
+    let cohorts = [];
     const today = new Date();
     const yearAndAHalf = subMonths(today, 18);
     const lastYear = eachMonthOfInterval({
       start: yearAndAHalf,
       end: today
     });
-    const convertedYears = lastYear.map(year => {
+    let convertedYears = lastYear.map(year => {
       return format(year, 'LLLL') + ' ' + format(year, 'y');
     });
-    convertedYears.push('Advisors');
-    const sortedList = convertedYears.reverse();
+    convertedYears.push('Advisors')
+    for (let i = 0; i < convertedYears.length; i++) {
+      const q = query(subCollection, where('cohort', '==', convertedYears[i]));
+      const snapshot = await getCountFromServer(q);
+      if (snapshot.data().count > 0) {
+        cohorts.push({ 'cohort': convertedYears[i], 'count': snapshot.data().count });
+      }
+    }
+    cohorts.sort((a, b) => {
+      const newA = new Date(a.cohort);
+      const newB = new Date(b.cohort);
+      if (newA < newB) return -1;
+      if (newA > newB) return 1;
+      return 0;
+    });
+    const sortedList = cohorts.reverse();
     setCohortList(sortedList);
-    setCurrentCohort(sortedList[1]);
   }
 
   const uploadAccessToken = async (token) => {
@@ -322,7 +344,7 @@ const Profile = (props) => {
       return (
         setAverage(prevState => prevState += parseInt(job.score))
       )
-    })
+    });
     setAverage(prevState => parseInt(prevState / averageToDivide));
   }
 
@@ -343,7 +365,8 @@ const Profile = (props) => {
   const handleClose = () => {
     setOpen(false);
     setTimeout(() => {
-      setResumeUpload(false)
+      setResumeUpload(false);
+      setUpdateProfile(false);
       setViewStudent([]);
     }, 500);
   }
@@ -370,6 +393,47 @@ const Profile = (props) => {
     getStudentsApplications();
   }, [viewStudent]);
 
+  const determineModelContents = () => {
+    if (resumeUpload) {
+      return <ResumeUpload
+        resume={resume}
+        setResume={setResume}
+        userReference={userReference}
+        currentUser={currentUser}
+        feedback={feedback}
+        setFeedback={setFeedback}
+        handleClose={handleClose}
+        getJobs={getJobs}
+        jobs={jobs}
+      />
+    } else if (updateProfile) {
+      return <UpdateProfile
+        username={username}
+        setUsername={setUsername}
+        userReference={userReference}
+        currentUser={currentUser}
+        feedback={feedback}
+        setFeedback={setFeedback}
+        handleClose={handleClose}
+        getJobs={getJobs}
+        jobs={jobs}
+        subCollection={subCollection}
+      />
+    } else {
+      return <UserUpload
+        currentUser={currentUser}
+        getStudents={getStudents}
+        cohortList={cohortList}
+        feedback={feedback}
+        setFeedback={setFeedback}
+        setOpen={setOpen}
+        organization={organization}
+        organizationReference={organizationReference}
+        setOrganization={setOrganization}
+      />
+    }
+  }
+
   return (
     <>
       <Modal
@@ -383,30 +447,7 @@ const Profile = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            {resumeUpload
-              ? <ResumeUpload
-                resume={resume}
-                setResume={setResume}
-                userReference={userReference}
-                currentUser={currentUser}
-                feedback={feedback}
-                setFeedback={setFeedback}
-                handleClose={handleClose}
-                getJobs={getJobs}
-                jobs={jobs}
-              />
-              : <UserUpload
-                currentUser={currentUser}
-                getStudents={getStudents}
-                cohortList={cohortList}
-                feedback={feedback}
-                setFeedback={setFeedback}
-                setOpen={setOpen}
-                organization={organization}
-                organizationReference={organizationReference}
-                setOrganization={setOrganization}
-              />
-            }
+            {determineModelContents()}
           </Box>
         </Fade>
       </Modal>
@@ -459,7 +500,7 @@ const Profile = (props) => {
                       {...bindMenu(popupState)}
                       TransitionComponent={Fade}
                       TransitionProps={{ timeout: 500 }}
-                      onClose={() => ((popupState.close(), setResumeUpload(false)))}
+                      onClose={() => ((popupState.close(), setResumeUpload(false), setUpdateProfile(false)))}
                     >
                       <MenuList>
                         <MenuItem
@@ -494,6 +535,37 @@ const Profile = (props) => {
                             </ListItemIcon>
                           </MenuItem>
                           : null}
+                        <MenuItem
+                          onClick={() => ((setUpdateProfile(true), setOpen(true)
+                          ))}>
+                          <ListItemIcon>
+                            <EditTwoTone />
+                            <ListItemText
+                              sx={{
+                                pl: 2
+                              }}
+                            >
+                              Edit Profile
+                            </ListItemText>
+                          </ListItemIcon>
+                        </MenuItem>
+                        <MenuItem
+                          component='a'
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          href='https://forms.gle/cy3TvnmfxrgkZY8K6'
+                        >
+                          <ListItemIcon>
+                            <ForumTwoTone />
+                            <ListItemText
+                              sx={{
+                                pl: 2
+                              }}
+                            >
+                              Feedback
+                            </ListItemText>
+                          </ListItemIcon>
+                        </MenuItem>
                         <MenuItem
                           onClick={logout}>
                           <ListItemIcon>
@@ -785,10 +857,24 @@ const Profile = (props) => {
                     <InputLabel>Cohort To View</InputLabel>
                     <Select
                       label='Cohort To View'
-                      value={currentCohort}
+                      value={currentCohort.cohort}
                       onChange={handleSelectChange}
                     >
-                      {cohortList.map(cohort => { return (<MenuItem value={cohort}>{cohort}</MenuItem>) })}
+                      {cohortList.map(cohort => {
+                        return (<MenuItem value={cohort.cohort}>
+                          {cohort.cohort}
+                          {cohort.count > 0
+                            && <Chip
+                              sx={{
+                                ml: 1
+                              }}
+                              label={cohort.count}
+                              variant='contained'
+                              size='small'
+                            />
+                          }
+                        </MenuItem>)
+                      })}
                     </Select>
                   </FormControl>
                   <ToggleButtonGroup

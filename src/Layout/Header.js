@@ -225,7 +225,7 @@ const Header = (props) => {
                   src={user?.photoURL}
                 />}
               variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
-              label={viewProfile ? 'Go Back' : user?.displayName}
+              label={viewProfile ? 'Go Back' : currentUser?.name}
               clickable
               onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}
             />

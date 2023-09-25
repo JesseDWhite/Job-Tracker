@@ -30,7 +30,6 @@ import {
   AlertTitle,
 } from '@mui/material';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
-import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 import { format } from 'date-fns';
 import { signOut, onAuthStateChanged, } from '@firebase/auth';
 import { auth } from '../firebase';
@@ -84,6 +83,8 @@ const Main = () => {
   const organizationReference = collection(db, 'organizations');
 
   const subCollection = collection(userReference, `${user?.uid}/jobs`);
+
+  const [gridView, setGridView] = useState(true);
 
   const [feedback, setFeedback] = useState({
     open: false,
@@ -235,7 +236,7 @@ const Main = () => {
           const nameSnapshot = await getDocs(orgName);
           const orgNameData = nameSnapshot.docs[0]?.data();
 
-          //Grap the advisor's information for the student.
+          //Grab the advisor's information for the student.
           const advisorQuery = query(userReference, where('name', '==', approvedUserData.advisor));
           const advisorSnapshot = await getDocs(advisorQuery);
           const advisorData = advisorSnapshot.docs[0]?.data();
@@ -423,17 +424,17 @@ const Main = () => {
     await updateDoc(jobDoc, updateInterviewDate);
   }
 
-  const updateAttendedInterview = async (id, attended) => {
-    const newAttended = !attended;
-    const newJobs = [...searchJobs];
-    const jobToUpdate = newJobs.find(job => job.id.includes(id));
-    jobToUpdate.attendedInterview = newAttended;
-    const jobDoc = doc(subCollection, id);
-    const updateAttendedInterview = { attendedInterview: newAttended };
-    setSearchJobs(newJobs);
-    setJobs(newJobs);
-    await updateDoc(jobDoc, updateAttendedInterview);
-  }
+  // const updateAttendedInterview = async (id, attended) => {
+  //   const newAttended = !attended;
+  //   const newJobs = [...searchJobs];
+  //   const jobToUpdate = newJobs.find(job => job.id.includes(id));
+  //   jobToUpdate.attendedInterview = newAttended;
+  //   const jobDoc = doc(subCollection, id);
+  //   const updateAttendedInterview = { attendedInterview: newAttended };
+  //   setSearchJobs(newJobs);
+  //   setJobs(newJobs);
+  //   await updateDoc(jobDoc, updateAttendedInterview);
+  // }
 
   const updatePreferrdTheme = async (id) => {
     const userToUpdate = doc(userReference, id);
@@ -672,37 +673,29 @@ const Main = () => {
                         user={user}
                         userReference={userReference}
                         currentUser={currentUser}
+                        open={open}
+                        setOpen={setOpen}
                       />
-                      <Fab
-                        variant='extended'
-                        sx={{
-                          position: 'fixed',
-                          top: 100,
-                          right: 30,
-                          backgroundColor: 'green',
-                          '&:hover': {
-                            backgroundColor: 'darkGreen'
-                          },
-                          color: 'white'
-                        }}
-                        onClick={() => setOpen(!open)}
-                      >
-                        <AddCircleTwoToneIcon sx={{ mr: 1 }} />
-                        ADD NEW
-                      </Fab>
-                      <Fab
-                        color='info'
-                        sx={{
-                          position: 'fixed',
-                          bottom: 30,
-                          right: 30,
-                        }}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href='https://forms.gle/cy3TvnmfxrgkZY8K6'
-                      >
-                        <CommentTwoToneIcon />
-                      </Fab>
+                      {!gridView ?
+                        <Fab
+                          variant='extended'
+                          sx={{
+                            position: 'fixed',
+                            top: 100,
+                            right: 30,
+                            backgroundColor: 'green',
+                            '&:hover': {
+                              backgroundColor: 'darkGreen'
+                            },
+                            color: 'white'
+                          }}
+                          onClick={() => setOpen(!open)}
+                        >
+                          <AddCircleTwoToneIcon sx={{ mr: 1 }} />
+                          ADD NEW
+                        </Fab>
+                        : null
+                      }
                     </Grid>
                   }
                 </Grid>
