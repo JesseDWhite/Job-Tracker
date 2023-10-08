@@ -154,33 +154,13 @@ const Header = (props) => {
               </Typography>
               :
               <Grid>
-                <Chip
-                  sx={{
-                    zIndex: 10,
-                    ml: 2
-                  }}
-                  color='primary'
-                  variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
-                  onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
-                  label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
-                  avatar={<Avatar>{applicationCount}</Avatar>}
-                />
-                <Button
-                  sx={{
-                    ml: 5,
-                    zIndex: 10
-                  }}
-                  variant='text'
-                  color='primary'
-                  onClick={() => sort ? sortByDate() : sortByName()}>
-                  SORTED BY: {sort ? 'NAME A-Z' : 'MOST RECENT'}
-                </Button>
                 <Grid
                   container
-                  justifyContent='center'
+                  justifyContent='start'
                   sx={{
                     position: 'absolute',
-                    top: 0
+                    top: 0,
+                    ml: 2.5
                   }}
                 >
                   <SearchBar

@@ -29,14 +29,11 @@ import {
   Avatar,
   ToggleButtonGroup,
   ToggleButton,
-  CircularProgress,
-  LinearProgress,
 } from '@mui/material';
 import {
   BackupTwoTone,
   KeyTwoTone,
   HighlightOffTwoTone,
-  ApartmentTwoTone,
   PersonAddAltTwoTone,
   CancelTwoTone,
   LogoutTwoTone,
@@ -82,7 +79,8 @@ const Profile = (props) => {
     setFeedback,
     feedback,
     handleViewComments,
-    getJobs
+    getJobs,
+    setSearchJobs
   } = props;
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -417,6 +415,16 @@ const Profile = (props) => {
         getJobs={getJobs}
         jobs={jobs}
         subCollection={subCollection}
+      />
+    } else if (student) {
+      <MasterList
+        themeMode={themeMode}
+        searchJobs={studentApplications}
+        jobs={studentApplications}
+        student={student}
+        handleViewComments={handleViewComments}
+        user={user}
+        setSearchJobs={setSearchJobs}
       />
     } else {
       return <UserUpload
@@ -916,7 +924,7 @@ const Profile = (props) => {
                     columns={columns}
                     pageSize={20}
                     rowsPerPageOptions={[20]}
-                    onSelectionModelChange={(newStudent) => (setViewStudent(newStudent))}
+                    onSelectionModelChange={(newStudent) => ((setViewStudent(newStudent), setOpen(true)))}
                     selectedModel={viewStudent}
                   />
                 </Paper>
@@ -1009,14 +1017,15 @@ const Profile = (props) => {
                     <Typography variant='h5' textAlign='center'>{student.name}</Typography>
                   </Paper>
                 </Grid>
-                <MasterList
+                {/* <MasterList
                   themeMode={themeMode}
                   searchJobs={studentApplications}
                   jobs={studentApplications}
                   student={student}
                   handleViewComments={handleViewComments}
                   user={user}
-                />
+                  setSearchJobs={setSearchJobs}
+                /> */}
               </Box>}
           </Grid>
         </Grid>

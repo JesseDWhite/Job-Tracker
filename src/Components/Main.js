@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import {
@@ -31,7 +30,7 @@ import {
 } from '@mui/material';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
-import { signOut, onAuthStateChanged, } from '@firebase/auth';
+import { signOut, onAuthStateChanged, } from 'firebase/auth';
 import { auth } from '../firebase';
 import Header from '../Layout/Header';
 import Profile from './User/Profile';
@@ -402,12 +401,11 @@ const Main = () => {
   }
 
   const updateJobStatus = async (id, e) => {
-    const newStatus = e.target.value;
     const newJobs = [...searchJobs];
     const jobToUpdate = newJobs.find(job => job.id.includes(id));
-    jobToUpdate.status = newStatus;
+    jobToUpdate.status = e;
     const jobDoc = doc(subCollection, id);
-    const updateStatus = { status: newStatus };
+    const updateStatus = { status: e };
     setSearchJobs(newJobs);
     setJobs(newJobs);
     await updateDoc(jobDoc, updateStatus);
@@ -625,79 +623,36 @@ const Main = () => {
               <Grid
                 item
                 sm={12}
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
               >
-                <Grid sx={{ m: 3, pt: 8 }}>
-                  {loading
-                    ? <AnimateKeyframes
-                      play
-                      iterationCount={1}
-                      keyframes={[
-                        "opacity: 0",
-                        "opacity: 1",
-                      ]}
-                    >
-                      <Grid display='flex' >
-                        <Grid
-                          sx={{ mt: 17, mx: 3 }}
-                          container
-                          direction="row"
-                          justifyContent="start"
-                        >
-                          {Array.from(new Array(12)).map((skeleton, idx) => {
-                            return (
-                              <Grid
-                                key={idx}
-                                xs={12}
-                                sm={4}
-                                xl={3}
-                                item
-                              >
-                                <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 300, borderRadius: 5 }} />
-                              </Grid>
-                            )
-                          })}
-                        </Grid>
-                      </Grid>
-                    </AnimateKeyframes>
-                    : <Grid >
-                      <MasterList
-                        loading={loading}
-                        themeMode={themeMode}
-                        searchJobs={searchJobs}
-                        jobs={jobs}
-                        updateJobApplication={updateJobApplication}
-                        deleteJob={deleteJob}
-                        updateJobStatus={updateJobStatus}
-                        updateInterviewDate={updateInterviewDate}
-                        handleViewComments={handleViewComments}
-                        user={user}
-                        userReference={userReference}
-                        currentUser={currentUser}
-                        open={open}
-                        setOpen={setOpen}
-                      />
-                      {!gridView ?
-                        <Fab
-                          variant='extended'
-                          sx={{
-                            position: 'fixed',
-                            top: 100,
-                            right: 30,
-                            backgroundColor: 'green',
-                            '&:hover': {
-                              backgroundColor: 'darkGreen'
-                            },
-                            color: 'white'
-                          }}
-                          onClick={() => setOpen(!open)}
-                        >
-                          <AddCircleTwoToneIcon sx={{ mr: 1 }} />
-                          ADD NEW
-                        </Fab>
-                        : null
-                      }
-                    </Grid>
-                  }
+                <Grid
+                  sx={{ pt: 10 }}
+                >
+                  <MasterList
+                    loading={loading}
+                    themeMode={themeMode}
+                    searchJobs={searchJobs}
+                    setSearchJobs={setSearchJobs}
+                    jobs={jobs}
+                    updateJobApplication={updateJobApplication}
+                    deleteJob={deleteJob}
+                    updateJobStatus={updateJobStatus}
+                    updateInterviewDate={updateInterviewDate}
+                    handleViewComments={handleViewComments}
+                    user={user}
+                    userReference={userReference}
+                    currentUser={currentUser}
+                    open={open}
+                    setOpen={setOpen}
+                    applicationCount={applicationCount}
+                    subCollection={subCollection}
+                    feedback={feedback}
+                    setFeedback={setFeedback}
+                    setJobs={setJobs}
+                  />
                 </Grid>
               </Grid>
             </Grid>

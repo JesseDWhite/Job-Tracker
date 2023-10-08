@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   TextField,
   Button,
@@ -17,9 +17,9 @@ import {
   ListItemText,
   ToggleButtonGroup,
   ToggleButton,
-  CircularProgress,
+  CircularProgress
 } from '@mui/material';
-import { Check, Close, AddBoxTwoTone } from '@mui/icons-material';
+import { Check, Close } from '@mui/icons-material';
 import {
   updateDoc,
   addDoc,
@@ -89,12 +89,19 @@ const NewJob = (props) => {
     resumeKeyWords: editing ? jobToEdit.resumeKeyWords : [],
     missingKeyWords: editing ? jobToEdit.missingKeyWords : [],
     score: editing ? jobToEdit.score : 0,
-    user: editing ? jobToEdit.user : ''
+    user: editing ? jobToEdit.user : '',
+    interviewPrep: [],
+    jobHardSkills: [],
+    jobSoftSkills: [],
+    personalHardSkills: [],
+    personalSoftSkills: []
   }
 
   const [formValues, setFormValues] = useState(initialValues);
 
   const [open, setOpen] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (editing) { setStatus(jobToEdit.status); }
@@ -142,7 +149,7 @@ const NewJob = (props) => {
     }
   }
 
-  const validateFormFields = (e) => {
+  const validateFormFields = async (e) => {
     handleErrorState();
     e.preventDefault();
     if (!formValues.company || !formValues.jobTitle || !formValues.dateApplied || !formValues.status) {
@@ -177,29 +184,8 @@ const NewJob = (props) => {
   }
 
   const createJob = async () => {
-    !editing
-      ? await addDoc(subCollection, {
-        company: formValues.company,
-        dateApplied: formValues.dateApplied,
-        jobDescription: formValues.jobDescription,
-        jobTitle: formValues.jobTitle,
-        status: status,
-        jobPosting: formValues.jobPosting,
-        ats: formValues.ats,
-        resumeLink: formValues.resumeLink,
-        coverLetterLink: formValues.coverLetterLink,
-        coverLetter: formValues.coverLetter,
-        resume: formValues.resume,
-        notes: formValues.notes,
-        jobPostingKeyWords: extractKeyWords(formValues.jobDescription),
-        coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
-        resumeKeyWords: extractKeyWords(formValues.resume),
-        missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
-        score: !formValues.coverLetter && !formValues.resume && !formValues.jobDescription ? 0
-          : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
-        user: user?.uid
-      })
-      : await updateDoc(doc(subCollection, jobToEdit.id), {
+    if (editing) {
+      await updateDoc(doc(subCollection, jobToEdit.id), {
         company: formValues.company,
         dateApplied: formValues.dateApplied,
         jobDescription: formValues.jobDescription,
@@ -219,11 +205,91 @@ const NewJob = (props) => {
         score: !formValues.coverLetter && !formValues.resume && !formValues.jobDescription ? 0
           : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
         user: user?.uid,
-        id: jobToEdit.id
+        id: jobToEdit.id,
+        jobHardSkills: formValues.jobHardSkills,
+        jobSoftSkills: formValues.jobSoftSkills,
+        personalHardSkills: formValues.personalHardSkills,
+        personalSoftSkills: formValues.personalSoftSkills,
+        interviewPrep: formValues.interviewPrep
       });
+    } else {
+      await addDoc(subCollection, {
+        company: formValues.company,
+        dateApplied: formValues.dateApplied,
+        jobDescription: formValues.jobDescription,
+        jobTitle: formValues.jobTitle,
+        status: status,
+        jobPosting: formValues.jobPosting,
+        ats: formValues.ats,
+        resumeLink: formValues.resumeLink,
+        coverLetterLink: formValues.coverLetterLink,
+        coverLetter: formValues.coverLetter,
+        resume: formValues.resume,
+        notes: formValues.notes,
+        jobPostingKeyWords: extractKeyWords(formValues.jobDescription),
+        coverLetterKeyWords: extractKeyWords(formValues.coverLetter),
+        resumeKeyWords: extractKeyWords(formValues.resume),
+        missingKeyWords: getMissingKeyWords(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+        score: !formValues.coverLetter && !formValues.resume && !formValues.jobDescription ? 0
+          : getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription),
+        user: user?.uid,
+        jobHardSkills: formValues.jobHardSkills,
+        jobSoftSkills: formValues.jobSoftSkills,
+        personalHardSkills: formValues.personalHardSkills,
+        personalSoftSkills: formValues.personalSoftSkills,
+        interviewPrep: formValues.interviewPrep
+      })
+    }
     getJobs();
     setEditing(false);
     setFormValues(initialValues);
+  };
+
+  const getSkillz = async (prompt) => {
+    try {
+      const user_token = currentUser.internalId;
+      if (user_token) {
+        // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
+        const keywordRequest = await fetch(`http://localhost:8000/${user_token}/extract_keywords/`, {
+          method: 'POST',
+          mode: "cors",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ data: prompt }),
+        });
+
+        const skillz = await keywordRequest.json();
+        const skillzObject = JSON.parse(skillz);
+        return skillzObject;
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
+  };
+
+  const getInterviewPrepQuestions = async (prompt) => {
+    try {
+      const user_token = currentUser.internalId;
+      if (user_token) {
+        // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
+        const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
+          method: 'POST',
+          mode: "cors",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ data: prompt }),
+        });
+
+        const prepQuestions = await keywordRequest.json();
+        const prepQuestionsObject = JSON.parse(prepQuestions);
+        console.log(prepQuestions, prepQuestionsObject)
+        return prepQuestionsObject.interview_prep;
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
   };
 
   const extractKeyWords = (doc) => {
@@ -350,10 +416,6 @@ const NewJob = (props) => {
       <Grid
         display='flex'
       >
-        {/* {formValues.jobDescription && (formValues.coverLetter || formValues.resume)
-          ? <CircularProgress variant='determinate' value={50} />
-          : null
-        } */}
         <form method='POST' action='#' onSubmit={(e) => validateFormFields(e)}>
           <Grid
             container
@@ -362,8 +424,6 @@ const NewJob = (props) => {
             alignItems="start"
             spacing={2}
           >
-            {/* <CircularProgress variant="determinate" value={parseInt(job.score)} sx={{ color: getScoreColor(job.score) }} thickness={5}
-                  /> */}
             <Grid xl={6} item>
               <Typography variant='h4' sx={{ textAlign: 'center' }}>Application Info</Typography>
               <Grid
@@ -457,18 +517,6 @@ const NewJob = (props) => {
                 label='Link To Job Posting'
                 onChange={handleInputChange}
                 value={formValues.jobPosting}
-                fullWidth />
-              <TextField
-                sx={{
-                  mb: 2,
-                  zIndex: 0
-                }}
-                size='small'
-                type='text'
-                name='ats'
-                label='Application Tracking System'
-                onChange={handleInputChange}
-                value={formValues.ats}
                 fullWidth />
               <TextField
                 fullWidth
@@ -608,10 +656,23 @@ const NewJob = (props) => {
             type='submit'
             color='primary'
             variant='contained'
-            startIcon={<AddBoxTwoTone />}
+            disabled={loading}
             fullWidth
           >
             {editing ? `Update ${formValues.company}` : 'ADD TO LIST'}
+            {loading && <CircularProgress
+              color='success'
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: '-16px',
+                marginLeft: '-16px',
+              }}
+              disableShrink
+              size='2rem'
+              thickness={7}
+            />}
           </Button>
           {editing
             ? <Button
@@ -622,6 +683,7 @@ const NewJob = (props) => {
               variant='contained'
               color='error'
               fullWidth
+              disabled={loading}
               onClick={() => ((setEditing(!editing), handleSetOpen(false)))}
             >
               Cancel
