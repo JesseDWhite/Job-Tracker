@@ -416,16 +416,6 @@ const Profile = (props) => {
         jobs={jobs}
         subCollection={subCollection}
       />
-    } else if (student) {
-      <MasterList
-        themeMode={themeMode}
-        searchJobs={studentApplications}
-        jobs={studentApplications}
-        student={student}
-        handleViewComments={handleViewComments}
-        user={user}
-        setSearchJobs={setSearchJobs}
-      />
     } else {
       return <UserUpload
         currentUser={currentUser}
@@ -924,7 +914,7 @@ const Profile = (props) => {
                     columns={columns}
                     pageSize={20}
                     rowsPerPageOptions={[20]}
-                    onSelectionModelChange={(newStudent) => ((setViewStudent(newStudent), setOpen(true)))}
+                    onSelectionModelChange={(newStudent) => setViewStudent(newStudent)}
                     selectedModel={viewStudent}
                   />
                 </Paper>
@@ -1017,15 +1007,21 @@ const Profile = (props) => {
                     <Typography variant='h5' textAlign='center'>{student.name}</Typography>
                   </Paper>
                 </Grid>
-                {/* <MasterList
-                  themeMode={themeMode}
-                  searchJobs={studentApplications}
-                  jobs={studentApplications}
-                  student={student}
-                  handleViewComments={handleViewComments}
-                  user={user}
-                  setSearchJobs={setSearchJobs}
-                /> */}
+                <Box
+                  sx={{
+                    p: 3
+                  }}
+                >
+                  <MasterList
+                    themeMode={themeMode}
+                    searchJobs={studentApplications}
+                    jobs={studentApplications}
+                    student={student}
+                    handleViewComments={handleViewComments}
+                    user={user}
+                    setSearchJobs={setSearchJobs}
+                  />
+                </Box>
               </Box>}
           </Grid>
         </Grid>

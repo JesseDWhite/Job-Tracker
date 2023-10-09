@@ -14,7 +14,8 @@ import {
   ListItemIcon,
   ListItemText,
   Avatar,
-  CircularProgress
+  CircularProgress,
+  Badge
 } from '@mui/material';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
@@ -32,6 +33,7 @@ import {
   AutoAwesomeTwoTone,
   CloseRounded,
   VisibilityTwoTone,
+  ForumTwoTone,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import {
@@ -147,7 +149,7 @@ const MasterList = (props) => {
     try {
       const user_token = currentUser.internalId;
       if (user_token) {
-        const keywordRequest = await fetch(`https://openai-api-psi.vercel.app/${user_token}/extract_keywords/`, {
+        const keywordRequest = await fetch(`https://openai-api-psi.vercel.app/${user_token}/interview_prep/`, {
           // const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
           method: 'POST',
           mode: "cors",
@@ -158,7 +160,6 @@ const MasterList = (props) => {
         });
 
         const prepQuestions = await keywordRequest.json();
-        console.log(prepQuestions)
         const prepQuestionsObject = JSON.parse(prepQuestions);
         return prepQuestionsObject.interview_prep;
       }
@@ -424,7 +425,15 @@ const MasterList = (props) => {
               aria-label='options'
               {...bindTrigger(popupState)}
             >
-              <SettingsTwoTone />
+              {currentUser?.organization !== 'Personal'
+                && job.lastResponseFrom
+                && job.lastResponseFrom !== user.uid
+                && job.unreadMessages > 0
+                ? <Badge color='error' overlap='circular' variant='dot'>
+                  <SettingsTwoTone />
+                </Badge>
+                : <SettingsTwoTone />
+              }
             </IconButton>
             <Menu
               id='options-menu'
@@ -466,6 +475,46 @@ const MasterList = (props) => {
                     </ListItemText>
                   </ListItemIcon>
                 </MenuItem>
+                {currentUser?.organization !== 'Personal'
+                  ? job.lastResponseFrom
+                    && job.lastResponseFrom !== user.uid
+                    && job.unreadMessages > 0 ?
+                    <MenuItem
+                      onClick={() => !student || Object.values(student).length === 0
+                        ? handleViewComments(user.uid, job)
+                        : handleViewComments(student.id, job)
+                      }>
+                      <Badge color='error' overlap='circular' variant='dot'>
+                        <ListItemIcon>
+                          <ForumTwoTone />
+                          <ListItemText
+                            sx={{
+                              pl: 2,
+                            }}
+                          >
+                            Comments
+                          </ListItemText>
+                        </ListItemIcon>
+                      </Badge>
+                    </MenuItem>
+                    : <MenuItem
+                      onClick={() => !student || Object.values(student).length === 0
+                        ? handleViewComments(user.uid, job)
+                        : handleViewComments(student.id, job)
+                      }>
+                      <ListItemIcon>
+                        <ForumTwoTone />
+                        <ListItemText
+                          sx={{
+                            pl: 2,
+                          }}
+                        >
+                          Comments
+                        </ListItemText>
+                      </ListItemIcon>
+                    </MenuItem>
+                  : null
+                }
                 <MenuItem
                   onClick={() => handleEditJob(job.id)}
                   disabled={student ? true : false}
@@ -499,8 +548,9 @@ const MasterList = (props) => {
               </MenuList>
             </Menu>
           </Box>
-        )}
-      </PopupState>
+        )
+        }
+      </PopupState >
     )
   };
 
@@ -634,7 +684,11 @@ const MasterList = (props) => {
       align: 'center',
       width: 100,
       renderCell: (params) => {
-        return renderStatus(params.row)
+        return !student ? renderStatus(params.row) : <Chip
+          label={params.row.status}
+          variant={THEME[themeMode].buttonStyle}
+          color={getStatus(params.row.status)}
+        />
       }
     },
     {
@@ -734,10 +788,10 @@ const MasterList = (props) => {
         transition: 'color .5s, background .5s',
         height: '85vh',
         width: '95vw',
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -46%)',
+        position: !student ? 'absolute' : 'relative',
+        top: !student ? '50%' : null,
+        left: !student ? '50%' : null,
+        transform: !student ? 'translate(-50%, -46%)' : null,
       }}>
       {viewInterviewPrep || viewDetails ?
         <AnimateKeyframes
@@ -769,32 +823,36 @@ const MasterList = (props) => {
             "opacity: 1",
           ]}
         >
-          <Chip
-            sx={{
-              zIndex: 10,
-              position: 'absolute',
-              top: 20,
-              left: 20
-            }}
-            color='primary'
-            variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
-            onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
-            label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
-            avatar={<Avatar>{applicationCount}</Avatar>}
-          />
-          <Button
-            elevation={10}
-            variant={THEME[themeMode].buttonStyle}
-            color='success'
-            onClick={() => setOpen(true)}
-            sx={{
-              position: 'absolute',
-              top: 20,
-              right: 20
-            }}
-          >
-            Add New
-          </Button>
+          {!student &&
+            <>
+              <Chip
+                sx={{
+                  zIndex: 10,
+                  position: 'absolute',
+                  top: 20,
+                  left: 20
+                }}
+                color='primary'
+                variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
+                onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
+                label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+                avatar={<Avatar>{applicationCount}</Avatar>}
+              />
+              <Button
+                elevation={10}
+                variant={THEME[themeMode].buttonStyle}
+                color='success'
+                onClick={() => setOpen(true)}
+                sx={{
+                  position: 'absolute',
+                  top: 20,
+                  right: 20
+                }}
+              >
+                Add New
+              </Button>
+            </>
+          }
           <Box
             sx={{
               borderRadius: 5,
@@ -820,6 +878,11 @@ const MasterList = (props) => {
                 "& ::-webkit-scrollbar-thumb": {
                   backgroundColor: 'rgb(169, 169, 169)',
                   borderRadius: '1em',
+                },
+              }}
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: 'dateApplied', sort: 'desc' }],
                 },
               }}
               rows={searchJobs}
