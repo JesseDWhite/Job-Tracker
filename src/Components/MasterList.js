@@ -3,8 +3,6 @@ import {
   Grid,
   Typography,
   Chip,
-  Pagination,
-  Stack,
   Paper,
   Box,
   Button,
@@ -25,14 +23,9 @@ import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import {
   SettingsTwoTone,
   WorkTwoTone,
-  InsertChartTwoTone,
   DescriptionTwoTone,
   DeleteTwoTone,
   CreateTwoTone,
-  KeyboardArrowDownRounded,
-  EmailTwoTone,
-  DraftsTwoTone,
-  OpenInNewTwoTone,
   CheckCircleTwoTone,
   DoNotDisturbOnTwoTone,
   HelpTwoTone,
@@ -43,7 +36,6 @@ import {
 import format from 'date-fns/format';
 import {
   updateDoc,
-  addDoc,
   doc
 } from 'firebase/firestore';
 
@@ -132,8 +124,8 @@ const MasterList = (props) => {
     try {
       const user_token = currentUser.internalId;
       if (user_token) {
-        // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
-        const keywordRequest = await fetch(`http://localhost:8000/${user_token}/extract_keywords/`, {
+        const keywordRequest = await fetch(`https://openai-api-psi.vercel.app/${user_token}/extract_keywords/`, {
+          // const keywordRequest = await fetch(`http://localhost:8000/${user_token}/extract_keywords/`, {
           method: 'POST',
           mode: "cors",
           headers: {
@@ -155,8 +147,8 @@ const MasterList = (props) => {
     try {
       const user_token = currentUser.internalId;
       if (user_token) {
-        // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
-        const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
+        const keywordRequest = await fetch(`https://openai-api-psi.vercel.app/${user_token}/extract_keywords/`, {
+          // const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
           method: 'POST',
           mode: "cors",
           headers: {

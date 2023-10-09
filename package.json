@@ -18,7 +18,7 @@
     "chart.js": "^3.6.0",
     "date-fns": "^2.25.0",
     "firebase": "^9.2.0",
-    "firebase-admin": "^11.10.1",
+    "firebase-admin": "^11.11.0",
     "firebase-config": "^0.0.2",
     "firebase-functions": "^4.4.1",
     "firebaseui": "^6.0.0",
