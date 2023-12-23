@@ -440,7 +440,7 @@ const UserUpload = (props) => {
                 type='submit'
                 variant={THEME[themeMode].buttonStyle}
                 fullWidth
-                disabled={loading ? true : false}
+                disabled={loading}
               >
                 Submit
               </Button>

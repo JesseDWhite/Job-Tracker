@@ -279,52 +279,78 @@ const NewJob = (props) => {
     setFormValues(initialValues);
   };
 
-  const getSkillz = async (prompt) => {
-    try {
-      const user_token = currentUser.internalId;
-      if (user_token) {
-        // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
-        const keywordRequest = await fetch(`http://localhost:8000/${user_token}/extract_keywords/`, {
-          method: 'POST',
-          mode: "cors",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ data: prompt }),
-        });
+  // const getSkillz = async (prompt) => {
+  //   try {
+  //     const user_token = currentUser.internalId;
+  //     if (user_token) {
+  //       // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
+  //       const keywordRequest = await fetch(`http://localhost:8000/${user_token}/extract_keywords/`, {
+  //         method: 'POST',
+  //         mode: "cors",
+  //         headers: {
+  //           'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify({ data: prompt }),
+  //       });
 
-        const skillz = await keywordRequest.json();
-        const skillzObject = JSON.parse(skillz);
-        return skillzObject;
-      }
-    } catch (error) {
-      console.log(error.message)
-    }
-  };
+  //       const skillz = await keywordRequest.json();
+  //       const skillzObject = JSON.parse(skillz);
+  //       return skillzObject;
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message)
+  //   }
+  // };
 
-  const getInterviewPrepQuestions = async (prompt) => {
-    try {
-      const user_token = currentUser.internalId;
-      if (user_token) {
-        // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
-        const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
-          method: 'POST',
-          mode: "cors",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ data: prompt }),
-        });
+  // const getInterviewPrepQuestions = async (prompt) => {
+  //   try {
+  //     const user_token = currentUser.internalId;
+  //     if (user_token) {
+  //       // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
+  //       const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
+  //         method: 'POST',
+  //         mode: "cors",
+  //         headers: {
+  //           'Content-Type': 'application/json'
+  //         },
+  //         body: JSON.stringify({ data: prompt }),
+  //       });
 
-        const prepQuestions = await keywordRequest.json();
-        const prepQuestionsObject = JSON.parse(prepQuestions);
-        console.log(prepQuestions, prepQuestionsObject)
-        return prepQuestionsObject.interview_prep;
-      }
-    } catch (error) {
-      console.log(error.message)
-    }
-  };
+  //       const prepQuestions = await keywordRequest.json();
+  //       const prepQuestionsObject = JSON.parse(prepQuestions);
+  //       console.log(prepQuestions, prepQuestionsObject)
+  //       return prepQuestionsObject.interview_prep;
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message)
+  //   }
+  // };
+
+  // const getGoogleDocText = async (prompt) => {
+  //   try {
+  //     const user_token = currentUser.internalId;
+  //     if (user_token) {
+  //       const docUrl = prompt.match(/\/d\/(.+)\//);
+  //       const payload = JSON.stringify({ data: docUrl[1] });
+  //       console.log(payload)
+  //       // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
+  //       const docRequest = await fetch(`http://localhost:8000/${user_token}/get_document_text/`, {
+  //         method: 'POST',
+  //         mode: "cors",
+  //         headers: {
+  //           'Content-Type': 'application/json'
+  //         },
+  //         body: payload,
+  //       });
+
+  //       const docJson = await docRequest.json();
+  //       const docText = JSON.parse(docJson);
+  //       console.log(docJson, docText)
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message)
+  //   }
+  // };
 
   const extractKeyWords = (doc) => {
     let matches = [];

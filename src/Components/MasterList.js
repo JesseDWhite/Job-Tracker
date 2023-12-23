@@ -209,6 +209,20 @@ const MasterList = (props) => {
     setAiLoading(false);
   }
 
+  const getGrade = (score) => {
+    if (score < 20) {
+      return 'F'
+    } else if (score >= 20 && score < 40) {
+      return 'D'
+    } else if (score >= 40 && score < 60) {
+      return 'C'
+    } else if (score >= 60 && score < 80) {
+      return 'B'
+    } else if (score >= 80 && score < 90) {
+      return 'A'
+    } else return 'A+'
+  }
+
   const renderMessage = () => {
     if (viewDetails) {
       return (
@@ -249,31 +263,30 @@ const MasterList = (props) => {
                     transition: 'color .5s, background .5s',
                   }}
                 >
-                  <Typography>
-                    {jobToView.jobPostingKeyWords.length === 0
-                      ? 'No Keywords Found'
-                      : `We Found ${jobToView.jobPostingKeyWords.length} Keywords For You`
-                    }
-                  </Typography>
-                  <Typography>
-                    {jobToView.jobPostingKeyWords.length !== 0 &&
-                      <em>{jobToView.score}% of them have been addressed so far.</em>
-                    }
-                  </Typography>
-                  <List
-                    dense={false}
-                    disablePadding
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="start"
                   >
-                    {jobToView.jobPostingKeyWords.length === 0
-                      ? 'Try adding the entire job description.'
-                      : jobToView.jobPostingKeyWords.map((keyword, idx) => {
-                        return (
-                          jobToView.coverLetterKeyWords.includes(keyword) || jobToView.resumeKeyWords.includes(keyword)
-                            ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
-                            : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
-                        )
-                      })}
-                  </List>
+                    <Typography
+                      sx={{
+                        fontSize: '1.75em',
+                      }}
+                    >{jobToView.company} - {getGrade(jobToView.score)}
+                    </Typography>
+                    <Chip
+                      label={jobToView.status}
+                      variant={THEME[themeMode].buttonStyle}
+                      color={getStatus(jobToView.status)}
+                    />
+                  </Grid>
+                  <Typography>{jobToView.jobTitle}</Typography>
+                  <Typography>{format(new Date(jobToView.dateApplied.replace(/-/g, '/')), 'PPP')}</Typography>
+                  <Typography>{jobToView.jobPosting}</Typography>
+                  <hr />
+                  <Typography>Notes</Typography>
+                  <Typography>{jobToView.notes ? jobToView.notes : <em>You have not added any notes yet.</em>}</Typography>
                 </Paper>
               </Grid>
               <Grid
@@ -291,8 +304,36 @@ const MasterList = (props) => {
                     transition: 'color .5s, background .5s',
                   }}
                 >
-                  <Typography>Notes</Typography>
-                  <Typography>{jobToView.notes ? jobToView.notes : <em>You have not added any notes yet.</em>}</Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '1.50em'
+                    }}
+                  >
+                    {jobToView.jobPostingKeyWords.length === 0
+                      ? 'No Keywords Found'
+                      : `We Found ${jobToView.jobPostingKeyWords.length} Keywords For You`
+                    }
+                  </Typography>
+                  <Typography>
+                    {jobToView.jobPostingKeyWords.length !== 0 &&
+                      <em>{jobToView.score}% of them have been addressed so far.</em>
+                    }
+                  </Typography>
+                  <hr />
+                  <List
+                    dense={true}
+                    disablePadding
+                  >
+                    {jobToView.jobPostingKeyWords.length === 0
+                      ? 'Try adding the entire job description.'
+                      : jobToView.jobPostingKeyWords.map((keyword, idx) => {
+                        return (
+                          jobToView.coverLetterKeyWords.includes(keyword) || jobToView.resumeKeyWords.includes(keyword)
+                            ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                            : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                        )
+                      })}
+                  </List>
                 </Paper>
               </Grid>
             </Grid>
@@ -716,7 +757,7 @@ const MasterList = (props) => {
         'Status',
       headerAlign: 'center',
       align: 'center',
-      width: 100,
+      width: 115,
       renderCell: (params) => {
         return !student ? renderStatus(params.row) : <Chip
           label={params.row.status}
@@ -741,7 +782,7 @@ const MasterList = (props) => {
       field: 'score',
       headerName: 'Score',
       headerAlign: 'center',
-      width: 100,
+      width: 115,
       align: 'center',
       filterable: true,
       sortable: true,

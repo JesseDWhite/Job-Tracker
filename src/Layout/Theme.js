@@ -6,7 +6,7 @@ export const THEME = {
     textColor: 'white',
     backgroundColor: '#37474F',
     chipColor: 'secondary',
-    buttonStyle: 'outlined',
+    buttonStyle: 'contained',
     border: 'none'
   },
   dorkMode: {

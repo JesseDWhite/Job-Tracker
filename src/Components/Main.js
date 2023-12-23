@@ -65,7 +65,7 @@ const Main = () => {
 
   const [viewProfile, setViewProfile] = useState(false);
 
-  const [themeMode, setThemeMode] = useState(currentUser.preferredTheme ? currentUser.preferredTheme : 'lightMode');
+  const [themeMode, setThemeMode] = useState('lightMode');
 
   const [totalApplications, setTotalApplications] = useState(0);
 
@@ -91,6 +91,21 @@ const Main = () => {
   const theme = createTheme({
     palette: {
       mode: themeMode !== 'lightMode' ? 'dark' : 'light',
+      primary: {
+        main: '#4a65fb',
+      },
+      secondary: {
+        main: '#a444b5',
+      },
+      error: {
+        main: '#F44336',
+      },
+      info: {
+        main: '#009688',
+      },
+      success: {
+        main: '#4a924e',
+      },
     },
     typography: {
       fontFamily: 'Readex Pro',

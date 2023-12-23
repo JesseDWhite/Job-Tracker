@@ -7,7 +7,8 @@ import {
   IconButton,
   LinearProgress,
   Box,
-  Badge
+  Badge,
+  Tooltip
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -112,10 +113,23 @@ const Header = (props) => {
   }, [jobs]);
 
   const renderThemeButton = () => {
-    let button = <NightsStayIcon />;
-    if (themeMode === 'darkMode') button = <DarkModeIcon sx={{ color: 'white' }} />;
-    if (themeMode === 'dorkMode') button = <LightModeIcon sx={{ color: 'white' }} />;
-    return button;
+    let message = 'dark mode'
+    let button = <NightsStayIcon />
+    if (themeMode === 'darkMode') {
+      button = <DarkModeIcon sx={{ color: 'white' }} />
+      message = 'underdark mode'
+    };
+    if (themeMode === 'dorkMode') {
+      button = <LightModeIcon sx={{ color: 'white' }} />
+      message = 'light mode'
+    };
+    return (
+      <Tooltip placement='bottom' title={message} disableInteractive>
+        <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
+          {button}
+        </IconButton>
+      </Tooltip>
+    );
   }
 
   return (
@@ -196,9 +210,9 @@ const Header = (props) => {
                 : <NotificationsNoneRoundedIcon />
               }
             </IconButton>
-            <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
-              {renderThemeButton()}
-            </IconButton>
+            {/* <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}> */}
+            {renderThemeButton()}
+            {/* </IconButton> */}
             <Chip
               avatar={
                 <Avatar
