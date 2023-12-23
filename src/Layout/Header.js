@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Grid,
-  Button,
   Typography,
   Chip,
   Avatar,
@@ -12,6 +11,7 @@ import {
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import SearchBar from '../Components/SearchBar';
@@ -22,12 +22,8 @@ const Header = (props) => {
 
   const {
     user,
-    sortByName,
-    sortByDate,
-    sort,
     jobs,
     setSearchJobs,
-    applicationCount,
     viewProfile,
     setViewProfile,
     themeMode,
@@ -115,6 +111,13 @@ const Header = (props) => {
     }
   }, [jobs]);
 
+  const renderThemeButton = () => {
+    let button = <NightsStayIcon />;
+    if (themeMode === 'darkMode') button = <DarkModeIcon sx={{ color: 'white' }} />;
+    if (themeMode === 'dorkMode') button = <LightModeIcon sx={{ color: 'white' }} />;
+    return button;
+  }
+
   return (
     <Box sx={{ position: 'relative' }}>
       <Grid
@@ -194,17 +197,14 @@ const Header = (props) => {
               }
             </IconButton>
             <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
-              {themeMode === 'darkMode'
-                ? <LightModeIcon sx={{ color: 'white' }} />
-                : <NightsStayIcon />
-              }
+              {renderThemeButton()}
             </IconButton>
             <Chip
               avatar={
                 <Avatar
                   src={user?.photoURL}
                 />}
-              variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
+              variant={THEME[themeMode].buttonStyle}
               label={viewProfile ? 'Go Back' : currentUser?.name}
               clickable
               onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}

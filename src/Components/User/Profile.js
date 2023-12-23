@@ -1,11 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
-  Button,
   Card,
   CardMedia,
   CardContent,
-  CardActions,
   Typography,
   Chip,
   Grid,
@@ -112,7 +110,8 @@ const Profile = (props) => {
     borderRadius: 5,
     boxShadow: 24,
     p: 4,
-    overflowY: 'auto'
+    overflowY: 'auto',
+    border: THEME[themeMode].border
   };
 
   const columns = [
@@ -402,6 +401,7 @@ const Profile = (props) => {
         handleClose={handleClose}
         getJobs={getJobs}
         jobs={jobs}
+        themeMode={themeMode}
       />
     } else if (updateProfile) {
       return <UpdateProfile
@@ -415,6 +415,7 @@ const Profile = (props) => {
         getJobs={getJobs}
         jobs={jobs}
         subCollection={subCollection}
+        themeMode={themeMode}
       />
     } else {
       return <UserUpload
@@ -427,6 +428,7 @@ const Profile = (props) => {
         organization={organization}
         organizationReference={organizationReference}
         setOrganization={setOrganization}
+        themeMode={themeMode}
       />
     }
   }
@@ -469,7 +471,8 @@ const Profile = (props) => {
                 transition: 'color .5s, background .5s',
                 background: THEME[themeMode].card,
                 color: THEME[themeMode].textColor,
-                position: 'relative'
+                position: 'relative',
+                border: THEME[themeMode].border
               }}
               container
             >
@@ -837,7 +840,8 @@ const Profile = (props) => {
                 sx={{
                   borderRadius: 5,
                   background: THEME[themeMode].card,
-                  transition: 'color .5s, background .5s'
+                  transition: 'color .5s, background .5s',
+                  border: THEME[themeMode].border
                 }}
               >
                 <Box
@@ -933,7 +937,8 @@ const Profile = (props) => {
                   transition: 'color .5s, background .5s',
                   background: THEME[themeMode].card,
                   color: THEME[themeMode].textColor,
-                  position: 'relative'
+                  position: 'relative',
+                  border: THEME[themeMode].border
                 }}
                 container
               >
@@ -969,7 +974,8 @@ const Profile = (props) => {
                       background: THEME[themeMode].card,
                       color: THEME[themeMode].textColor,
                       textAlign: 'center',
-                      position: 'relative'
+                      position: 'relative',
+                      border: THEME[themeMode].border
                     }}
                   >
                     <Tooltip title='Close' placement='left'>

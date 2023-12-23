@@ -7,6 +7,17 @@ export const THEME = {
     backgroundColor: '#37474F',
     chipColor: 'secondary',
     buttonStyle: 'outlined',
+    border: 'none'
+  },
+  dorkMode: {
+    header: 'black',
+    card: 'black',
+    subCard: 'black',
+    textColor: 'white',
+    backgroundColor: 'black',
+    chipColor: 'secondary',
+    buttonStyle: 'outlined',
+    border: '1px solid white'
   },
   lightMode: {
     header: '#ECEFF1',
@@ -16,5 +27,6 @@ export const THEME = {
     backgroundColor: '#CFD8DC',
     chipColor: 'default',
     buttonStyle: 'contained',
+    border: 'none'
   }
 }

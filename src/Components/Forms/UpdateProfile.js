@@ -13,6 +13,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { format, subMonths } from 'date-fns'
+import { THEME } from '../../Layout/Theme';
 
 const UpdateProfile = (props) => {
 
@@ -25,7 +26,8 @@ const UpdateProfile = (props) => {
     currentUser,
     handleClose,
     getJobs,
-    subCollection
+    subCollection,
+    themeMode
   } = props;
 
   const handleInputChange = (e) => {
@@ -156,7 +158,7 @@ const UpdateProfile = (props) => {
             mt: 2
           }}
           type='submit'
-          variant='contained'
+          variant={THEME[themeMode].buttonStyle}
           color='info'
           fullWidth
         >

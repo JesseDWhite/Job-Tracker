@@ -21,14 +21,12 @@ import {
   Fade,
   Backdrop,
   Box,
-  Fab,
-  Skeleton,
+
   Snackbar,
   Alert,
   Slide,
   AlertTitle,
 } from '@mui/material';
-import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
 import { signOut, onAuthStateChanged, } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -67,7 +65,7 @@ const Main = () => {
 
   const [viewProfile, setViewProfile] = useState(false);
 
-  const [themeMode, setThemeMode] = useState('lightMode');
+  const [themeMode, setThemeMode] = useState(currentUser.preferredTheme ? currentUser.preferredTheme : 'lightMode');
 
   const [totalApplications, setTotalApplications] = useState(0);
 
@@ -83,8 +81,6 @@ const Main = () => {
 
   const subCollection = collection(userReference, `${user?.uid}/jobs`);
 
-  const [gridView, setGridView] = useState(true);
-
   const [feedback, setFeedback] = useState({
     open: false,
     type: null,
@@ -92,9 +88,9 @@ const Main = () => {
     message: null
   });
 
-  const darkTheme = createTheme({
+  const theme = createTheme({
     palette: {
-      mode: themeMode === 'darkMode' ? 'dark' : 'light',
+      mode: themeMode !== 'lightMode' ? 'dark' : 'light',
     },
     typography: {
       fontFamily: 'Readex Pro',
@@ -120,7 +116,8 @@ const Main = () => {
     borderRadius: 5,
     boxShadow: 24,
     p: 4,
-    overflowY: 'auto'
+    overflowY: 'auto',
+    border: THEME[themeMode].border
   };
 
   const handleClose = () => {
@@ -422,23 +419,15 @@ const Main = () => {
     await updateDoc(jobDoc, updateInterviewDate);
   }
 
-  // const updateAttendedInterview = async (id, attended) => {
-  //   const newAttended = !attended;
-  //   const newJobs = [...searchJobs];
-  //   const jobToUpdate = newJobs.find(job => job.id.includes(id));
-  //   jobToUpdate.attendedInterview = newAttended;
-  //   const jobDoc = doc(subCollection, id);
-  //   const updateAttendedInterview = { attendedInterview: newAttended };
-  //   setSearchJobs(newJobs);
-  //   setJobs(newJobs);
-  //   await updateDoc(jobDoc, updateAttendedInterview);
-  // }
-
   const updatePreferrdTheme = async (id) => {
     const userToUpdate = doc(userReference, id);
     if (themeMode === 'lightMode') {
       setThemeMode('darkMode');
       const newTheme = { preferredTheme: 'darkMode' };
+      await updateDoc(userToUpdate, newTheme);
+    } else if (themeMode === 'darkMode') {
+      setThemeMode('dorkMode');
+      const newTheme = { preferredTheme: 'dorkMode' };
       await updateDoc(userToUpdate, newTheme);
     } else {
       setThemeMode('lightMode');
@@ -576,7 +565,7 @@ const Main = () => {
   }, [getJobs]);
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <Box
         sx={{
           transition: 'color .5s, background .5s',
@@ -645,7 +634,6 @@ const Main = () => {
                     user={user}
                     userReference={userReference}
                     currentUser={currentUser}
-                    open={open}
                     setOpen={setOpen}
                     applicationCount={applicationCount}
                     subCollection={subCollection}
@@ -664,14 +652,9 @@ const Main = () => {
           viewProfile={viewProfile}
           setViewProfile={setViewProfile}
           user={user}
-          sortByDate={sortByDate}
-          sortByName={sortByName}
-          sort={sort}
           jobs={jobs}
           setSearchJobs={setSearchJobs}
-          applicationCount={applicationCount}
           loading={loading}
-          searchJobs={searchJobs}
         />}
         <Snackbar
           sx={{ width: '100%' }}

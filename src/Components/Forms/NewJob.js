@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -17,9 +17,10 @@ import {
   ListItemText,
   ToggleButtonGroup,
   ToggleButton,
-  CircularProgress
+  CircularProgress,
+  InputAdornment
 } from '@mui/material';
-import { Check, Close } from '@mui/icons-material';
+import { Check, Close, Http } from '@mui/icons-material';
 import {
   updateDoc,
   addDoc,
@@ -59,6 +60,7 @@ const NewJob = (props) => {
     boxShadow: 24,
     p: 4,
     overflowY: 'auto',
+    border: THEME[themeMode].border
   };
 
   const [resumeKeywords, setResumeKeywords] = useState([]);
@@ -113,12 +115,42 @@ const NewJob = (props) => {
   }, [editing]);
 
   const handleErrorState = () => {
+    const requiredFields = ['company', 'dateApplied', 'jobTitle', 'status', 'coverLetter', 'resume', 'coverLetterLink', 'resumeLink'];
     const formValuesCopy = { ...formValues };
-    const keys = Object.keys(formValuesCopy);
-    const newErrorState = Object.assign(...keys.map(key => ({
+    const validator = new RegExp(/^(https ?| ftp):\/\/[^\s\/$.?#].[^\s]*$/);
+    let newErrorState = Object.assign(...requiredFields.map(key => ({
       [key]: !formValuesCopy[key] ? true : false
     })));
+    if (formValues.coverLetter) {
+      if (validator.test(formValuesCopy.coverLetter)) {
+        newErrorState['coverLetter'] = true;
+      }
+    } else {
+      newErrorState['coverLetter'] = false;
+    }
+    if (formValues.resume) {
+      if (validator.test(formValuesCopy.resume)) {
+        newErrorState['resume'] = true;
+      }
+    } else {
+      newErrorState['resume'] = false;
+    }
+    if (formValues.coverLetterLink) {
+      if (!validator.test(formValuesCopy.coverLetterLink)) {
+        newErrorState['coverLetterLink'] = true;
+      }
+    } else {
+      newErrorState['coverLetterLink'] = false;
+    }
+    if (formValues.resumeLink) {
+      if (!validator.test(formValuesCopy.resumeLink)) {
+        newErrorState['resumeLink'] = true;
+      }
+    } else {
+      newErrorState['resumeLink'] = false;
+    }
     setError(newErrorState);
+    return newErrorState;
   }
 
   const handleInputChange = (e) => {
@@ -150,9 +182,11 @@ const NewJob = (props) => {
   }
 
   const validateFormFields = async (e) => {
-    handleErrorState();
+    const errorState = handleErrorState();
+    const errors = Object.values(errorState);
+    const validator = (field) => field === true;
     e.preventDefault();
-    if (!formValues.company || !formValues.jobTitle || !formValues.dateApplied || !formValues.status) {
+    if (errors.some(validator)) {
       setFeedback({
         ...feedback,
         open: true,
@@ -310,6 +344,8 @@ const NewJob = (props) => {
 
     const docKeyWordsNoDups = [...new Set(matches)];
 
+    docKeyWordsNoDups.sort();
+
     return docKeyWordsNoDups;
   }
 
@@ -323,6 +359,8 @@ const NewJob = (props) => {
     const missingKeyWords = jobDescription.filter(e => !removeDuplicates.includes(e));
 
     const missingKeyWordsNoDups = [...new Set(missingKeyWords)];
+
+    missingKeyWordsNoDups.sort();
 
     return missingKeyWordsNoDups;
   }
@@ -370,7 +408,6 @@ const NewJob = (props) => {
       setJobPostingKeywords([]);
     }, 500);
   }
-
 
   return (
     <>
@@ -520,6 +557,9 @@ const NewJob = (props) => {
                 fullWidth />
               <TextField
                 fullWidth
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Http /></InputAdornment>
+                }}
                 sx={{
                   mb: 2,
                   zIndex: 0
@@ -529,10 +569,15 @@ const NewJob = (props) => {
                 name='resumeLink'
                 label='Link To Resume'
                 onChange={handleInputChange}
+                error={error.resumeLink}
+                helperText={error.resumeLink ? "This doesn't look like a valid url." : false}
                 value={formValues.resumeLink}
               />
               <TextField
                 fullWidth
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Http /></InputAdornment>
+                }}
                 sx={{
                   // mb: 2,
                   zIndex: 0
@@ -542,6 +587,8 @@ const NewJob = (props) => {
                 name='coverLetterLink'
                 label='Link To Cover Letter'
                 onChange={handleInputChange}
+                error={error.coverLetterLink}
+                helperText={error.coverLetterLink ? "This doesn't look like a valid url." : false}
                 value={formValues.coverLetterLink}
               />
             </Grid>
@@ -586,7 +633,7 @@ const NewJob = (props) => {
                     }}
                     fullWidth
                     type='button'
-                    variant='contained'
+                    variant={THEME[themeMode].buttonStyle}
                     color='success'
                     onClick={() => ((setOpen(true), handleModalKeywordExtraction(formValues.jobDescription, 'jobPosting'), handleModalKeywordExtraction(formValues.resume, 'resume'), handleModalKeywordExtraction(formValues.coverLetter, 'coverLetter')))}
                     disabled={!formValues.jobDescription ? true : false}
@@ -611,6 +658,8 @@ const NewJob = (props) => {
                   label='Resume'
                   onChange={handleInputChange}
                   value={formValues.resume}
+                  error={error.resume}
+                  helperText={error.resume ? 'This belongs in "Link To Resume" field.' : false}
                   fullWidth />
               </Tooltip>
               <Tooltip
@@ -629,6 +678,8 @@ const NewJob = (props) => {
                   label='Cover Letter'
                   onChange={handleInputChange}
                   value={formValues.coverLetter}
+                  error={error.coverLetter}
+                  helperText={error.coverLetter ? 'This belongs in "Link To Cover Letter" field.' : false}
                   fullWidth />
               </Tooltip>
               <TextField sx={{
@@ -649,13 +700,12 @@ const NewJob = (props) => {
           </Grid>
           <Button
             sx={{
-              // background: 'linear-gradient(270deg, rgb(69, 69, 255), rgb(221, 192, 255))',
               fontSize: 18,
               mt: 4
             }}
             type='submit'
             color='primary'
-            variant='contained'
+            variant={THEME[themeMode].buttonStyle}
             disabled={loading}
             fullWidth
           >
@@ -680,7 +730,7 @@ const NewJob = (props) => {
                 mt: 2
               }}
               type='button'
-              variant='contained'
+              variant={THEME[themeMode].buttonStyle}
               color='error'
               fullWidth
               disabled={loading}

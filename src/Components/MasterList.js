@@ -15,14 +15,15 @@ import {
   ListItemText,
   Avatar,
   CircularProgress,
-  Badge
+  Badge,
+  List,
+  ListItem
 } from '@mui/material';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
 import { DataGrid } from '@mui/x-data-grid';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import {
-  SettingsTwoTone,
   WorkTwoTone,
   DescriptionTwoTone,
   DeleteTwoTone,
@@ -34,6 +35,9 @@ import {
   CloseRounded,
   VisibilityTwoTone,
   ForumTwoTone,
+  MenuRounded,
+  Check,
+  Close
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import {
@@ -54,7 +58,6 @@ const MasterList = (props) => {
     handleViewComments,
     user,
     currentUser,
-    open,
     setOpen,
     loading,
     setSearchJobs,
@@ -209,63 +212,94 @@ const MasterList = (props) => {
   const renderMessage = () => {
     if (viewDetails) {
       return (
-        <Box
-          sx={{
-            py: 5,
-            px: 5,
-            height: '100%',
-          }}
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={[
+            "opacity: 0",
+            "opacity: 1",
+          ]}
         >
-          <Grid
-            container
-            spacing={2}
-            direction="row"
-            justifyContent="center"
-            alignItems="start"
+          <Box
+            sx={{
+              py: 5,
+              px: 5,
+              height: '100%',
+            }}
           >
             <Grid
-              item
-              xl={6}
-              sx={{
-                width: '100%',
-              }}
+              container
+              spacing={2}
+              direction="row"
+              justifyContent="center"
+              alignItems="start"
             >
-              <Paper
+              <Grid
+                item
+                xl={6}
                 sx={{
-                  p: 2,
-                  borderRadius: 5,
-                  background: THEME[themeMode].subCard,
-                  transition: 'color .5s, background .5s',
+                  width: '100%',
                 }}
               >
-                <Typography>Company: {jobToView.company}</Typography>
-                <Typography>Job Title: {jobToView.jobTitle}</Typography>
-                <Typography>Date Applied: {jobToView.dateApplied}</Typography>
-              </Paper>
-            </Grid>
-            <Grid
-              item
-              xl={6}
-              sx={{
-                width: '100%',
-              }}
-            >
-              <Paper
+                <Paper
+                  sx={{
+                    p: 2,
+                    borderRadius: 5,
+                    background: THEME[themeMode].subCard,
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+                  <Typography>
+                    {jobToView.jobPostingKeyWords.length === 0
+                      ? 'No Keywords Found'
+                      : `We Found ${jobToView.jobPostingKeyWords.length} Keywords For You`
+                    }
+                  </Typography>
+                  <Typography>
+                    {jobToView.jobPostingKeyWords.length !== 0 &&
+                      <em>{jobToView.score}% of them have been addressed so far.</em>
+                    }
+                  </Typography>
+                  <List
+                    dense={false}
+                    disablePadding
+                  >
+                    {jobToView.jobPostingKeyWords.length === 0
+                      ? 'Try adding the entire job description.'
+                      : jobToView.jobPostingKeyWords.map((keyword, idx) => {
+                        return (
+                          jobToView.coverLetterKeyWords.includes(keyword) || jobToView.resumeKeyWords.includes(keyword)
+                            ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                            : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                        )
+                      })}
+                  </List>
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                xl={6}
                 sx={{
-                  p: 2,
-                  borderRadius: 5,
-                  background: THEME[themeMode].subCard,
-                  transition: 'color .5s, background .5s',
+                  width: '100%',
                 }}
               >
-                <Typography>Notes</Typography>
-                <Typography>{jobToView.notes}</Typography>
-              </Paper>
+                <Paper
+                  sx={{
+                    p: 2,
+                    borderRadius: 5,
+                    background: THEME[themeMode].subCard,
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+                  <Typography>Notes</Typography>
+                  <Typography>{jobToView.notes ? jobToView.notes : <em>You have not added any notes yet.</em>}</Typography>
+                </Paper>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
+          </Box>
+        </AnimateKeyframes >
       )
-    } else if (viewInterviewPrep && jobToView?.interviewPrep) {
+    } else if (viewInterviewPrep && (jobToView.hasOwnProperty('interviewPrep') && jobToView?.interviewPrep.length > 0)) {
       return (
         <AnimateKeyframes
           play
@@ -429,10 +463,10 @@ const MasterList = (props) => {
                 && job.lastResponseFrom
                 && job.lastResponseFrom !== user.uid
                 && job.unreadMessages > 0
-                ? <Badge color='error' overlap='circular' variant='dot'>
-                  <SettingsTwoTone />
+                ? <Badge color='error' variant='dot'>
+                  <MenuRounded />
                 </Badge>
-                : <SettingsTwoTone />
+                : <MenuRounded />
               }
             </IconButton>
             <Menu
@@ -585,7 +619,7 @@ const MasterList = (props) => {
                   onClick={() => updateJobStatus(job.id, 'Active')}
                 >
                   <ListItemIcon>
-                    <CheckCircleTwoTone />
+                    <CheckCircleTwoTone color='success' />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -599,7 +633,7 @@ const MasterList = (props) => {
                   onClick={() => updateJobStatus(job.id, 'Interview')}
                 >
                   <ListItemIcon>
-                    <WorkTwoTone />
+                    <WorkTwoTone color='secondary' />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -614,7 +648,7 @@ const MasterList = (props) => {
 
                 >
                   <ListItemIcon>
-                    <HelpTwoTone />
+                    <HelpTwoTone color='warning' />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -628,7 +662,7 @@ const MasterList = (props) => {
                   onClick={() => updateJobStatus(job.id, 'Closed')}
                 >
                   <ListItemIcon>
-                    <DoNotDisturbOnTwoTone />
+                    <DoNotDisturbOnTwoTone color='error' />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -782,8 +816,9 @@ const MasterList = (props) => {
       id='dataGrid'
       className='modal'
       sx={{
-        overflowY: viewInterviewPrep ? 'auto' : 'none',
+        overflowY: viewInterviewPrep || viewDetails ? 'auto' : 'none',
         borderRadius: 5,
+        border: THEME[themeMode].border,
         background: THEME[themeMode].card,
         transition: 'color .5s, background .5s',
         height: '85vh',
@@ -833,7 +868,7 @@ const MasterList = (props) => {
                   left: 20
                 }}
                 color='primary'
-                variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
+                variant={THEME[themeMode].buttonStyle}
                 onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
                 label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
                 avatar={<Avatar>{applicationCount}</Avatar>}
