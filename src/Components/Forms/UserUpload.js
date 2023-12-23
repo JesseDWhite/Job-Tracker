@@ -426,7 +426,7 @@ const UserUpload = (props) => {
             <Grid item sm={6}>
               <Button
                 fullWidth
-                variant='contained'
+                variant={THEME[themeMode].buttonStyle}
                 color='success'
                 type='button'
                 disabled={editing || loading ? true : false}
@@ -438,7 +438,7 @@ const UserUpload = (props) => {
             <Grid item sm={6}>
               <Button
                 type='submit'
-                variant='contained'
+                variant={THEME[themeMode].buttonStyle}
                 fullWidth
                 disabled={loading ? true : false}
               >
