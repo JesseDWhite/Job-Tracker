@@ -17,7 +17,8 @@ import {
   CircularProgress,
   Badge,
   List,
-  ListItem
+  ListItem,
+  TextField
 } from '@mui/material';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
@@ -37,7 +38,7 @@ import {
   ForumTwoTone,
   MenuRounded,
   Check,
-  Close
+  Close,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import {
@@ -66,6 +67,7 @@ const MasterList = (props) => {
     feedback,
     setFeedback,
     setJobs,
+    updateInterviewDate
   } = props;
 
   const [viewInterviewPrep, setViewInterviewPrep] = useState(false);
@@ -275,15 +277,32 @@ const MasterList = (props) => {
                       }}
                     >{jobToView.company} - {getGrade(jobToView.score)}
                     </Typography>
-                    <Chip
-                      label={jobToView.status}
-                      variant={THEME[themeMode].buttonStyle}
-                      color={getStatus(jobToView.status)}
-                    />
+                    {renderStatus(jobToView)}
                   </Grid>
                   <Typography>{jobToView.jobTitle}</Typography>
                   <Typography>{format(new Date(jobToView.dateApplied.replace(/-/g, '/')), 'PPP')}</Typography>
                   <Typography>{jobToView.jobPosting}</Typography>
+                  {jobToView.status === 'Interview' ?
+                    !student || Object.values(student).length === 0
+                      ?
+                      <TextField
+                        sx={{
+                          mt: 1,
+                          width: '50%'
+                        }}
+                        value={jobToView.interviewDate}
+                        onChange={(e) => updateInterviewDate(jobToView.id, e)}
+                        type='datetime-local'
+                        name='interviewDate'
+                        size='small'
+                        label='Interview Date'
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                      : <Typography>{jobToView.interviewDate ? format(new Date(jobToView.interviewDate), 'Pp') : null}</Typography>
+                    : null
+                  }
                   <hr />
                   <Typography>Notes</Typography>
                   <Typography>{jobToView.notes ? jobToView.notes : <em>You have not added any notes yet.</em>}</Typography>
