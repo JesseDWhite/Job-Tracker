@@ -387,6 +387,9 @@ const Profile = (props) => {
 
   useEffect(() => {
     getStudentsApplications();
+    setTimeout(() => {
+      document.getElementById('studentApplications').scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 1000);
   }, [viewStudent]);
 
   const determineModelContents = () => {
@@ -950,7 +953,6 @@ const Profile = (props) => {
             </Grid>
             : null}
           <Grid item sx={{ width: '100%' }}>
-            <div id='studentApplications' />
             {Object.keys(student).length !== 0 &&
               <Box
                 sx={{
@@ -996,7 +998,7 @@ const Profile = (props) => {
                     <Chip
                       avatar={<Avatar>{student.totalApplications}</Avatar>}
                       label='Total Applications'
-                      variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
+                      variant={THEME[themeMode].buttonStyle}
                       sx={{
                         position: 'absolute',
                         top: 0,
@@ -1029,6 +1031,7 @@ const Profile = (props) => {
                   />
                 </Box>
               </Box>}
+            <div id='studentApplications' />
           </Grid>
         </Grid>
       </Grid >

@@ -275,7 +275,8 @@ const MasterList = (props) => {
                       sx={{
                         fontSize: '1.75em',
                       }}
-                    >{jobToView.company} - {getGrade(jobToView.score)}
+                    >
+                      {jobToView.company}{` - ${getGrade(jobToView.score)}`}
                     </Typography>
                     {renderStatus(jobToView)}
                   </Grid>
@@ -305,7 +306,7 @@ const MasterList = (props) => {
                   }
                   <hr />
                   <Typography>Notes</Typography>
-                  <Typography>{jobToView.notes ? jobToView.notes : <em>You have not added any notes yet.</em>}</Typography>
+                  <Typography>{jobToView.notes ? jobToView.notes : <em>No notes have been added yet.</em>}</Typography>
                 </Paper>
               </Grid>
               <Grid
