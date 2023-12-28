@@ -1,18 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Grid,
   Typography,
   Chip,
-  Pagination,
-  Stack,
-  // Paper,
-  // Box,
-  // Button
+  Paper,
+  Box,
+  Button,
+  MenuList,
+  MenuItem,
+  IconButton,
+  Menu,
+  Fade,
+  ListItemIcon,
+  ListItemText,
+  Avatar,
+  CircularProgress,
+  Badge,
+  List,
+  ListItem,
+  TextField
 } from '@mui/material';
-import CardView from './CardView';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
-// import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import {
+  WorkTwoTone,
+  DescriptionTwoTone,
+  DeleteTwoTone,
+  CreateTwoTone,
+  CheckCircleTwoTone,
+  DoNotDisturbOnTwoTone,
+  HelpTwoTone,
+  AutoAwesomeTwoTone,
+  CloseRounded,
+  VisibilityTwoTone,
+  ForumTwoTone,
+  MenuRounded,
+  Check,
+  Close,
+} from '@mui/icons-material';
+import format from 'date-fns/format';
+import {
+  updateDoc,
+  doc
+} from 'firebase/firestore';
 
 const MasterList = (props) => {
 
@@ -22,73 +54,31 @@ const MasterList = (props) => {
     updateJobApplication,
     deleteJob,
     updateJobStatus,
-    updateInterviewDate,
     themeMode,
     student,
     handleViewComments,
     user,
     currentUser,
-    // open,
-    // setOpen
+    setOpen,
+    loading,
+    setSearchJobs,
+    applicationCount,
+    subCollection,
+    feedback,
+    setFeedback,
+    setJobs,
+    updateInterviewDate
   } = props;
 
-  const [interviewPage, setInterviewPage] = useState(1);
+  const [viewInterviewPrep, setViewInterviewPrep] = useState(false);
 
-  const [activePage, setActivePage] = useState(1);
+  const [viewDetails, setViewDetails] = useState(false);
 
-  const [closedPage, setClosedPage] = useState(1);
+  const [jobToView, setJobToView] = useState({});
 
-  const [otherPage, setOtherPage] = useState(1);
+  const [dailyFilter, setDailyFilter] = useState(false);
 
-  const jobsPerPage = 12;
-
-  const interviewPagesVisited = interviewPage * jobsPerPage;
-
-  const activePagesVisited = activePage * jobsPerPage;
-
-  const closedPagesVisited = closedPage * jobsPerPage;
-
-  const otherPagesVisited = otherPage * jobsPerPage;
-
-  const jobsToDisplay = (status, pages) => {
-    const newJobs = [...searchJobs];
-    const buffer = new Array(jobsPerPage);
-    const filteredJobs = newJobs.filter(job => job.status.includes(status));
-    const paddedJobs = buffer.concat(filteredJobs)
-      .slice(pages, pages + jobsPerPage);
-    return paddedJobs;
-  }
-
-  const interviewPageCount = Math.ceil(jobs.filter(job => job.status.includes('Interview')).length / jobsPerPage);
-
-  const activePageCount = Math.ceil(jobs.filter(job => job.status.includes('Active')).length / jobsPerPage);
-
-  const closedPageCount = Math.ceil(jobs.filter(job => job.status.includes('Closed')).length / jobsPerPage);
-
-  const otherPageCount = Math.ceil(jobs.filter(job => job.status.includes('Other')).length / jobsPerPage);
-
-  const handleInterviewChange = (event, value) => {
-    setInterviewPage(value);
-  }
-
-  const handleActiveChange = (event, value) => {
-    setActivePage(value);
-  }
-
-  const handleClosedChange = (event, value) => {
-    setClosedPage(value);
-  }
-
-  const handleOtherChange = (event, value) => {
-    setOtherPage(value);
-  }
-
-  const getTotalApplicationCount = (status) => {
-    const newJobs = [...searchJobs];
-    const filteredJobs = newJobs.filter(job => job.status.includes(status));
-    const count = filteredJobs.length;
-    return count;
-  }
+  const [aiLoading, setAiLoading] = useState(false);
 
   const getStatus = (status) => {
     if (status === 'Active') {
@@ -102,79 +92,673 @@ const MasterList = (props) => {
     }
   };
 
-  const categoryHeader = (status, color, pageCount, pageNumber, changeEvent) => {
-    let headerTitle = 'Closed Applications';
-    if (status === 'Interview') {
-      headerTitle = 'Upcoming Interviews'
-    } else if (status === 'Active') {
-      headerTitle = 'Active Applications'
-    } else if (status === 'Other') {
-      headerTitle = 'Alternative Job Activities'
+  const handleViewInterviewPrep = (jobId) => {
+    setViewInterviewPrep(true);
+    const jobToView = searchJobs.filter(job => job.id.includes(jobId));
+    setJobToView(jobToView[0]);
+  }
+
+  const handleViewDetails = (jobId) => {
+    setViewDetails(true);
+    const jobToView = searchJobs.filter(job => job.id.includes(jobId));
+    setJobToView(jobToView[0]);
+  }
+
+  const handleEditJob = (jobId) => {
+    const jobToEdit = searchJobs.filter(job => job.id.includes(jobId));
+    updateJobApplication(jobToEdit[0])
+  }
+
+  const handleClose = () => {
+    setViewInterviewPrep(false);
+    setViewDetails(false);
+    setJobToView({});
+  }
+
+  //Only show job apps that have been added today.
+  useEffect(() => {
+    const newJobs = [...jobs];
+    if (dailyFilter) {
+      const todaysDate = format(new Date(), 'yyyy-MM-dd');
+      const todaysJobs = newJobs.filter(job => job.dateApplied === todaysDate);
+      setSearchJobs(todaysJobs);
+    } else {
+      setSearchJobs(newJobs);
     }
-    if (searchJobs.some(job => job.status === status)) {
+  }, [dailyFilter]);
+
+  const getSkillz = async (prompt) => {
+    try {
+      const user_token = currentUser.internalId;
+      if (user_token) {
+        const keywordRequest = await fetch(`https://openai-api-psi.vercel.app/${user_token}/extract_keywords/`, {
+          // const keywordRequest = await fetch(`http://localhost:8000/${user_token}/extract_keywords/`, {
+          method: 'POST',
+          mode: "cors",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ data: prompt }),
+        });
+
+        const skillz = await keywordRequest.json();
+        const skillzObject = JSON.parse(skillz);
+        return skillzObject;
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
+  };
+
+  const getInterviewPrepQuestions = async (prompt) => {
+    try {
+      const user_token = currentUser.internalId;
+      if (user_token) {
+        const keywordRequest = await fetch(`https://openai-api-psi.vercel.app/${user_token}/interview_prep/`, {
+          // const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
+          method: 'POST',
+          mode: "cors",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ data: prompt }),
+        });
+
+        const prepQuestions = await keywordRequest.json();
+        const prepQuestionsObject = JSON.parse(prepQuestions);
+        return prepQuestionsObject.interview_prep;
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
+  };
+
+  const handleGetInterviewHelp = async () => {
+    setAiLoading(true);
+    try {
+      const jobSkills = await getSkillz(jobToView.jobDescription);
+      const personalSkills = await getSkillz(jobToView.resume);
+      const interviewPrep = await getInterviewPrepQuestions(jobToView.jobDescription);
+
+      const newJobs = [...searchJobs];
+      const jobToUpdate = newJobs.find(job => job.id.includes(jobToView.id));
+
+      jobToUpdate.jobHardSkills = jobSkills.hard_skills
+      jobToUpdate.jobSoftSkills = jobSkills.soft_skills
+      jobToUpdate.personalHardSkills = personalSkills.hard_skills
+      jobToUpdate.personalSoftSkills = personalSkills.soft_skills
+      jobToUpdate.interviewPrep = interviewPrep
+      setSearchJobs(newJobs);
+      setJobs(newJobs);
+
+      await updateDoc(doc(subCollection, jobToView.id), {
+        jobHardSkills: jobSkills.hard_skills,
+        jobSoftSkills: jobSkills.soft_skills,
+        personalHardSkills: personalSkills.hard_skills,
+        personalSoftSkills: personalSkills.soft_skills,
+        interviewPrep: interviewPrep
+      });
+
+    } catch (error) {
+      setFeedback({
+        ...feedback,
+        open: true,
+        type: 'error',
+        title: 'Error',
+        message: 'There was an issue with your request, please try again later.'
+      });
+    }
+    setAiLoading(false);
+  }
+
+  const getGrade = (score) => {
+    if (score < 20) {
+      return 'F'
+    } else if (score >= 20 && score < 40) {
+      return 'D'
+    } else if (score >= 40 && score < 60) {
+      return 'C'
+    } else if (score >= 60 && score < 80) {
+      return 'B'
+    } else if (score >= 80 && score < 90) {
+      return 'A'
+    } else return 'A+'
+  }
+
+  const renderMessage = () => {
+    if (viewDetails) {
       return (
-        <Stack sx={{ display: 'flex', alignItems: 'center' }} spacing={2}>
-          <Typography
-            variant='h4'
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={[
+            "opacity: 0",
+            "opacity: 1",
+          ]}
+        >
+          <Box
             sx={{
-              mt: 3,
-              color: THEME[themeMode].textColor,
-              cursor: 'default'
+              py: 5,
+              px: 5,
+              height: '100%',
             }}
           >
-            {headerTitle} <Chip sx={{ fontSize: '1.15rem', color: THEME[themeMode].textColor }} label={getTotalApplicationCount(status)} />
-          </Typography>
-          <Pagination
-            count={pageCount}
-            page={pageNumber}
-            onChange={changeEvent}
-            color={color}
-          />
-        </Stack>
+            <Grid
+              container
+              spacing={2}
+              direction="row"
+              justifyContent="center"
+              alignItems="start"
+            >
+              <Grid
+                item
+                xl={6}
+                sx={{
+                  width: '100%',
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: 2,
+                    borderRadius: 5,
+                    background: THEME[themeMode].subCard,
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="start"
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: '1.75em',
+                      }}
+                    >
+                      {jobToView.company}{` - ${getGrade(jobToView.score)}`}
+                    </Typography>
+                    {renderStatus(jobToView)}
+                  </Grid>
+                  <Typography>{jobToView.jobTitle}</Typography>
+                  <Typography>{format(new Date(jobToView.dateApplied.replace(/-/g, '/')), 'PPP')}</Typography>
+                  <Typography>{jobToView.jobPosting}</Typography>
+                  {jobToView.status === 'Interview' ?
+                    !student || Object.values(student).length === 0
+                      ?
+                      <TextField
+                        sx={{
+                          mt: 1,
+                          width: '50%'
+                        }}
+                        value={jobToView.interviewDate}
+                        onChange={(e) => updateInterviewDate(jobToView.id, e)}
+                        type='datetime-local'
+                        name='interviewDate'
+                        size='small'
+                        label='Interview Date'
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                      : <Typography>{jobToView.interviewDate ? format(new Date(jobToView.interviewDate), 'Pp') : null}</Typography>
+                    : null
+                  }
+                  <hr />
+                  <Typography>Notes</Typography>
+                  <Typography>{jobToView.notes ? jobToView.notes : <em>No notes have been added yet.</em>}</Typography>
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                xl={6}
+                sx={{
+                  width: '100%',
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: 2,
+                    borderRadius: 5,
+                    background: THEME[themeMode].subCard,
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: '1.50em'
+                    }}
+                  >
+                    {jobToView.jobPostingKeyWords.length === 0
+                      ? 'No Keywords Found'
+                      : `We Found ${jobToView.jobPostingKeyWords.length} Keywords For You`
+                    }
+                  </Typography>
+                  <Typography>
+                    {jobToView.jobPostingKeyWords.length !== 0 &&
+                      <em>{jobToView.score}% of them have been addressed so far.</em>
+                    }
+                  </Typography>
+                  <hr />
+                  <List
+                    dense={true}
+                    disablePadding
+                  >
+                    {jobToView.jobPostingKeyWords.length === 0
+                      ? 'Try adding the entire job description.'
+                      : jobToView.jobPostingKeyWords.map((keyword, idx) => {
+                        return (
+                          jobToView.coverLetterKeyWords.includes(keyword) || jobToView.resumeKeyWords.includes(keyword)
+                            ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                            : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                        )
+                      })}
+                  </List>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Box>
+        </AnimateKeyframes >
       )
+    } else if (viewInterviewPrep && (jobToView.hasOwnProperty('interviewPrep') && jobToView?.interviewPrep.length > 0)) {
+      return (
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={[
+            "opacity: 0",
+            "opacity: 1",
+          ]}
+        >
+          <Box
+            sx={{
+              py: 5,
+              px: 5,
+              height: '100%',
+            }}
+          >
+            <Grid
+              container
+              spacing={2}
+              direction="row"
+              justifyContent="center"
+              alignItems="start"
+            >
+              <Grid
+                item
+                xl={3}
+                sx={{
+                  width: '50%',
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: 2,
+                    borderRadius: 5,
+                    background: THEME[themeMode].subCard,
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+                  <Typography>Job Hard Skills</Typography>
+                  <ul>
+                    {jobToView.jobHardSkills.map(skill => {
+                      return <li>{skill}</li>
+                    })}
+                  </ul>
+                  <Typography>Job Soft Skills</Typography>
+                  <ul>
+                    {jobToView.jobSoftSkills.map(skill => {
+                      return <li>{skill}</li>
+                    })}
+                  </ul>
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                xl={3}
+                sx={{
+                  width: '50%',
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: 2,
+                    borderRadius: 5,
+                    background: THEME[themeMode].subCard,
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+                  <Typography>Personal Hard Skills</Typography>
+                  <ul>
+                    {jobToView.personalHardSkills.map(skill => {
+                      return <li>{skill}</li>
+                    })}
+                  </ul>
+                  <Typography>Personal Soft Skills</Typography>
+                  <ul>
+                    {jobToView.personalSoftSkills.map(skill => {
+                      return <li>{skill}</li>
+                    })}
+                  </ul>
+                </Paper>
+              </Grid>
+              <Grid
+                item
+                xl={6}
+                sx={{
+                  width: '100%'
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: 2,
+                    borderRadius: 5,
+                    background: THEME[themeMode].subCard,
+                    transition: 'color .5s, background .5s',
+                  }}
+                >
+
+                  <Typography>Interview Prep Questions</Typography>
+                  <ol>
+                    {jobToView.interviewPrep.map(skill => {
+                      return <li>{skill}</li>
+                    })}
+                  </ol>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Box>
+        </AnimateKeyframes>
+      )
+    } else {
+      if ((jobToView.resume || jobToView.coverLetter) && jobToView.jobDescription) {
+        return (
+          <Button
+            variant={THEME[themeMode].buttonStyle}
+            endIcon={
+              !aiLoading ? <AutoAwesomeTwoTone />
+                : <CircularProgress
+                  color='inherit'
+                  disableShrink
+                  size='1rem'
+                  thickness={7}
+                />
+            }
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+            disabled={aiLoading}
+            onClick={() => handleGetInterviewHelp()}
+          >
+            Get Application Help
+          </Button>
+        )
+      } else {
+        return <Typography
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >A Job Description and Resume / Cover Letter are required for this service.
+        </Typography>
+      }
     }
   }
 
-  const STRUCTURE = [
-    {
-      status: 'Interview',
-      color: 'primary',
-      pageCount: interviewPageCount,
-      page: interviewPage,
-      change: handleInterviewChange,
-      pagesVisited: interviewPagesVisited
-    },
-    {
-      status: 'Active',
-      color: 'success',
-      pageCount: activePageCount,
-      page: activePage,
-      change: handleActiveChange,
-      pagesVisited: activePagesVisited
-    },
-    {
-      status: 'Other',
-      color: 'warning',
-      pageCount: otherPageCount,
-      page: otherPage,
-      change: handleOtherChange,
-      pagesVisited: otherPagesVisited
-    },
-    {
-      status: 'Closed',
-      color: 'error',
-      pageCount: closedPageCount,
-      page: closedPage,
-      change: handleClosedChange,
-      pagesVisited: closedPagesVisited
-    },
-  ];
+  const renderActions = (job) => {
+    return (
+      <PopupState variant="popover">
+        {(popupState) => (
+          <Box>
+            <IconButton
+              id='options-button'
+              aria-label='options'
+              {...bindTrigger(popupState)}
+            >
+              {currentUser?.organization !== 'Personal'
+                && job.lastResponseFrom
+                && job.lastResponseFrom !== user.uid
+                && job.unreadMessages > 0
+                ? <Badge color='error' variant='dot'>
+                  <MenuRounded />
+                </Badge>
+                : <MenuRounded />
+              }
+            </IconButton>
+            <Menu
+              id='options-menu'
+              anchorEl='options-button'
+              MenuListProps={{
+                'aria-labelledby': 'options-button'
+              }}
+              {...bindMenu(popupState)}
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 500 }}
+              onClose={() => popupState.close()}
+            >
+              <MenuList>
+                <MenuItem
+                  onClick={() => handleViewDetails(job.id)}
+                >
+                  <ListItemIcon>
+                    <VisibilityTwoTone />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      View Details
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => handleViewInterviewPrep(job.id)}
+                >
+                  <ListItemIcon>
+                    <AutoAwesomeTwoTone />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Interview Prep
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+                {currentUser?.organization !== 'Personal'
+                  ? job.lastResponseFrom
+                    && job.lastResponseFrom !== user.uid
+                    && job.unreadMessages > 0 ?
+                    <MenuItem
+                      onClick={() => !student || Object.values(student).length === 0
+                        ? handleViewComments(user.uid, job)
+                        : handleViewComments(student.id, job)
+                      }>
+                      <Badge color='error' overlap='circular' variant='dot'>
+                        <ListItemIcon>
+                          <ForumTwoTone />
+                          <ListItemText
+                            sx={{
+                              pl: 2,
+                            }}
+                          >
+                            Comments
+                          </ListItemText>
+                        </ListItemIcon>
+                      </Badge>
+                    </MenuItem>
+                    : <MenuItem
+                      onClick={() => !student || Object.values(student).length === 0
+                        ? handleViewComments(user.uid, job)
+                        : handleViewComments(student.id, job)
+                      }>
+                      <ListItemIcon>
+                        <ForumTwoTone />
+                        <ListItemText
+                          sx={{
+                            pl: 2,
+                          }}
+                        >
+                          Comments
+                        </ListItemText>
+                      </ListItemIcon>
+                    </MenuItem>
+                  : null
+                }
+                <MenuItem
+                  onClick={() => handleEditJob(job.id)}
+                  disabled={student ? true : false}
+                >
+                  <ListItemIcon>
+                    <CreateTwoTone />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Edit
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => deleteJob(job.id, job.company)}
+                  disabled={student ? true : false}
+                >
+                  <ListItemIcon>
+                    <DeleteTwoTone />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Delete
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
+        )
+        }
+      </PopupState >
+    )
+  };
+
+  const renderStatus = (job) => {
+    return (
+      <PopupState variant="popover">
+        {(popupState) => (
+          <Box>
+            <Chip
+              id='status-button'
+              aria-label='options'
+              {...bindTrigger(popupState)}
+              label={job.status}
+              variant={THEME[themeMode].buttonStyle}
+              color={getStatus(job.status)}
+              {...bindTrigger(popupState)}
+
+            />
+            <Menu
+              id='status-menu'
+              anchorEl='options-button'
+              MenuListProps={{
+                'aria-labelledby': 'status-button'
+              }}
+              {...bindMenu(popupState)}
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 500 }}
+              onClose={() => popupState.close()}
+            >
+              <MenuList>
+                <MenuItem
+                  onClick={() => updateJobStatus(job.id, 'Active')}
+                >
+                  <ListItemIcon>
+                    <CheckCircleTwoTone color='success' />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Active
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => updateJobStatus(job.id, 'Interview')}
+                >
+                  <ListItemIcon>
+                    <WorkTwoTone color='secondary' />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Interview
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => updateJobStatus(job.id, 'Other')}
+
+                >
+                  <ListItemIcon>
+                    <HelpTwoTone color='warning' />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Other
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => updateJobStatus(job.id, 'Closed')}
+                >
+                  <ListItemIcon>
+                    <DoNotDisturbOnTwoTone color='error' />
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Closed
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
+        )}
+      </PopupState>
+    )
+  };
 
   const columns = [
     {
+      field: 'actions',
+      headerName: 'Actions',
+      headerAlign: 'center',
+      width: 100,
+      align: 'center',
+      filterable: false,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return renderActions(params.row)
+      }
+    },
+    {
       field: 'company',
       headerName: 'Company',
-      headerAlign: 'center',
+      headerAlign: 'left',
       width: 300,
       align: 'left',
       filterable: false,
@@ -183,11 +767,8 @@ const MasterList = (props) => {
     {
       field: 'jobTitle',
       headerName: 'Job Title',
-      headerAlign: 'center',
+      headerAlign: 'left',
       width: 300,
-      renderCell: (params) => {
-        return <span style={{ cursor: 'default' }}>{params.value}</span>
-      }
     },
     {
       field:
@@ -196,135 +777,224 @@ const MasterList = (props) => {
         'Status',
       headerAlign: 'center',
       align: 'center',
-      width: 100,
+      width: 115,
       renderCell: (params) => {
-        return <Chip label={params.value} variant={THEME[themeMode].buttonStyle} color={getStatus(params.value)} />
+        return !student ? renderStatus(params.row) : <Chip
+          label={params.row.status}
+          variant={THEME[themeMode].buttonStyle}
+          color={getStatus(params.row.status)}
+        />
+      }
+    },
+    {
+      field: 'dateApplied',
+      headerName: 'Date Applied',
+      headerAlign: 'center',
+      width: 150,
+      align: 'center',
+      filterable: true,
+      sortable: true,
+      renderCell: (params) => {
+        return format(new Date(params.value.replace(/-/g, '/')), 'PP')
       }
     },
     {
       field: 'score',
       headerName: 'Score',
       headerAlign: 'center',
-      width: 100,
+      width: 115,
       align: 'center',
       filterable: true,
       sortable: true,
     },
     {
-      field: 'dateApplied',
-      headerName: 'Date Applied',
+      field: 'jobPosting',
+      headerName: 'Job Posting',
       headerAlign: 'center',
-      width: 125,
+      width: 150,
       align: 'center',
-      filterable: true,
-      sortable: true,
+      filterable: false,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return <IconButton
+          target='_blank'
+          rel='noopener noreferrer'
+          component='a'
+          href={params.row.jobPosting}
+          disabled={!params.row.jobPosting ? true : false}
+        >
+          <WorkTwoTone />
+        </IconButton>
+      }
+    },
+    {
+      field: 'resumeLink',
+      headerName: 'Resume',
+      headerAlign: 'center',
+      width: 150,
+      align: 'center',
+      filterable: false,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return <IconButton
+          target='_blank'
+          rel='noopener noreferrer'
+          component='a'
+          href={params.row.resumeLink}
+          disabled={!params.row.resumeLink ? true : false}
+        >
+          <DescriptionTwoTone />
+        </IconButton>
+      }
+    },
+    {
+      field: 'coverLetterLink',
+      headerName: 'Cover Letter',
+      headerAlign: 'center',
+      width: 150,
+      align: 'center',
+      filterable: false,
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return <IconButton
+          target='_blank'
+          rel='noopener noreferrer'
+          component='a'
+          href={params.row.coverLetterLink}
+          disabled={!params.row.coverLetterLink ? true : false}
+        >
+          <DescriptionTwoTone />
+        </IconButton>
+      }
     },
   ];
 
   return (
-    <Grid>
-      {/* <Paper
-        id='dataGrid'
-        sx={{
-          position: 'relative',
-          borderRadius: 5,
-          background: THEME[themeMode].card,
-          transition: 'color .5s, background .5s'
-        }}
-      >
-        <Button
-          elevation={3}
-          variant={THEME[themeMode].buttonStyle}
-          color='success'
-          onClick={() => setOpen(true)}
-          sx={{
-            position: 'absolute',
-            top: 20,
-            right: 20
-          }}
+    <Paper
+      id='dataGrid'
+      className='modal'
+      sx={{
+        overflowY: viewInterviewPrep || viewDetails ? 'auto' : 'none',
+        borderRadius: 5,
+        border: THEME[themeMode].border,
+        background: THEME[themeMode].card,
+        transition: 'color .5s, background .5s',
+        height: '85vh',
+        width: '95vw',
+        position: !student ? 'absolute' : 'relative',
+        top: !student ? '50%' : null,
+        left: !student ? '50%' : null,
+        transform: !student ? 'translate(-50%, -46%)' : null,
+      }}>
+      {viewInterviewPrep || viewDetails ?
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={[
+            "opacity: 0",
+            "opacity: 1",
+          ]}
         >
-          Add New
-        </Button>
-        <Box
-          sx={{
-            borderRadius: 5,
-            transition: 'color .5s, background .5s',
-            height: '80vh',
-            width: '100%',
-            background: THEME[themeMode].card,
-            pt: 5
-          }}
-        >
-          <DataGrid
+          <IconButton
+            onClick={() => handleClose()}
             sx={{
-              transition: 'color .5s, background .5s',
-              color: THEME[themeMode].textColor,
-              border: 'none',
-              "& ::-webkit-scrollbar": {
-                backgroundColor: 'rgba(0, 0, 0, 0)',
-                width: '0.5em'
-              },
-              "& ::-webkit-scrollbar-thumb": {
-                backgroundColor: 'rgb(169, 169, 169)',
-                borderRadius: '1em'
-              }
+              position: 'absolute',
+              top: 10,
+              left: 10
             }}
-            rows={searchJobs}
-            columns={columns}
-            pageSize={20}
-            rowsPerPageOptions={[20]}
-          // onSelectionModelChange={(newStudent) => (setViewStudent(newStudent))}
-          // selectedModel={viewStudent}
-          />
-        </Box>
-      </Paper> */}
-      {
-        STRUCTURE.map(skeleton => {
-          return (
-            <Grid key={skeleton.status}>
-              <AnimateKeyframes
-                play
-                iterationCount={1}
-                keyframes={["opacity: 0", "opacity: 1"]}
+          >
+            <CloseRounded />
+          </IconButton>
+          {renderMessage()}
+        </AnimateKeyframes>
+        :
+        <AnimateKeyframes
+          play
+          iterationCount={1}
+          keyframes={[
+            "opacity: 0",
+            "opacity: 1",
+          ]}
+        >
+          {!student &&
+            <>
+              <Chip
+                sx={{
+                  zIndex: 10,
+                  position: 'absolute',
+                  top: 20,
+                  left: 20
+                }}
+                color='primary'
+                variant={THEME[themeMode].buttonStyle}
+                onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
+                label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+                avatar={<Avatar>{applicationCount}</Avatar>}
+              />
+              <Button
+                elevation={10}
+                variant={THEME[themeMode].buttonStyle}
+                color='success'
+                onClick={() => setOpen(true)}
+                sx={{
+                  position: 'absolute',
+                  top: 20,
+                  right: 20
+                }}
               >
-                {categoryHeader(skeleton.status, skeleton.color, skeleton.pageCount, skeleton.page, skeleton.change)}
-              </AnimateKeyframes>
-              <Grid
-                container
-                direction='row'
-                justifyContent='start'
-              >
-                {jobsToDisplay(skeleton.status, skeleton.pagesVisited).map(job => {
-                  return (
-                    <Grid
-                      item
-                      xs={12}
-                      sm={4}
-                      xl={3}
-                      key={job.id}
-                    >
-                      <CardView
-                        themeMode={themeMode}
-                        updateJobApplication={updateJobApplication}
-                        job={job}
-                        deleteJob={deleteJob}
-                        updateJobStatus={updateJobStatus}
-                        updateInterviewDate={updateInterviewDate}
-                        student={student}
-                        handleViewComments={handleViewComments}
-                        user={user}
-                        currentUser={currentUser}
-                      />
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </Grid>
-          )
-        })
+                Add New
+              </Button>
+            </>
+          }
+          <Box
+            sx={{
+              borderRadius: 5,
+              transition: 'color .5s, background .5s',
+              height: '75vh',
+              width: '95vw',
+              background: THEME[themeMode].card,
+              pt: 8
+            }}
+            id='test'
+          >
+            <DataGrid
+              sx={{
+                transition: 'color .5s, background .5s',
+                color: THEME[themeMode].textColor,
+                borderLeft: 'none',
+                borderRight: 'none',
+                borderBottom: 'none',
+                "& ::-webkit-scrollbar": {
+                  backgroundColor: 'rgba(0, 0, 0, 0)',
+                  width: '0.5em'
+                },
+                "& ::-webkit-scrollbar-thumb": {
+                  backgroundColor: 'rgb(169, 169, 169)',
+                  borderRadius: '1em',
+                },
+              }}
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: 'dateApplied', sort: 'desc' }],
+                },
+              }}
+              rows={searchJobs}
+              columns={columns}
+              pageSize={20}
+              rowsPerPageOptions={[20]}
+              disableRowSelectionOnClick
+              loading={loading}
+            // onSelectionModelChange={(jobId) => (handleEditJob(jobId[0]))}
+            // selectedModel={jobToEdit}
+            />
+          </Box>
+        </AnimateKeyframes>
       }
-    </Grid >
+    </Paper >
   )
-}
+};
 
 export default MasterList;

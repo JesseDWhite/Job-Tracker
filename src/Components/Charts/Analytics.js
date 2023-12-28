@@ -78,6 +78,7 @@ const Analytics = (props) => {
           textAlign: 'center',
           transition: 'color .5s, background .5s',
           background: THEME[themeMode].card,
+          border: THEME[themeMode].border
         }}
       >
         {/* <Typography variant='h5' textAlign='center'>7-Day Totals</Typography> */}

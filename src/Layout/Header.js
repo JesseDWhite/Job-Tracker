@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
   Grid,
-  Button,
   Typography,
   Chip,
   Avatar,
   IconButton,
   LinearProgress,
   Box,
-  Badge
+  Badge,
+  Tooltip
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import SearchBar from '../Components/SearchBar';
@@ -22,12 +23,8 @@ const Header = (props) => {
 
   const {
     user,
-    sortByName,
-    sortByDate,
-    sort,
     jobs,
     setSearchJobs,
-    applicationCount,
     viewProfile,
     setViewProfile,
     themeMode,
@@ -115,6 +112,26 @@ const Header = (props) => {
     }
   }, [jobs]);
 
+  const renderThemeButton = () => {
+    let message = 'dark mode'
+    let button = <NightsStayIcon />
+    if (themeMode === 'darkMode') {
+      button = <DarkModeIcon sx={{ color: 'white' }} />
+      message = 'underdark mode'
+    };
+    if (themeMode === 'dorkMode') {
+      button = <LightModeIcon sx={{ color: 'white' }} />
+      message = 'light mode'
+    };
+    return (
+      <Tooltip placement='bottom' title={message} disableInteractive>
+        <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
+          {button}
+        </IconButton>
+      </Tooltip>
+    );
+  }
+
   return (
     <Box sx={{ position: 'relative' }}>
       <Grid
@@ -154,33 +171,13 @@ const Header = (props) => {
               </Typography>
               :
               <Grid>
-                <Chip
-                  sx={{
-                    zIndex: 10,
-                    ml: 2
-                  }}
-                  color='primary'
-                  variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
-                  onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
-                  label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
-                  avatar={<Avatar>{applicationCount}</Avatar>}
-                />
-                <Button
-                  sx={{
-                    ml: 5,
-                    zIndex: 10
-                  }}
-                  variant='text'
-                  color='primary'
-                  onClick={() => sort ? sortByDate() : sortByName()}>
-                  SORTED BY: {sort ? 'NAME A-Z' : 'MOST RECENT'}
-                </Button>
                 <Grid
                   container
-                  justifyContent='center'
+                  justifyContent='start'
                   sx={{
                     position: 'absolute',
-                    top: 0
+                    top: 0,
+                    ml: 2.5
                   }}
                 >
                   <SearchBar
@@ -213,18 +210,15 @@ const Header = (props) => {
                 : <NotificationsNoneRoundedIcon />
               }
             </IconButton>
-            <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}>
-              {themeMode === 'darkMode'
-                ? <LightModeIcon sx={{ color: 'white' }} />
-                : <NightsStayIcon />
-              }
-            </IconButton>
+            {/* <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}> */}
+            {renderThemeButton()}
+            {/* </IconButton> */}
             <Chip
               avatar={
                 <Avatar
                   src={user?.photoURL}
                 />}
-              variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
+              variant={THEME[themeMode].buttonStyle}
               label={viewProfile ? 'Go Back' : currentUser?.name}
               clickable
               onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}

@@ -29,6 +29,7 @@ import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import * as XLSX from 'xlsx';
 import { eachMonthOfInterval, format, subMonths } from 'date-fns'
+import { THEME } from '../../Layout/Theme';
 
 const UserUpload = (props) => {
 
@@ -40,7 +41,8 @@ const UserUpload = (props) => {
     feedback,
     cohortList,
     getStudents,
-    currentUser
+    currentUser,
+    themeMode
   } = props;
 
   const initialValues =
@@ -250,7 +252,7 @@ const UserUpload = (props) => {
           }}
         >
           <Button
-            variant='contained'
+            variant={THEME[themeMode].buttonStyle}
             component='label'
             endIcon={<PeopleAltTwoToneIcon />}
           >
@@ -259,7 +261,7 @@ const UserUpload = (props) => {
           </Button>
           <Button
             onClick={() => editing ? (setEditing(false), setFormValues([initialValues], setCohort(''))) : setEditing(true)}
-            variant='contained'
+            variant={THEME[themeMode].buttonStyle}
             endIcon={editing ? <CloseRoundedIcon /> : <EditTwoToneIcon />}
             sx={{
               ml: 5
@@ -424,7 +426,7 @@ const UserUpload = (props) => {
             <Grid item sm={6}>
               <Button
                 fullWidth
-                variant='contained'
+                variant={THEME[themeMode].buttonStyle}
                 color='success'
                 type='button'
                 disabled={editing || loading ? true : false}
@@ -436,9 +438,9 @@ const UserUpload = (props) => {
             <Grid item sm={6}>
               <Button
                 type='submit'
-                variant='contained'
+                variant={THEME[themeMode].buttonStyle}
                 fullWidth
-                disabled={loading ? true : false}
+                disabled={loading}
               >
                 Submit
               </Button>

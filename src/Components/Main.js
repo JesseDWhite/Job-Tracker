@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import {
@@ -22,16 +21,14 @@ import {
   Fade,
   Backdrop,
   Box,
-  Fab,
-  Skeleton,
+
   Snackbar,
   Alert,
   Slide,
   AlertTitle,
 } from '@mui/material';
-import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import { format } from 'date-fns';
-import { signOut, onAuthStateChanged, } from '@firebase/auth';
+import { signOut, onAuthStateChanged, } from 'firebase/auth';
 import { auth } from '../firebase';
 import Header from '../Layout/Header';
 import Profile from './User/Profile';
@@ -84,8 +81,6 @@ const Main = () => {
 
   const subCollection = collection(userReference, `${user?.uid}/jobs`);
 
-  const [gridView, setGridView] = useState(true);
-
   const [feedback, setFeedback] = useState({
     open: false,
     type: null,
@@ -93,9 +88,24 @@ const Main = () => {
     message: null
   });
 
-  const darkTheme = createTheme({
+  const theme = createTheme({
     palette: {
-      mode: themeMode === 'darkMode' ? 'dark' : 'light',
+      mode: themeMode !== 'lightMode' ? 'dark' : 'light',
+      primary: {
+        main: '#4a65fb',
+      },
+      secondary: {
+        main: '#a444b5',
+      },
+      error: {
+        main: '#F44336',
+      },
+      info: {
+        main: '#009688',
+      },
+      success: {
+        main: '#4a924e',
+      },
     },
     typography: {
       fontFamily: 'Readex Pro',
@@ -121,7 +131,8 @@ const Main = () => {
     borderRadius: 5,
     boxShadow: 24,
     p: 4,
-    overflowY: 'auto'
+    overflowY: 'auto',
+    border: THEME[themeMode].border
   };
 
   const handleClose = () => {
@@ -402,12 +413,11 @@ const Main = () => {
   }
 
   const updateJobStatus = async (id, e) => {
-    const newStatus = e.target.value;
     const newJobs = [...searchJobs];
     const jobToUpdate = newJobs.find(job => job.id.includes(id));
-    jobToUpdate.status = newStatus;
+    jobToUpdate.status = e;
     const jobDoc = doc(subCollection, id);
-    const updateStatus = { status: newStatus };
+    const updateStatus = { status: e };
     setSearchJobs(newJobs);
     setJobs(newJobs);
     await updateDoc(jobDoc, updateStatus);
@@ -424,23 +434,15 @@ const Main = () => {
     await updateDoc(jobDoc, updateInterviewDate);
   }
 
-  // const updateAttendedInterview = async (id, attended) => {
-  //   const newAttended = !attended;
-  //   const newJobs = [...searchJobs];
-  //   const jobToUpdate = newJobs.find(job => job.id.includes(id));
-  //   jobToUpdate.attendedInterview = newAttended;
-  //   const jobDoc = doc(subCollection, id);
-  //   const updateAttendedInterview = { attendedInterview: newAttended };
-  //   setSearchJobs(newJobs);
-  //   setJobs(newJobs);
-  //   await updateDoc(jobDoc, updateAttendedInterview);
-  // }
-
   const updatePreferrdTheme = async (id) => {
     const userToUpdate = doc(userReference, id);
     if (themeMode === 'lightMode') {
       setThemeMode('darkMode');
       const newTheme = { preferredTheme: 'darkMode' };
+      await updateDoc(userToUpdate, newTheme);
+    } else if (themeMode === 'darkMode') {
+      setThemeMode('dorkMode');
+      const newTheme = { preferredTheme: 'dorkMode' };
       await updateDoc(userToUpdate, newTheme);
     } else {
       setThemeMode('lightMode');
@@ -578,7 +580,7 @@ const Main = () => {
   }, [getJobs]);
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <Box
         sx={{
           transition: 'color .5s, background .5s',
@@ -625,79 +627,35 @@ const Main = () => {
               <Grid
                 item
                 sm={12}
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
               >
-                <Grid sx={{ m: 3, pt: 8 }}>
-                  {loading
-                    ? <AnimateKeyframes
-                      play
-                      iterationCount={1}
-                      keyframes={[
-                        "opacity: 0",
-                        "opacity: 1",
-                      ]}
-                    >
-                      <Grid display='flex' >
-                        <Grid
-                          sx={{ mt: 17, mx: 3 }}
-                          container
-                          direction="row"
-                          justifyContent="start"
-                        >
-                          {Array.from(new Array(12)).map((skeleton, idx) => {
-                            return (
-                              <Grid
-                                key={idx}
-                                xs={12}
-                                sm={4}
-                                xl={3}
-                                item
-                              >
-                                <Skeleton key={skeleton} variant="rectangular" sx={{ mb: 8, mx: 3, height: 300, borderRadius: 5 }} />
-                              </Grid>
-                            )
-                          })}
-                        </Grid>
-                      </Grid>
-                    </AnimateKeyframes>
-                    : <Grid >
-                      <MasterList
-                        loading={loading}
-                        themeMode={themeMode}
-                        searchJobs={searchJobs}
-                        jobs={jobs}
-                        updateJobApplication={updateJobApplication}
-                        deleteJob={deleteJob}
-                        updateJobStatus={updateJobStatus}
-                        updateInterviewDate={updateInterviewDate}
-                        handleViewComments={handleViewComments}
-                        user={user}
-                        userReference={userReference}
-                        currentUser={currentUser}
-                        open={open}
-                        setOpen={setOpen}
-                      />
-                      {!gridView ?
-                        <Fab
-                          variant='extended'
-                          sx={{
-                            position: 'fixed',
-                            top: 100,
-                            right: 30,
-                            backgroundColor: 'green',
-                            '&:hover': {
-                              backgroundColor: 'darkGreen'
-                            },
-                            color: 'white'
-                          }}
-                          onClick={() => setOpen(!open)}
-                        >
-                          <AddCircleTwoToneIcon sx={{ mr: 1 }} />
-                          ADD NEW
-                        </Fab>
-                        : null
-                      }
-                    </Grid>
-                  }
+                <Grid
+                  sx={{ pt: 10 }}
+                >
+                  <MasterList
+                    loading={loading}
+                    themeMode={themeMode}
+                    searchJobs={searchJobs}
+                    setSearchJobs={setSearchJobs}
+                    jobs={jobs}
+                    updateJobApplication={updateJobApplication}
+                    deleteJob={deleteJob}
+                    updateJobStatus={updateJobStatus}
+                    updateInterviewDate={updateInterviewDate}
+                    handleViewComments={handleViewComments}
+                    user={user}
+                    userReference={userReference}
+                    currentUser={currentUser}
+                    setOpen={setOpen}
+                    applicationCount={applicationCount}
+                    subCollection={subCollection}
+                    feedback={feedback}
+                    setFeedback={setFeedback}
+                    setJobs={setJobs}
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -709,14 +667,9 @@ const Main = () => {
           viewProfile={viewProfile}
           setViewProfile={setViewProfile}
           user={user}
-          sortByDate={sortByDate}
-          sortByName={sortByName}
-          sort={sort}
           jobs={jobs}
           setSearchJobs={setSearchJobs}
-          applicationCount={applicationCount}
           loading={loading}
-          searchJobs={searchJobs}
         />}
         <Snackbar
           sx={{ width: '100%' }}

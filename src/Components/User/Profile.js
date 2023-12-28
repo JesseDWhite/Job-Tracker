@@ -1,11 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import {
-  Button,
   Card,
   CardMedia,
   CardContent,
-  CardActions,
   Typography,
   Chip,
   Grid,
@@ -29,14 +27,11 @@ import {
   Avatar,
   ToggleButtonGroup,
   ToggleButton,
-  CircularProgress,
-  LinearProgress,
 } from '@mui/material';
 import {
   BackupTwoTone,
   KeyTwoTone,
   HighlightOffTwoTone,
-  ApartmentTwoTone,
   PersonAddAltTwoTone,
   CancelTwoTone,
   LogoutTwoTone,
@@ -82,7 +77,8 @@ const Profile = (props) => {
     setFeedback,
     feedback,
     handleViewComments,
-    getJobs
+    getJobs,
+    setSearchJobs
   } = props;
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -114,7 +110,8 @@ const Profile = (props) => {
     borderRadius: 5,
     boxShadow: 24,
     p: 4,
-    overflowY: 'auto'
+    overflowY: 'auto',
+    border: THEME[themeMode].border
   };
 
   const columns = [
@@ -390,6 +387,9 @@ const Profile = (props) => {
 
   useEffect(() => {
     getStudentsApplications();
+    setTimeout(() => {
+      document.getElementById('studentApplications').scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 1000);
   }, [viewStudent]);
 
   const determineModelContents = () => {
@@ -404,6 +404,7 @@ const Profile = (props) => {
         handleClose={handleClose}
         getJobs={getJobs}
         jobs={jobs}
+        themeMode={themeMode}
       />
     } else if (updateProfile) {
       return <UpdateProfile
@@ -417,6 +418,7 @@ const Profile = (props) => {
         getJobs={getJobs}
         jobs={jobs}
         subCollection={subCollection}
+        themeMode={themeMode}
       />
     } else {
       return <UserUpload
@@ -429,6 +431,7 @@ const Profile = (props) => {
         organization={organization}
         organizationReference={organizationReference}
         setOrganization={setOrganization}
+        themeMode={themeMode}
       />
     }
   }
@@ -471,7 +474,8 @@ const Profile = (props) => {
                 transition: 'color .5s, background .5s',
                 background: THEME[themeMode].card,
                 color: THEME[themeMode].textColor,
-                position: 'relative'
+                position: 'relative',
+                border: THEME[themeMode].border
               }}
               container
             >
@@ -839,7 +843,8 @@ const Profile = (props) => {
                 sx={{
                   borderRadius: 5,
                   background: THEME[themeMode].card,
-                  transition: 'color .5s, background .5s'
+                  transition: 'color .5s, background .5s',
+                  border: THEME[themeMode].border
                 }}
               >
                 <Box
@@ -916,7 +921,7 @@ const Profile = (props) => {
                     columns={columns}
                     pageSize={20}
                     rowsPerPageOptions={[20]}
-                    onSelectionModelChange={(newStudent) => (setViewStudent(newStudent))}
+                    onSelectionModelChange={(newStudent) => setViewStudent(newStudent)}
                     selectedModel={viewStudent}
                   />
                 </Paper>
@@ -935,7 +940,8 @@ const Profile = (props) => {
                   transition: 'color .5s, background .5s',
                   background: THEME[themeMode].card,
                   color: THEME[themeMode].textColor,
-                  position: 'relative'
+                  position: 'relative',
+                  border: THEME[themeMode].border
                 }}
                 container
               >
@@ -947,7 +953,6 @@ const Profile = (props) => {
             </Grid>
             : null}
           <Grid item sx={{ width: '100%' }}>
-            <div id='studentApplications' />
             {Object.keys(student).length !== 0 &&
               <Box
                 sx={{
@@ -971,7 +976,8 @@ const Profile = (props) => {
                       background: THEME[themeMode].card,
                       color: THEME[themeMode].textColor,
                       textAlign: 'center',
-                      position: 'relative'
+                      position: 'relative',
+                      border: THEME[themeMode].border
                     }}
                   >
                     <Tooltip title='Close' placement='left'>
@@ -992,7 +998,7 @@ const Profile = (props) => {
                     <Chip
                       avatar={<Avatar>{student.totalApplications}</Avatar>}
                       label='Total Applications'
-                      variant={themeMode === 'darkMode' ? 'outlined' : 'contained'}
+                      variant={THEME[themeMode].buttonStyle}
                       sx={{
                         position: 'absolute',
                         top: 0,
@@ -1009,15 +1015,23 @@ const Profile = (props) => {
                     <Typography variant='h5' textAlign='center'>{student.name}</Typography>
                   </Paper>
                 </Grid>
-                <MasterList
-                  themeMode={themeMode}
-                  searchJobs={studentApplications}
-                  jobs={studentApplications}
-                  student={student}
-                  handleViewComments={handleViewComments}
-                  user={user}
-                />
+                <Box
+                  sx={{
+                    p: 3
+                  }}
+                >
+                  <MasterList
+                    themeMode={themeMode}
+                    searchJobs={studentApplications}
+                    jobs={studentApplications}
+                    student={student}
+                    handleViewComments={handleViewComments}
+                    user={user}
+                    setSearchJobs={setSearchJobs}
+                  />
+                </Box>
               </Box>}
+            <div id='studentApplications' />
           </Grid>
         </Grid>
       </Grid >

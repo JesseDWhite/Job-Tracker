@@ -2,13 +2,13 @@ import React from 'react';
 import {
   TextField,
   Button,
-  Typography,
   Box,
 } from '@mui/material';
 import {
   updateDoc,
   doc,
 } from 'firebase/firestore';
+import { THEME } from '../../Layout/Theme';
 
 const ResumeUpload = (props) => {
 
@@ -20,7 +20,8 @@ const ResumeUpload = (props) => {
     userReference,
     currentUser,
     handleClose,
-    getJobs
+    getJobs,
+    themeMode
   } = props;
 
   const handleInputChange = (e) => {
@@ -83,7 +84,7 @@ const ResumeUpload = (props) => {
             mt: 2
           }}
           type='submit'
-          variant='contained'
+          variant={THEME[themeMode].buttonStyle}
           color='info'
           fullWidth
         >

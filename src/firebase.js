@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from '@firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, logEvent } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, signInWithPopup, } from 'firebase/auth';
 import { getPerformance } from 'firebase/performance';
@@ -24,11 +24,13 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
+provider.addScope('https://www.googleapis.com/auth/documents.readonly')
 
 export const signInWithGoogle = () => {
   signInWithPopup(auth, provider)
     .then(result => {
       const name = result.user.displayName;
+      const credential = GoogleAuthProvider.credentialFromResult(result);
       console.log(`Welcome back ${name}!`)
     }).catch(error => {
       console.log(error.message);
