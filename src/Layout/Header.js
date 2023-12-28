@@ -210,9 +210,7 @@ const Header = (props) => {
                 : <NotificationsNoneRoundedIcon />
               }
             </IconButton>
-            {/* <IconButton sx={{ mr: 3 }} onClick={() => updatePreferrdTheme(currentUser.id)}> */}
             {renderThemeButton()}
-            {/* </IconButton> */}
             <Chip
               avatar={
                 <Avatar

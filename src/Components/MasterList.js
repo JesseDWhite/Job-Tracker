@@ -80,6 +80,31 @@ const MasterList = (props) => {
 
   const [aiLoading, setAiLoading] = useState(false);
 
+  const getWindowDimensions = () => {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+      width,
+      height
+    };
+  }
+
+  const useWindowDimensions = () => {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+  }
+
+  const { height, width } = useWindowDimensions();
+
   const getStatus = (status) => {
     if (status === 'Active') {
       return 'success';
@@ -887,7 +912,7 @@ const MasterList = (props) => {
         position: !student ? 'absolute' : 'relative',
         top: !student ? '50%' : null,
         left: !student ? '50%' : null,
-        transform: !student ? 'translate(-50%, -46%)' : null,
+        transform: !student ? height < 700 ? 'translate(-50%, -43%)' : 'translate(-50%, -45%)' : null,
       }}>
       {viewInterviewPrep || viewDetails ?
         <AnimateKeyframes
