@@ -579,18 +579,18 @@ const MasterList = (props) => {
                         ? handleViewComments(user.uid, job)
                         : handleViewComments(student.id, job)
                       }>
-                      <Badge color='error' overlap='circular' variant='dot'>
-                        <ListItemIcon>
+                      <ListItemIcon>
+                        <Badge color='error' variant='dot'>
                           <ForumTwoTone />
-                          <ListItemText
-                            sx={{
-                              pl: 2,
-                            }}
-                          >
-                            Comments
-                          </ListItemText>
-                        </ListItemIcon>
-                      </Badge>
+                        </Badge>
+                        <ListItemText
+                          sx={{
+                            pl: 2,
+                          }}
+                        >
+                          Comments
+                        </ListItemText>
+                      </ListItemIcon>
                     </MenuItem>
                     : <MenuItem
                       onClick={() => !student || Object.values(student).length === 0

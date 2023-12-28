@@ -387,9 +387,11 @@ const Profile = (props) => {
 
   useEffect(() => {
     getStudentsApplications();
-    setTimeout(() => {
-      document.getElementById('studentApplications').scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 1000);
+    if (viewStudent.length) {
+      setTimeout(() => {
+        document.getElementById('studentApplications').scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 700);
+    }
   }, [viewStudent]);
 
   const determineModelContents = () => {
