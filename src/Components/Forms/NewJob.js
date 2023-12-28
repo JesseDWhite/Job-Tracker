@@ -408,9 +408,10 @@ const NewJob = (props) => {
       };
     };
     const newYourScore = scoreArrray.length;
-    const percentage = jobDescription.length > 0
+    let percentage = jobDescription.length > 0
       ? newYourScore / newTotalScore * 100
       : 0;
+    if (percentage > 100) percentage = 100;
 
     return parseInt(percentage.toFixed(0));
   }
