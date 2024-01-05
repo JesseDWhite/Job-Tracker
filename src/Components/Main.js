@@ -297,6 +297,9 @@ const Main = () => {
         setCurrentUser({ ...userData, defaultUserParams });
         await updateDoc(doc(userReference, userData.id), defaultUserParams);
       }
+    } else {
+      setCurrentUser({ ...userData, defaultUserParams });
+      await updateDoc(doc(userReference, userData.id), defaultUserParams);
     }
   }
 

@@ -24,13 +24,11 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 const provider = new GoogleAuthProvider();
-provider.addScope('https://www.googleapis.com/auth/documents.readonly')
 
 export const signInWithGoogle = () => {
   signInWithPopup(auth, provider)
     .then(result => {
       const name = result.user.displayName;
-      const credential = GoogleAuthProvider.credentialFromResult(result);
       console.log(`Welcome back ${name}!`)
     }).catch(error => {
       console.log(error.message);

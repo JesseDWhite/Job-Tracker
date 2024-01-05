@@ -38,7 +38,8 @@ import {
   MoreVert,
   UploadFileTwoTone,
   ForumTwoTone,
-  EditTwoTone
+  EditTwoTone,
+  DeleteTwoTone
 } from '@mui/icons-material';
 import {
   collection,
@@ -261,6 +262,20 @@ const Profile = (props) => {
       title: 'Uploaded',
       message: `Access Token submitted. Make sure your account admin has added you to the network and refresh your page.`
     });
+    setAddToken(false);
+  }
+
+  const deleteAccessToken = async () => {
+    const docToUpdate = doc(userReference, currentUser.id);
+    await updateDoc(docToUpdate, { accessToken: '' });
+    setFeedback({
+      ...feedback,
+      open: true,
+      type: 'error',
+      title: 'Removed',
+      message: `Your access token has successfully been removed and you no longer have access to ${currentUser.organization}.`
+    });
+    setAccessToken('');
     setAddToken(false);
   }
 
@@ -636,7 +651,7 @@ const Profile = (props) => {
                   spacing={2}
                 >
                   {addToken
-                    ? <Grid item sm={10}>
+                    ? <Grid item sm={9}>
                       <TextField
                         label="Access Token"
                         variant="outlined"
@@ -667,9 +682,21 @@ const Profile = (props) => {
                   </Grid>
                   <Grid item sm={1}>
                     {addToken &&
-                      <Tooltip title='Cancel'>
+                      <Tooltip title='Delete Token'>
                         <IconButton
                           color='error'
+                          disabled={accessToken ? false : true}
+                          onClick={() => deleteAccessToken()}>
+                          <DeleteTwoTone />
+                        </IconButton>
+                      </Tooltip>
+                    }
+                  </Grid>
+                  <Grid item sm={1}>
+                    {addToken &&
+                      <Tooltip title='Cancel'>
+                        <IconButton
+                          // color='error'
                           onClick={() => ((setAddToken(false), setAccessToken(backupToken)))}>
                           <HighlightOffTwoTone />
                         </IconButton>

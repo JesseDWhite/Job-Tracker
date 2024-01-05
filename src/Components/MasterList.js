@@ -250,6 +250,20 @@ const MasterList = (props) => {
     } else return 'A+'
   }
 
+  const getScoreColor = (score) => {
+    if (score < 20) {
+      return '#FF3D00'
+    } else if (score >= 20 && score < 40) {
+      return '#FF9100'
+    } else if (score >= 40 && score < 60) {
+      return '#FFC400'
+    } else if (score >= 60 && score < 80) {
+      return '#CDDC39'
+    } else if (score >= 80 && score < 90) {
+      return '#64DD17'
+    } else return '#00C853'
+  }
+
   const renderMessage = () => {
     if (viewDetails) {
       return (
@@ -301,7 +315,11 @@ const MasterList = (props) => {
                         fontSize: '1.75em',
                       }}
                     >
-                      {jobToView.company}{` - ${getGrade(jobToView.score)}`}
+                      {jobToView.company} - <span style={{
+                        color: getScoreColor(jobToView.score),
+                      }}>
+                        {getGrade(jobToView.score)}
+                      </span>
                     </Typography>
                     {renderStatus(jobToView)}
                   </Grid>
@@ -581,21 +599,23 @@ const MasterList = (props) => {
                     </ListItemText>
                   </ListItemIcon>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => handleViewInterviewPrep(job.id)}
-                >
-                  <ListItemIcon>
-                    <AutoAwesomeTwoTone />
-                    <ListItemText
-                      sx={{
-                        pl: 2,
-                      }}
-                    >
-                      Interview Prep
-                    </ListItemText>
-                  </ListItemIcon>
-                </MenuItem>
-                {currentUser?.organization !== 'Personal'
+                {'Personal' !== currentUser.organization &&
+                  <MenuItem
+                    onClick={() => handleViewInterviewPrep(job.id)}
+                  >
+                    <ListItemIcon>
+                      <AutoAwesomeTwoTone />
+                      <ListItemText
+                        sx={{
+                          pl: 2,
+                        }}
+                      >
+                        Interview Prep
+                      </ListItemText>
+                    </ListItemIcon>
+                  </MenuItem>
+                }
+                {'Personal' !== currentUser.organization
                   ? job.lastResponseFrom
                     && job.lastResponseFrom !== user.uid
                     && job.unreadMessages > 0 ?
