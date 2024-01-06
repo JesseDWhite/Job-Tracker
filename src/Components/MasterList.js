@@ -563,7 +563,7 @@ const MasterList = (props) => {
               aria-label='options'
               {...bindTrigger(popupState)}
             >
-              {currentUser?.organization !== 'Personal'
+              {'Personal' !== currentUser.organization
                 && job.lastResponseFrom
                 && job.lastResponseFrom !== user.uid
                 && job.unreadMessages > 0

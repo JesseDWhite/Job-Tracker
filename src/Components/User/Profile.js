@@ -1057,6 +1057,7 @@ const Profile = (props) => {
                     handleViewComments={handleViewComments}
                     user={user}
                     setSearchJobs={setSearchJobs}
+                    currentUser={currentUser}
                   />
                 </Box>
               </Box>}
