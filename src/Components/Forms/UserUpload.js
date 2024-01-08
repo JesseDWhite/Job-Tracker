@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -63,12 +63,27 @@ const UserUpload = (props) => {
 
   const [cohort, setCohort] = useState('');
 
+  const [advisors, setAdvisors] = useState([]);
+
   const subCollection = collection(organizationReference, `${organization.accessToken}/approvedUsers`);
 
   const handleSelectChange = (e) => {
     setCohort(e.target.value);
     getUsersToEdit(e.target.value);
   }
+
+  const getAdvisors = async () => {
+    const q = query(subCollection, where('cohort', '==', 'Advisors'));
+    const qSnapShot = await getDocs(q);
+    const qResults = qSnapShot.docs.map((advisor) => ({
+      ...advisor.data(), id: advisor.id
+    }));
+    setAdvisors(qResults);
+  }
+
+  useEffect(() => {
+    getAdvisors();
+  }, []);
 
   const getLastYear = () => {
     const today = new Date();
@@ -195,11 +210,13 @@ const UserUpload = (props) => {
       });
     } else {
       const newFormValues = [...formValues];
-      newFormValues.splice(idx, 1);
-      setFormValues(newFormValues);
-      if (editing) {
-        await deleteDoc(doc(subCollection, id));
+      if (newFormValues.length > 1) {
+        newFormValues.splice(idx, 1);
+        setFormValues(newFormValues);
+      } else {
+        setFormValues([initialValues]);
       }
+      if (editing) await deleteDoc(doc(subCollection, id));
     }
   }
 
@@ -248,7 +265,8 @@ const UserUpload = (props) => {
           justifyContent="start"
           alignItems="center"
           sx={{
-            mb: 2
+            mb: 2,
+            width: '100%'
           }}
         >
           <Button
@@ -312,142 +330,145 @@ const UserUpload = (props) => {
           </Grid>
         </Grid>
       }
-      <Grid display='flex'>
-        <form action="#" method='POST' onSubmit={(e) => addUserList(e)}>
-          <Grid
-            container
-            direction="row"
-            justifyContent="start"
-            alignItems="start"
-            spacing={3}
-          >
-            {formValues.map((entry, idx) => {
-              return (
-                <Grid sm={6} item>
-                  <Typography>
-                    <IconButton color='error' disabled={editing ? false : formValues.length > 1 ? false : true} onClick={() => deleteEntry(idx, entry.id)}>
-                      <DeleteTwoToneIcon />
-                    </IconButton>
-                    User # {idx + 1}
-                  </Typography>
-                  <TextField
-                    sx={{
-                      mb: 2,
-                      zIndex: 0
-                    }}
-                    autoFocus
-                    type='text'
-                    name='name'
-                    label='Name'
+      <form action="#" method='POST' onSubmit={(e) => addUserList(e)}>
+        <Grid
+          container
+          direction="row"
+          justifyContent="start"
+          alignItems="start"
+          spacing={3}
+        >
+          {formValues.map((entry, idx) => {
+            return (
+              <Grid sm={6} item>
+                <Typography>
+                  <IconButton color='error' disabled={editing ? false : formValues.length > 1 ? false : true} onClick={() => deleteEntry(idx, entry.id)}>
+                    <DeleteTwoToneIcon />
+                  </IconButton>
+                  User # {idx + 1}
+                </Typography>
+                <TextField
+                  sx={{
+                    mb: 2,
+                    zIndex: 0,
+                  }}
+                  autoFocus
+                  type='text'
+                  name='name'
+                  label='Name'
+                  onChange={(e) => handleInputChange(e, idx)}
+                  value={entry.name}
+                  fullWidth
+                  size='small'
+                />
+                <TextField
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  required
+                  type='text'
+                  name='email'
+                  label='Email'
+                  onChange={(e) => handleInputChange(e, idx)}
+                  value={entry.email}
+                  fullWidth
+                  size='small'
+                />
+                <FormControl
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  size='small'
+                  fullWidth>
+                  <InputLabel>Role</InputLabel>
+                  <Select
+                    name='role'
+                    label='Role'
                     onChange={(e) => handleInputChange(e, idx)}
-                    value={entry.name}
-                    fullWidth
-                    size='small'
-                  />
-                  <TextField
-                    sx={{
-                      mb: 2,
-                      zIndex: 0
-                    }}
-                    required
-                    type='text'
-                    name='email'
-                    label='Email'
+                    value={entry.role}
+                  >
+                    <MenuItem value='Student'>Student</MenuItem>
+                    <MenuItem value='Alumni'>Alumni</MenuItem>
+                    <MenuItem value='Advisor'>Advisor</MenuItem>
+                    <MenuItem value='Admin'>Admin</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl
+                  sx={{
+                    mb: 2,
+                    zIndex: 0
+                  }}
+                  required
+                  size='small'
+                  fullWidth>
+                  <InputLabel>Cohort</InputLabel>
+                  <Select
+                    name='cohort'
+                    label='Cohort'
+                    value={entry.cohort}
                     onChange={(e) => handleInputChange(e, idx)}
-                    value={entry.email}
-                    fullWidth
-                    size='small'
-                  />
-                  <FormControl
-                    sx={{
-                      mb: 2,
-                      zIndex: 0
-                    }}
-                    size='small'
-                    fullWidth>
-                    <InputLabel>Role</InputLabel>
-                    <Select
-                      name='role'
-                      label='Role'
-                      onChange={(e) => handleInputChange(e, idx)}
-                      value={entry.role}
-                    >
-                      <MenuItem value='Student'>Student</MenuItem>
-                      <MenuItem value='Alumni'>Alumni</MenuItem>
-                      <MenuItem value='Advisor'>Advisor</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl
-                    sx={{
-                      mb: 2,
-                      zIndex: 0
-                    }}
-                    required
-                    size='small'
-                    fullWidth>
-                    <InputLabel>Cohort</InputLabel>
-                    <Select
-                      name='cohort'
-                      label='Cohort'
-                      value={entry.cohort}
-                      onChange={(e) => handleInputChange(e, idx)}
-                    >
-                      {getLastYear().map(cohort => {
-                        return (
-                          <MenuItem value={cohort}>{cohort}</MenuItem>
-                        )
-                      })}
-                    </Select>
-                  </FormControl>
-                  <TextField
-                    fullWidth
-                    sx={{
-                      mb: 2,
-                      zIndex: 0
-                    }}
-                    type='text'
+                  >
+                    {getLastYear().map(cohort => {
+                      return <MenuItem key={cohort} value={cohort}>{cohort}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+                <FormControl
+                  sx={{
+                    mb: 2,
+                    zIndex: 0,
+                  }}
+                  size='small'
+                  fullWidth>
+                  <InputLabel>Advisor</InputLabel>
+                  <Select
                     name='advisor'
                     label='Advisor'
                     onChange={(e) => handleInputChange(e, idx)}
                     value={entry.advisor}
-                    size='small'
-                  />
-                </Grid>
-              )
-            })}
+                  >
+                    {advisors.map(adv => {
+                      return <MenuItem key={adv.id} value={adv.name}>{adv.name}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )
+          })}
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="start"
+          spacing={3}
+        >
+          <Grid item sm={6}>
+            <Button
+              fullWidth
+              variant={THEME[themeMode].buttonStyle}
+              color='success'
+              type='button'
+              disabled={editing || loading ? true : false}
+              onClick={() => addNewEntry()}
+            >
+              Add Entry
+            </Button>
           </Grid>
-          <Grid
-            container
-            direction="row"
-            justifyContent="center"
-            alignItems="start"
-            spacing={3}
-          >
-            <Grid item sm={6}>
-              <Button
-                fullWidth
-                variant={THEME[themeMode].buttonStyle}
-                color='success'
-                type='button'
-                disabled={editing || loading ? true : false}
-                onClick={() => addNewEntry()}
-              >
-                Add Entry
-              </Button>
-            </Grid>
-            <Grid item sm={6}>
-              <Button
-                type='submit'
-                variant={THEME[themeMode].buttonStyle}
-                fullWidth
-                disabled={loading}
-              >
-                Submit
-              </Button>
-            </Grid>
+          <Grid item sm={6}>
+            <Button
+              type='submit'
+              variant={THEME[themeMode].buttonStyle}
+              fullWidth
+              disabled={loading}
+            >
+              Submit
+            </Button>
           </Grid>
-        </form>
-      </Grid>
+        </Grid>
+      </form>
     </Box>
   );
 }
