@@ -1,0 +1,1 @@
+<h1><a href='https://nomorecoverletter.com/'>nomorecoverletter.com</a></h1>
