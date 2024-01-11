@@ -17,7 +17,7 @@ export const THEME = {
     backgroundColor: 'black',
     chipColor: 'secondary',
     buttonStyle: 'outlined',
-    border: '1px solid white'
+    border: '2px solid white'
   },
   lightMode: {
     header: '#ECEFF1',

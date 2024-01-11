@@ -199,6 +199,7 @@ const Details = (props) => {
                     borderRadius: 5,
                     background: THEME[themeMode].subCard,
                     transition: 'color .5s, background .5s',
+                    border: THEME[themeMode].border
                   }}
                 >
                   <Grid
@@ -262,6 +263,7 @@ const Details = (props) => {
                     borderRadius: 5,
                     background: THEME[themeMode].subCard,
                     transition: 'color .5s, background .5s',
+                    border: THEME[themeMode].border
                   }}
                 >
                   <Typography
@@ -337,6 +339,7 @@ const Details = (props) => {
                     borderRadius: 5,
                     background: THEME[themeMode].subCard,
                     transition: 'color .5s, background .5s',
+                    border: THEME[themeMode].border
                   }}
                 >
                   <Typography sx={{ fontWeight: 'bold', fontSize: '1.15rem', textAlign: 'center' }}>Their Hard Skills</Typography>
@@ -368,6 +371,7 @@ const Details = (props) => {
                     borderRadius: 5,
                     background: THEME[themeMode].subCard,
                     transition: 'color .5s, background .5s',
+                    border: THEME[themeMode].border
                   }}
                 >
                   <Typography sx={{ fontWeight: 'bold', fontSize: '1.15rem', textAlign: 'center' }}>Your Hard Skills</Typography>
@@ -399,6 +403,7 @@ const Details = (props) => {
                     borderRadius: 5,
                     background: THEME[themeMode].subCard,
                     transition: 'color .5s, background .5s',
+                    border: THEME[themeMode].border
                   }}
                 >
                   <Typography sx={{ fontWeight: 'bold', fontSize: '1.15rem', textAlign: 'center' }}>Interview Prep Questions</Typography>

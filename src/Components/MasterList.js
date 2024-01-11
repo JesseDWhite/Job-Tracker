@@ -32,6 +32,7 @@ import {
   MenuRounded,
   Check,
   Close,
+  AccessTimeTwoTone,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
 import { storage } from '../firebase';
@@ -290,6 +291,14 @@ const MasterList = (props) => {
     )
   };
 
+  const getStatusIcon = (status) => {
+    let icon = <CheckCircleTwoTone color='success' />;
+    if (status === 'Closed') icon = <DoNotDisturbOnTwoTone color='error' />;
+    if (status === 'Other') icon = <HelpTwoTone color='warning' />;
+    if (status === 'Interview') icon = <AccessTimeTwoTone color='secondary' />;
+    return icon;
+  }
+
   const renderStatus = (job) => {
     return (
       <PopupState variant="popover">
@@ -303,7 +312,7 @@ const MasterList = (props) => {
               variant={THEME[themeMode].buttonStyle}
               color={getStatus(job.status)}
               {...bindTrigger(popupState)}
-
+              icon={getStatusIcon(job.status)}
             />
             <Menu
               id='status-menu'
@@ -335,7 +344,7 @@ const MasterList = (props) => {
                   onClick={() => updateJobStatus(job.id, 'Interview')}
                 >
                   <ListItemIcon>
-                    <WorkTwoTone color='secondary' />
+                    <AccessTimeTwoTone color='secondary' />
                     <ListItemText
                       sx={{
                         pl: 2,
