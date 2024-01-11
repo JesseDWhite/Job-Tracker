@@ -70,6 +70,8 @@ const Header = (props) => {
 
   //Set the loading bar progress depending on the state of loading. Totally fake bar, don't believe it.
   useEffect(() => {
+    setProgress(0);
+    setProgressColor('info');
     if (!loading) {
       setProgress(100);
       setTimeout(() => { setProgressColor('primary') }, 500);
@@ -80,7 +82,7 @@ const Header = (props) => {
           let buffer = 25;
           if (oldProgress > 60 && oldProgress < 80) {
             buffer = 5;
-          } else if (oldProgress > 80) {
+          } else if (oldProgress >= 80) {
             buffer = 1;
           }
           const diff = Math.random() * buffer;

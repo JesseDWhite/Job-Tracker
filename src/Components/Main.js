@@ -640,6 +640,7 @@ const Main = () => {
                 >
                   <MasterList
                     loading={loading}
+                    setLoading={setLoading}
                     themeMode={themeMode}
                     searchJobs={searchJobs}
                     setSearchJobs={setSearchJobs}

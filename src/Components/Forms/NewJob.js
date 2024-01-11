@@ -18,7 +18,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   CircularProgress,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
 import { Check, Close, Http } from '@mui/icons-material';
 import {
@@ -30,6 +30,11 @@ import { KEYWORDS } from '../../Constants/Keywords';
 import format from 'date-fns/format';
 import strCompare from 'str-compare';
 import { THEME } from '../../Layout/Theme';
+import { storage } from '../../firebase';
+import { ref, uploadBytes } from 'firebase/storage';
+import { v4 } from 'uuid';
+import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
+import FolderIcon from '@mui/icons-material/Folder';
 
 const NewJob = (props) => {
 
@@ -92,18 +97,27 @@ const NewJob = (props) => {
     missingKeyWords: editing ? jobToEdit.missingKeyWords : [],
     score: editing ? jobToEdit.score : 0,
     user: editing ? jobToEdit.user : '',
-    interviewPrep: [],
-    jobHardSkills: [],
-    jobSoftSkills: [],
-    personalHardSkills: [],
-    personalSoftSkills: []
+    interviewPrep: editing ? jobToEdit.interviewPrep : [],
+    jobHardSkills: editing ? jobToEdit.jobHardSkills : [],
+    jobSoftSkills: editing ? jobToEdit.jobSoftSkills : [],
+    personalHardSkills: editing ? jobToEdit.personalHardSkills : [],
+    personalSoftSkills: editing ? jobToEdit.personalSoftSkills : [],
+    resumeFile: editing ? jobToEdit?.resumeFile : '',
+    coverLetterFile: editing ? jobToEdit?.coverLetterFile : '',
   }
+
+  // const initialFiles = {
+  //   resumeFile: editing ? jobToEdit?.resumeFile : '',
+  //   coverLetterFile: editing ? jobToEdit?.coverLetterFile : '',
+  // }
 
   const [formValues, setFormValues] = useState(initialValues);
 
   const [open, setOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  // const [file, setFile] = useState(initialFiles);
 
   useEffect(() => {
     if (editing) { setStatus(jobToEdit.status); }
@@ -161,12 +175,20 @@ const NewJob = (props) => {
     });
   };
 
+  // const handleFileChange = (e) => {
+  //   const { name, files } = e.target;
+  //   setFile({
+  //     ...file,
+  //     [name]: files[0]
+  //   });
+  // };
+
   const handleToggleChange = (e, newStatus) => {
     setStatus(newStatus);
     setFormValues({
       ...formValues,
       status: newStatus
-    })
+    });
   }
 
   const getToggleButtonColor = (status) => {
@@ -244,7 +266,7 @@ const NewJob = (props) => {
         jobSoftSkills: formValues.jobSoftSkills,
         personalHardSkills: formValues.personalHardSkills,
         personalSoftSkills: formValues.personalSoftSkills,
-        interviewPrep: formValues.interviewPrep
+        interviewPrep: formValues.interviewPrep,
       });
     } else {
       await addDoc(subCollection, {
@@ -271,86 +293,15 @@ const NewJob = (props) => {
         jobSoftSkills: formValues.jobSoftSkills,
         personalHardSkills: formValues.personalHardSkills,
         personalSoftSkills: formValues.personalSoftSkills,
-        interviewPrep: formValues.interviewPrep
-      })
+        interviewPrep: formValues.interviewPrep,
+        // resumeFile: null !== file.resumeFile ? uploadResume(file.resumeFile) : '',
+        // coverLetterFile: null !== file.coverLetterFile ? uploadCoverLetter(file.coverLetterFile) : ''
+      });
     }
     getJobs();
     setEditing(false);
     setFormValues(initialValues);
   };
-
-  // const getSkillz = async (prompt) => {
-  //   try {
-  //     const user_token = currentUser.internalId;
-  //     if (user_token) {
-  //       // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
-  //       const keywordRequest = await fetch(`http://localhost:8000/${user_token}/extract_keywords/`, {
-  //         method: 'POST',
-  //         mode: "cors",
-  //         headers: {
-  //           'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({ data: prompt }),
-  //       });
-
-  //       const skillz = await keywordRequest.json();
-  //       const skillzObject = JSON.parse(skillz);
-  //       return skillzObject;
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message)
-  //   }
-  // };
-
-  // const getInterviewPrepQuestions = async (prompt) => {
-  //   try {
-  //     const user_token = currentUser.internalId;
-  //     if (user_token) {
-  //       // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
-  //       const keywordRequest = await fetch(`http://localhost:8000/${user_token}/interview_prep/`, {
-  //         method: 'POST',
-  //         mode: "cors",
-  //         headers: {
-  //           'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({ data: prompt }),
-  //       });
-
-  //       const prepQuestions = await keywordRequest.json();
-  //       const prepQuestionsObject = JSON.parse(prepQuestions);
-  //       console.log(prepQuestions, prepQuestionsObject)
-  //       return prepQuestionsObject.interview_prep;
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message)
-  //   }
-  // };
-
-  // const getGoogleDocText = async (prompt) => {
-  //   try {
-  //     const user_token = currentUser.internalId;
-  //     if (user_token) {
-  //       const docUrl = prompt.match(/\/d\/(.+)\//);
-  //       const payload = JSON.stringify({ data: docUrl[1] });
-  //       console.log(payload)
-  //       // const chatResponse = await fetch('https://openai-api-psi.vercel.app/chat/', {
-  //       const docRequest = await fetch(`http://localhost:8000/${user_token}/get_document_text/`, {
-  //         method: 'POST',
-  //         mode: "cors",
-  //         headers: {
-  //           'Content-Type': 'application/json'
-  //         },
-  //         body: payload,
-  //       });
-
-  //       const docJson = await docRequest.json();
-  //       const docText = JSON.parse(docJson);
-  //       console.log(docJson, docText)
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message)
-  //   }
-  // };
 
   const extractKeyWords = (doc) => {
     let matches = [];
@@ -433,7 +384,22 @@ const NewJob = (props) => {
       setResumeKeywords([]);
       setCoverLetterKeywords([]);
       setJobPostingKeywords([]);
+      // setFile({});
     }, 500);
+  }
+
+  const uploadResume = (doc) => {
+    const docName = doc.name + v4();
+    const fileRef = ref(storage, `resumes/${docName}`);
+    uploadBytes(fileRef, doc);
+    return 'resumes/' + docName;
+  }
+
+  const uploadCoverLetter = (doc) => {
+    const docName = doc.name + v4();
+    const fileRef = ref(storage, `coverLetters/${docName}`);
+    uploadBytes(fileRef, doc);
+    return 'coverLetters/' + docName;
   }
 
   return (
@@ -571,6 +537,9 @@ const NewJob = (props) => {
                 }}
               />
               <TextField
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><Http /></InputAdornment>
+                }}
                 sx={{
                   mb: 2,
                   zIndex: 0
@@ -606,7 +575,7 @@ const NewJob = (props) => {
                   startAdornment: <InputAdornment position="start"><Http /></InputAdornment>
                 }}
                 sx={{
-                  // mb: 2,
+                  mb: 2,
                   zIndex: 0
                 }}
                 size='small'
@@ -618,6 +587,38 @@ const NewJob = (props) => {
                 helperText={error.coverLetterLink ? "This doesn't look like a valid url." : false}
                 value={formValues.coverLetterLink}
               />
+              {/* <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="start"
+                spacing={2}
+              >
+                <Grid sm={6} item>
+                  <Button
+                    startIcon={file.resumeFile ? <FolderIcon /> : <FolderOutlinedIcon />}
+                    component='label'
+                    variant={THEME[themeMode].buttonStyle}
+                    fullWidth
+                    color='info'
+                  >
+                    <input hidden type="file" name='resumeFile' accept="application/pdf" onChange={handleFileChange} />
+                    Resume
+                  </Button>
+                </Grid>
+                <Grid sm={6} item>
+                  <Button
+                    startIcon={file.coverLetterFile ? <FolderIcon /> : <FolderOutlinedIcon />}
+                    component='label'
+                    variant={THEME[themeMode].buttonStyle}
+                    fullWidth
+                    color='info'
+                  >
+                    <input hidden type="file" name='coverLetterFile' accept="application/pdf" onChange={handleFileChange} />
+                    Cover Letter
+                  </Button>
+                </Grid>
+              </Grid> */}
             </Grid>
             <Grid xl={6} item>
               <Typography variant='h4' sx={{ textAlign: 'center', mb: 2 }}>Grade Application</Typography>
@@ -725,49 +726,66 @@ const NewJob = (props) => {
               />
             </Grid>
           </Grid>
-          <Button
-            sx={{
-              fontSize: 18,
-              mt: 4
-            }}
-            type='submit'
-            color='primary'
-            variant={THEME[themeMode].buttonStyle}
-            disabled={loading}
-            fullWidth
+          <Grid
+            container
+            spacing={2}
           >
-            {editing ? `Update ${formValues.company}` : 'ADD TO LIST'}
-            {loading && <CircularProgress
-              color='success'
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-16px',
-                marginLeft: '-16px',
-              }}
-              disableShrink
-              size='2rem'
-              thickness={7}
-            />}
-          </Button>
-          {editing
-            ? <Button
-              sx={{
-                mt: 2
-              }}
-              type='button'
-              variant={THEME[themeMode].buttonStyle}
-              color='error'
-              fullWidth
-              disabled={loading}
-              onClick={() => ((setEditing(!editing), handleSetOpen(false)))}
+            <Grid
+              item
+              sm={editing ? 6 : 12}
             >
-              Cancel
-            </Button>
-            : null
-          }
-        </form >
+              <Button
+                sx={{
+                  fontSize: 18,
+                  mt: 4
+                }}
+                type='submit'
+                color='primary'
+                variant={THEME[themeMode].buttonStyle}
+                disabled={loading}
+                fullWidth
+              >
+                {editing ? 'Update' : 'ADD TO LIST'}
+                {loading && <CircularProgress
+                  color='success'
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-16px',
+                    marginLeft: '-16px',
+                  }}
+                  disableShrink
+                  size='2rem'
+                  thickness={7}
+                />}
+              </Button>
+            </Grid>
+            {editing
+              ?
+              <Grid
+                item
+                sm={6}
+              >
+                <Button
+                  sx={{
+                    mt: 4,
+                    fontSize: 18,
+                  }}
+                  type='button'
+                  variant={THEME[themeMode].buttonStyle}
+                  color='error'
+                  fullWidth
+                  disabled={loading}
+                  onClick={() => ((setEditing(!editing), handleSetOpen(false)))}
+                >
+                  Cancel
+                </Button>
+              </Grid>
+              : null
+            }
+          </Grid>
+        </form>
       </Grid>
     </>
   );

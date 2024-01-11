@@ -1046,7 +1046,7 @@ const Profile = (props) => {
                 </Grid>
                 <Box
                   sx={{
-                    p: 3
+                    pb: 3
                   }}
                 >
                   <MasterList

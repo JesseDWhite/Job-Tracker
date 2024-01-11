@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import { getAnalytics, logEvent } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, signInWithPopup, } from 'firebase/auth';
 import { getPerformance } from 'firebase/performance';
@@ -22,6 +23,7 @@ logEvent(analytics, 'login');
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 const provider = new GoogleAuthProvider();
 
