@@ -988,62 +988,6 @@ const Profile = (props) => {
                   transition: 'color .5s',
                   color: THEME[themeMode].textColor,
                 }}>
-                <Grid
-                  container
-                  justifyContent='center'
-                  alignItems='center'
-                  direction="row"
-                >
-                  <Paper
-                    elevation={3}
-                    sx={{
-                      borderRadius: 5,
-                      p: 3,
-                      mb: 3,
-                      width: 500,
-                      transition: 'color .5s, background .5s',
-                      background: THEME[themeMode].card,
-                      color: THEME[themeMode].textColor,
-                      textAlign: 'center',
-                      position: 'relative',
-                      border: THEME[themeMode].border
-                    }}
-                  >
-                    <Tooltip title='Close' placement='left'>
-                      <IconButton
-                        size='large'
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          right: 0,
-                          mr: 1.5,
-                          mt: 1.5
-                        }}
-                        onClick={() => handleViewStudentClose()}
-                      >
-                        <CancelTwoTone fontSize='inherit' />
-                      </IconButton>
-                    </Tooltip>
-                    <Chip
-                      avatar={<Avatar>{student.totalApplications}</Avatar>}
-                      label='Total Applications'
-                      variant={THEME[themeMode].buttonStyle}
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        ml: 3,
-                        mt: 3,
-                        cursor: 'default'
-                      }}
-                    />
-                    <Box>
-                      <img src={student.profilePhoto} alt={student.name} style={{ borderRadius: '100%', width: 100 }} />
-                    </Box>
-                    <Typography variant='p' textAlign='center'>Currently Viewing</Typography>
-                    <Typography variant='h5' textAlign='center'>{student.name}</Typography>
-                  </Paper>
-                </Grid>
                 <Box
                   sx={{
                     pb: 3
@@ -1058,6 +1002,7 @@ const Profile = (props) => {
                     user={user}
                     setSearchJobs={setSearchJobs}
                     currentUser={currentUser}
+                    handleViewStudentClose={handleViewStudentClose}
                   />
                 </Box>
               </Box>}

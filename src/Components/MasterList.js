@@ -30,8 +30,6 @@ import {
   VisibilityTwoTone,
   ForumTwoTone,
   MenuRounded,
-  Check,
-  Close,
   AccessTimeTwoTone,
 } from '@mui/icons-material';
 import format from 'date-fns/format';
@@ -62,7 +60,8 @@ const MasterList = (props) => {
     feedback,
     setFeedback,
     setJobs,
-    updateInterviewDate
+    updateInterviewDate,
+    handleViewStudentClose
   } = props;
 
   const [viewInterviewPrep, setViewInterviewPrep] = useState(false);
@@ -433,6 +432,7 @@ const MasterList = (props) => {
           label={params.row.status}
           variant={THEME[themeMode].buttonStyle}
           color={getStatus(params.row.status)}
+          icon={getStatusIcon(params.row.status)}
         />
       }
     },
@@ -587,8 +587,20 @@ const MasterList = (props) => {
             "opacity: 1",
           ]}
         >
-          {!student &&
-            <>
+          {student ?
+            <Chip
+              sx={{
+                zIndex: 10,
+                position: 'absolute',
+                top: 20,
+                left: 20
+              }}
+              variant={THEME[themeMode].buttonStyle}
+              onDelete={() => handleViewStudentClose()}
+              label={student.name}
+              avatar={<Avatar src={student.profilePhoto} />}
+            />
+            : <>
               <Chip
                 sx={{
                   zIndex: 10,
