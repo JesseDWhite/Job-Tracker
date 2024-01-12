@@ -11,6 +11,7 @@ const SearchBar = (props) => {
   const {
     jobs,
     setSearchJobs,
+    width
   } = props;
 
   const [searchString, setSearchString] = useState('');
@@ -34,7 +35,7 @@ const SearchBar = (props) => {
   return (
     <TextField
       sx={{
-        width: '20%',
+        width: width < 600 ? '70%' : '20%',
       }}
       size='small'
       label='Search Companies'

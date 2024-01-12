@@ -49,7 +49,8 @@ const NewJob = (props) => {
     feedback,
     setFeedback,
     themeMode,
-    currentUser
+    currentUser,
+    width
   } = props;
 
   const modalStyle = {
@@ -57,7 +58,7 @@ const NewJob = (props) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: width < 600 ? '80%' : 400,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
@@ -632,6 +633,7 @@ const NewJob = (props) => {
                 <Grid
                   item
                   sm={8}
+                  xs={12}
                 >
                   <Tooltip
                     placement='left'
@@ -654,6 +656,7 @@ const NewJob = (props) => {
                 <Grid
                   item
                   sm={4}
+                  xs={12}
                 >
                   <Button
                     sx={{
@@ -729,15 +732,18 @@ const NewJob = (props) => {
           <Grid
             container
             spacing={2}
+            sx={{
+              mt: 2
+            }}
           >
             <Grid
               item
               sm={editing ? 6 : 12}
+              xs={12}
             >
               <Button
                 sx={{
                   fontSize: 18,
-                  mt: 4
                 }}
                 type='submit'
                 color='primary'
@@ -765,11 +771,11 @@ const NewJob = (props) => {
               ?
               <Grid
                 item
+                xs={12}
                 sm={6}
               >
                 <Button
                   sx={{
-                    mt: 4,
                     fontSize: 18,
                   }}
                   type='button'

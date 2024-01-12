@@ -79,7 +79,8 @@ const Profile = (props) => {
     feedback,
     handleViewComments,
     getJobs,
-    setSearchJobs
+    setSearchJobs,
+    width
   } = props;
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -103,7 +104,7 @@ const Profile = (props) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 750,
+    width: width < 600 ? '80%' : 750,
     maxHeight: '85%',
     minHeight: '10%',
     bgcolor: THEME[themeMode].card,
@@ -470,7 +471,7 @@ const Profile = (props) => {
           </Box>
         </Fade>
       </Modal>
-      <Grid display='flex' sx={{ ml: 3, mr: 3, pt: 12 }}>
+      <Grid display='flex' sx={{ ml: width <= 600 ? 1 : 3, mr: width <= 600 ? 1 : 3, pt: 12 }}>
         <Grid
           container
           direction="row"
@@ -478,15 +479,15 @@ const Profile = (props) => {
           alignItems="start"
           spacing={4}
         >
-          <Grid sm={6} xl={4} item>
+          <Grid xs={12} sm={6} xl={4} item>
             <Card
               elevation={3}
               sx={{
                 borderRadius: 5,
                 minHeight: '100%',
                 pt: 3,
-                pl: 3,
-                pr: 3,
+                pl: width <= 600 ? 1 : 3,
+                pr: width <= 600 ? 1 : 3,
                 pb: 1,
                 transition: 'color .5s, background .5s',
                 background: THEME[themeMode].card,
@@ -648,10 +649,14 @@ const Profile = (props) => {
                   container
                   direction="row"
                   justifyContent="center"
+                  alignItems='center'
                   spacing={2}
+                  sx={{
+                    textAlign: 'center'
+                  }}
                 >
                   {addToken
-                    ? <Grid item sm={9}>
+                    ? <Grid item xs={12} sm={9}>
                       <TextField
                         label="Access Token"
                         variant="outlined"
@@ -662,13 +667,13 @@ const Profile = (props) => {
                       />
                     </Grid>
                     : accessToken &&
-                    <Grid item sm={12}>
+                    <Grid item xs={12}>
                       <Typography sx={{ textAlign: 'center', color: 'gray' }}>
                         Access Token: {accessToken}
                       </Typography>
                     </Grid>
                   }
-                  <Grid item sm={1}>
+                  <Grid item xs={4} sm={1}>
                     {addToken &&
                       <Tooltip title='Upload Token'>
                         <IconButton
@@ -680,7 +685,7 @@ const Profile = (props) => {
                       </Tooltip>
                     }
                   </Grid>
-                  <Grid item sm={1}>
+                  <Grid item xs={4} sm={1}>
                     {addToken &&
                       <Tooltip title='Delete Token'>
                         <IconButton
@@ -692,11 +697,10 @@ const Profile = (props) => {
                       </Tooltip>
                     }
                   </Grid>
-                  <Grid item sm={1}>
+                  <Grid item xs={4} sm={1}>
                     {addToken &&
                       <Tooltip title='Cancel'>
                         <IconButton
-                          // color='error'
                           onClick={() => ((setAddToken(false), setAccessToken(backupToken)))}>
                           <HighlightOffTwoTone />
                         </IconButton>
@@ -860,10 +864,34 @@ const Profile = (props) => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid sm={12} xl={8} item>
-            <Analytics jobs={jobs} themeMode={themeMode} />
+          {(currentUser.role === 'Admin' || currentUser.role === 'Advisor') && width <= 1536
+            ? <Grid xs={12} sm={6} xl={4} item>
+              <Card
+                elevation={3}
+                sx={{
+                  borderRadius: 5,
+                  height: '100%',
+                  p: 3,
+                  transition: 'color .5s, background .5s',
+                  background: THEME[themeMode].card,
+                  color: THEME[themeMode].textColor,
+                  position: 'relative',
+                  border: THEME[themeMode].border
+                }}
+                container
+              >
+                <Typography variant='h5' textAlign='center'>Application Breakdown</Typography>
+                <hr />
+                <CardContent sx={{ height: '100%' }}>
+                  <DoughnutChart jobs={Object.keys(student).length !== 0 ? studentApplications : jobs} themeMode={themeMode} />
+                </CardContent>
+              </Card>
+            </Grid>
+            : null}
+          <Grid xs={12} xl={8} item>
+            <Analytics jobs={jobs} themeMode={themeMode} width={width} />
           </Grid>
-          <Grid sm={12} xl={8} item>
+          <Grid xs={12} xl={8} item>
             {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
               ?
               <Paper
@@ -939,11 +967,15 @@ const Profile = (props) => {
                       border: 'none',
                       "& ::-webkit-scrollbar": {
                         backgroundColor: 'rgba(0, 0, 0, 0)',
-                        width: '0.5em'
+                        width: '0.5em',
+                        height: '0.5em'
                       },
                       "& ::-webkit-scrollbar-thumb": {
                         backgroundColor: 'rgb(169, 169, 169)',
-                        borderRadius: '1em'
+                        borderRadius: '1em',
+                      },
+                      "& ::-webkit-scrollbar-corner": {
+                        backgroundColor: 'rgba(0, 0, 0, 0)'
                       }
                     }}
                     rows={cohortStudents}
@@ -958,7 +990,7 @@ const Profile = (props) => {
               : null
             }
           </Grid>
-          {currentUser.role === 'Admin' || currentUser.role === 'Advisor'
+          {(currentUser.role === 'Admin' || currentUser.role === 'Advisor') && width > 1536
             ? <Grid sm={6} xl={4} item>
               <Card
                 elevation={3}
@@ -975,13 +1007,14 @@ const Profile = (props) => {
                 container
               >
                 <Typography variant='h5' textAlign='center'>Application Breakdown</Typography>
+                <hr />
                 <CardContent sx={{ height: '100%' }}>
                   <DoughnutChart jobs={Object.keys(student).length !== 0 ? studentApplications : jobs} themeMode={themeMode} />
                 </CardContent>
               </Card>
             </Grid>
             : null}
-          <Grid item sx={{ width: '100%' }}>
+          <Grid item xs={12}>
             {Object.keys(student).length !== 0 &&
               <Box
                 sx={{
@@ -1009,7 +1042,7 @@ const Profile = (props) => {
             <div id='studentApplications' />
           </Grid>
         </Grid>
-      </Grid >
+      </Grid>
     </>
   )
 }

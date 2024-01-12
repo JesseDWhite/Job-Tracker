@@ -286,7 +286,7 @@ const MasterList = (props) => {
           </Box>
         )
         }
-      </PopupState >
+      </PopupState>
     )
   };
 
@@ -533,7 +533,7 @@ const MasterList = (props) => {
         background: THEME[themeMode].card,
         transition: 'color .5s, background .5s',
         height: '85vh',
-        width: '97vw',
+        width: !student ? '97vw' : '100%',
         position: !student ? 'absolute' : 'relative',
         top: !student ? '50%' : null,
         left: !student ? '50%' : null,
@@ -552,8 +552,8 @@ const MasterList = (props) => {
             onClick={() => handleClose()}
             sx={{
               position: 'absolute',
-              top: 10,
-              left: 10
+              top: width < 600 ? 5 : 10,
+              left: width < 600 ? 5 : 10
             }}
           >
             <CloseRounded />
@@ -576,6 +576,7 @@ const MasterList = (props) => {
             renderStatus={renderStatus}
             loading={loading}
             setLoading={setLoading}
+            width={width}
           />
         </AnimateKeyframes>
         :
@@ -634,7 +635,7 @@ const MasterList = (props) => {
               borderRadius: 5,
               transition: 'color .5s, background .5s',
               height: '75vh',
-              width: '97vw',
+              width: !student ? '97vw' : '100%',
               background: THEME[themeMode].card,
               pt: 8
             }}
@@ -649,12 +650,16 @@ const MasterList = (props) => {
                 borderBottom: 'none',
                 "& ::-webkit-scrollbar": {
                   backgroundColor: 'rgba(0, 0, 0, 0)',
-                  width: '0.5em'
+                  width: '0.5em',
+                  height: '0.5em'
                 },
                 "& ::-webkit-scrollbar-thumb": {
                   backgroundColor: 'rgb(169, 169, 169)',
                   borderRadius: '1em',
                 },
+                "& ::-webkit-scrollbar-corner": {
+                  backgroundColor: 'rgba(0, 0, 0, 0)'
+                }
               }}
               initialState={{
                 sorting: {

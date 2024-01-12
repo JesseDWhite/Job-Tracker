@@ -262,32 +262,37 @@ const UserUpload = (props) => {
         <Grid
           container
           direction="row"
-          justifyContent="start"
+          justifyContent="center"
           alignItems="center"
           sx={{
             mb: 2,
-            width: '100%'
           }}
+          spacing={2}
         >
-          <Button
-            variant={THEME[themeMode].buttonStyle}
-            component='label'
-            endIcon={<PeopleAltTwoToneIcon />}
-          >
-            <input type="file" onChange={(e) => handleFile(e)} accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' hidden />
-            Bulk Upload
-          </Button>
-          <Button
-            onClick={() => editing ? (setEditing(false), setFormValues([initialValues], setCohort(''))) : setEditing(true)}
-            variant={THEME[themeMode].buttonStyle}
-            endIcon={editing ? <CloseRoundedIcon /> : <EditTwoToneIcon />}
-            sx={{
-              ml: 5
-            }}
-          >
-            {editing ? 'Cancel' : 'Edit Existing'}
-          </Button>
-          {loading && <CircularProgress color='success' sx={{ ml: 2 }} disableShrink />}
+          <Grid item xs={12} sm={6}>
+            <Button
+              variant={THEME[themeMode].buttonStyle}
+              component='label'
+              endIcon={<PeopleAltTwoToneIcon />}
+              fullWidth
+            >
+              <input type="file" onChange={(e) => handleFile(e)} accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' hidden />
+              Bulk Upload
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button
+              onClick={() => editing ? (setEditing(false), setFormValues([initialValues], setCohort(''))) : setEditing(true)}
+              variant={THEME[themeMode].buttonStyle}
+              endIcon={editing ? <CloseRoundedIcon /> : <EditTwoToneIcon />}
+              fullWidth
+            >
+              {editing ? 'Cancel' : 'Edit Existing'}
+            </Button>
+            <Grid item xs={12}>
+              {loading && !editing ? <CircularProgress color='success' sx={{ ml: 2 }} disableShrink /> : null}
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
       {editing &&
@@ -297,9 +302,9 @@ const UserUpload = (props) => {
           direction="row"
           justifyContent="start"
           alignItems="center"
-          spacing={3}
+          spacing={2}
         >
-          <Grid item sm={6}>
+          <Grid item xs={10} sm={6}>
             <FormControl
               size='small'
               fullWidth
@@ -327,6 +332,9 @@ const UserUpload = (props) => {
                 })}
               </Select>
             </FormControl>
+          </Grid>
+          <Grid xs={2}>
+            {loading && editing ? <CircularProgress sx={{ ml: 2, mt: 2 }} color='success' disableShrink /> : null}
           </Grid>
         </Grid>
       }
@@ -443,9 +451,9 @@ const UserUpload = (props) => {
           direction="row"
           justifyContent="center"
           alignItems="start"
-          spacing={3}
+          spacing={2}
         >
-          <Grid item sm={6}>
+          <Grid item xs={6}>
             <Button
               fullWidth
               variant={THEME[themeMode].buttonStyle}
@@ -457,7 +465,7 @@ const UserUpload = (props) => {
               Add Entry
             </Button>
           </Grid>
-          <Grid item sm={6}>
+          <Grid item xs={6}>
             <Button
               type='submit'
               variant={THEME[themeMode].buttonStyle}

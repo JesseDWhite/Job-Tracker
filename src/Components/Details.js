@@ -42,7 +42,8 @@ const Details = (props) => {
     updateInterviewDate,
     viewInterviewPrep,
     student,
-    setLoading
+    setLoading,
+    width
   } = props;
 
   const [aiLoading, setAiLoading] = useState(false);
@@ -175,7 +176,7 @@ const Details = (props) => {
           <Box
             sx={{
               py: 5,
-              px: 5,
+              px: width < 600 ? 2 : 5,
               height: '100%',
             }}
           >
@@ -315,7 +316,7 @@ const Details = (props) => {
           <Box
             sx={{
               py: 5,
-              px: 5,
+              px: width < 600 ? 2 : 5,
               height: '100%',
             }}
           >
@@ -329,6 +330,8 @@ const Details = (props) => {
               <Grid
                 item
                 xl={3}
+                sm={6}
+                xs={12}
                 sx={{
                   width: '50%',
                 }}
@@ -361,6 +364,8 @@ const Details = (props) => {
               <Grid
                 item
                 xl={3}
+                sm={6}
+                xs={12}
                 sx={{
                   width: '50%',
                 }}
@@ -393,6 +398,7 @@ const Details = (props) => {
               <Grid
                 item
                 xl={6}
+                xs={12}
                 sx={{
                   width: '100%'
                 }}

@@ -118,12 +118,36 @@ const Main = () => {
     },
   });
 
+  const getWindowDimensions = () => {
+    const { innerWidth: width } = window;
+    return {
+      width,
+    };
+  }
+
+  const useWindowDimensions = () => {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+  }
+
+  const { width } = useWindowDimensions();
+
   const modalStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    minWidth: 525,
+    minWidth: width < 600 ? '80%' : 525,
     maxWidth: viewComments ? 525 : null,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
@@ -356,32 +380,6 @@ const Main = () => {
     } catch (error) {
       console.log(error.message);
     }
-  }
-
-  const sortByDate = () => {
-    const newJobs = [...searchJobs];
-    const sortedByDate = newJobs.sort((a, b) => {
-      const newA = a.dateApplied;
-      const newB = b.dateApplied;
-      if (newA < newB) return 1;
-      if (newA > newB) return -1;
-      return 0;
-    });
-    setSearchJobs(sortedByDate);
-    setSort(!sort);
-  }
-
-  const sortByName = () => {
-    const newJobs = [...searchJobs];
-    const sortedByName = newJobs.sort((a, b) => {
-      const newA = a.company.toLowerCase();
-      const newB = b.company.toLowerCase();
-      if (newA < newB) return -1;
-      if (newA > newB) return 1;
-      return 0;
-    });
-    setSearchJobs(sortedByName);
-    setSort(!sort);
   }
 
   const getApplicationTotal = () => {
@@ -621,6 +619,7 @@ const Main = () => {
                   setViewProfile={setViewProfile}
                   handleViewComments={handleViewComments}
                   getJobs={getJobs}
+                  width={width}
                 />
               </AnimateKeyframes>
             </Grid>
@@ -674,6 +673,7 @@ const Main = () => {
           jobs={jobs}
           setSearchJobs={setSearchJobs}
           loading={loading}
+          logout={logout}
         />}
         <Snackbar
           sx={{ width: '100%' }}
@@ -686,7 +686,7 @@ const Main = () => {
           <Alert
             severity={feedback.type}
             onClose={handleClose}
-            sx={{ width: '45%' }}
+            sx={{ width: width < 600 ? '75%' : '45%' }}
           >
             <AlertTitle>{feedback.title}</AlertTitle>
             {feedback.message}
@@ -730,6 +730,7 @@ const Main = () => {
                 handleClose={handleClose}
                 feedback={feedback}
                 setFeedback={setFeedback}
+                width={width}
               />
             }
           </Box>

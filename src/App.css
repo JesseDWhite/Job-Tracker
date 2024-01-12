@@ -16,6 +16,10 @@ body::-webkit-scrollbar-thumb {
   border-radius: 1em;
 }
 
+body::-webkit-scrollbar-corner {
+  background-color: rgba(169, 169, 169, 0);
+}
+
 .modal::-webkit-scrollbar {
   /* width: 0.5em; */
   display: none;

@@ -8,7 +8,13 @@ import {
   LinearProgress,
   Box,
   Badge,
-  Tooltip
+  Tooltip,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuList,
+  Fade
 } from '@mui/material';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -18,6 +24,10 @@ import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import SearchBar from '../Components/SearchBar';
 import { THEME } from './Theme';
 import { format } from 'date-fns';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import {
+  MenuRounded,
+} from '@mui/icons-material';
 
 const Header = (props) => {
 
@@ -31,6 +41,7 @@ const Header = (props) => {
     currentUser,
     updatePreferrdTheme,
     loading,
+    logout
   } = props;
 
   const [dailyFilter, setDailyFilter] = useState(false);
@@ -44,6 +55,30 @@ const Header = (props) => {
   const [notifications, setNotifications] = useState(false);
 
   const [notificationCount, setNotificationCount] = useState(0);
+
+  const getWindowDimensions = () => {
+    const { innerWidth: width } = window;
+    return {
+      width,
+    };
+  }
+
+  const useWindowDimensions = () => {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+  }
+
+  const { width } = useWindowDimensions();
 
   //Only show job apps that have been added today.
   useEffect(() => {
@@ -134,6 +169,96 @@ const Header = (props) => {
     );
   }
 
+  const renderThemeMenuButton = () => {
+    let button = <NightsStayIcon />
+    if (themeMode === 'darkMode') button = <DarkModeIcon sx={{ color: 'white' }} />
+    if (themeMode === 'dorkMode') button = <LightModeIcon sx={{ color: 'white' }} />
+    return button;
+  }
+
+  const renderMenu = () => {
+    return (
+      <PopupState variant="popover">
+        {(popupState) => (
+          <Box>
+            <IconButton
+              id='options-button'
+              aria-label='options'
+              {...bindTrigger(popupState)}
+            >
+              {notifications
+                ? <Badge color='error' variant='dot'>
+                  <MenuRounded />
+                </Badge>
+                : <MenuRounded />
+              }
+            </IconButton>
+            <Menu
+              id='options-menu'
+              anchorEl='options-button'
+              MenuListProps={{
+                'aria-labelledby': 'options-button'
+              }}
+              {...bindMenu(popupState)}
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 500 }}
+              onClose={() => popupState.close()}
+            >
+              <MenuList>
+                <MenuItem>
+                  <Chip
+                    avatar={
+                      <Avatar
+                        src={user?.photoURL}
+                      />}
+                    variant={THEME[themeMode].buttonStyle}
+                    label={viewProfile ? 'Go Back' : currentUser?.name}
+                    clickable
+                    onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}
+                  />
+                </MenuItem>
+                <MenuItem onClick={() => updatePreferrdTheme(currentUser.id)}>
+                  <ListItemIcon>
+                    {renderThemeMenuButton()}
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Theme
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => notifications ? setNotificationFilter(!notificationFilter) : setNotificationFilter(false)}
+
+                >
+                  <ListItemIcon>
+                    {notifications
+                      ?
+                      <Badge badgeContent={notificationCount} color='error' overlap='circular'>
+                        <NotificationsRoundedIcon />
+                      </Badge>
+                      : <NotificationsNoneRoundedIcon />
+                    }
+                    <ListItemText
+                      sx={{
+                        pl: 2,
+                      }}
+                    >
+                      Notifications
+                    </ListItemText>
+                  </ListItemIcon>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </Box>
+        )
+        }
+      </PopupState>
+    )
+  };
+
   return (
     <Box sx={{ position: 'relative' }}>
       <Grid
@@ -186,44 +311,56 @@ const Header = (props) => {
                     themeMode={themeMode}
                     jobs={jobs}
                     setSearchJobs={setSearchJobs}
+                    width={width}
                   />
                 </Grid>
               </Grid>
             }
           </Grid>
-          <Grid
-            sx={{
-              position: 'fixed',
-              right: 15,
-              top: 15
-            }}
-          >
-            <IconButton
-              onClick={() => notifications ? setNotificationFilter(!notificationFilter) : setNotificationFilter(false)}
+          {width < 600
+            ? <Grid
               sx={{
-                mr: 2
+                position: 'fixed',
+                right: 15,
+                top: 15
               }}
             >
-              {notifications
-                ?
-                <Badge badgeContent={notificationCount} color='error' overlap='circular'>
-                  <NotificationsRoundedIcon />
-                </Badge>
-                : <NotificationsNoneRoundedIcon />
-              }
-            </IconButton>
-            {renderThemeButton()}
-            <Chip
-              avatar={
-                <Avatar
-                  src={user?.photoURL}
-                />}
-              variant={THEME[themeMode].buttonStyle}
-              label={viewProfile ? 'Go Back' : currentUser?.name}
-              clickable
-              onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}
-            />
-          </Grid>
+              {renderMenu()}
+            </Grid>
+            : <Grid
+              sx={{
+                position: 'fixed',
+                right: 15,
+                top: 15
+              }}
+            >
+              <IconButton
+                onClick={() => notifications ? setNotificationFilter(!notificationFilter) : setNotificationFilter(false)}
+                sx={{
+                  mr: 2
+                }}
+              >
+                {notifications
+                  ?
+                  <Badge badgeContent={notificationCount} color='error' overlap='circular'>
+                    <NotificationsRoundedIcon />
+                  </Badge>
+                  : <NotificationsNoneRoundedIcon />
+                }
+              </IconButton>
+              {renderThemeButton()}
+              <Chip
+                avatar={
+                  <Avatar
+                    src={user?.photoURL}
+                  />}
+                variant={THEME[themeMode].buttonStyle}
+                label={viewProfile ? 'Go Back' : currentUser?.name}
+                clickable
+                onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}
+              />
+            </Grid>
+          }
         </Grid>
         }
         <Box

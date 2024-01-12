@@ -45,122 +45,44 @@ const Auth = () => {
   }
 
   return (
-    <>
-      {/* <Typography
-        variant='h3'
-        sx={{
-          textAlign: 'center'
-        }}
-      >
-        {method ? 'REGISTER' : 'SIGN IN'}
-      </Typography> */}
+    <Grid
+      container
+      spacing={5}
+    >
       <Grid
-        container
-        spacing={5}
+        item
+        sm={12}
       >
-        <Grid
-          item
-          sm={12}
-        >
-          {/* {method ? */}
-          <Grid>
-            {/* <TextField
-                sx={{
-                  mb: 5
-                }}
-                fullWidth
-                label='Email'
-                onChange={(e) => setRegisterEmail(e.target.value)}
-              />
-              <TextField
-                sx={{
-                  mb: 5
-                }}
-                fullWidth
-                label='Password'
-                onChange={(e) => setRegisterPassword(e.target.value)}
-              />
-              <Button
-                fullWidth
-                color='secondary'
-                variant='contained'
-                onClick={register}
-              >
-                Create User
-              </Button>
-            </Grid>
-            :
-            <Grid>
-              <TextField
-                sx={{
-                  mb: 5
-                }}
-                fullWidth
-                label='Email'
-                onChange={(e) => setLoginEmail(e.target.value)}
-              />
-              <TextField
-                sx={{
-                  mb: 5
-                }}
-                fullWidth
-                label='Password'
-                onChange={(e) => setLoginPassword(e.target.value)}
-              />
-              <Button
-                fullWidth
-                variant='contained'
-                onClick={login}
-              >
-                Sign In
-              </Button> */}
-            <Typography
-              variant='h3'
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                fontWeight: 'bold',
-                fontSize: '500%',
-                textShadow: 'rgb(10,25,41) -8px 0px 0px',
-                color: 'lightgray'
-              }}
-            >
-              WELCOME
-            </Typography>
-            <Button
-              sx={{
-                mt: 3
-              }}
-              startIcon={<PersonOutlineTwoToneIcon />}
-              fullWidth
-              variant='contained'
-              onClick={signInWithGoogle}
-            >
-              Sign In With Google
-            </Button>
-          </Grid>
-          {/* } */}
+        <Grid>
+          <Typography
+            variant='h3'
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              fontWeight: 'bold',
+              fontSize: '500%',
+              textShadow: 'rgb(10,25,41) -8px 0px 0px',
+              color: 'lightgray'
+            }}
+          >
+            WELCOME
+          </Typography>
+          <Button
+            sx={{
+              mt: 3
+            }}
+            startIcon={<PersonOutlineTwoToneIcon />}
+            fullWidth
+            variant='contained'
+            onClick={signInWithGoogle}
+          >
+            Sign In With Google
+          </Button>
         </Grid>
-        {/* <Grid
-          container
-          item
-        >
-          <FormControlLabel
-            label='Register New Account'
-            control={
-              <Switch
-                fullWidth
-                size='large'
-                color='secondary'
-                onClick={() => setMethod(!method)}
-              />
-            }
-          />
-        </Grid> */}
       </Grid>
-    </>
+    </Grid>
   )
 }
 

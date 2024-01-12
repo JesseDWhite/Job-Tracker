@@ -25,7 +25,7 @@ ChartJS.register(
 
 const Analytics = (props) => {
 
-  const { jobs, themeMode } = props;
+  const { jobs, themeMode, width } = props;
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -170,27 +170,27 @@ const Analytics = (props) => {
           position: 'absolute',
           top: 0,
           left: 0,
-          ml: 3,
+          ml: width <= 600 ? 1 : 3,
           mt: 3
         }}
         startIcon={<ArrowBackIosTwoTone />}
         onClick={() => prevMonth()}
       >
-        Previous Month
+        {width <= 600 ? '' : 'Previous Month'}
       </Button>
       <Button
         sx={{
           position: 'absolute',
           top: 0,
           right: 0,
-          mr: 3,
+          mr: width <= 600 ? 1 : 3,
           mt: 3
         }}
         onClick={() => nextMonth()}
         disabled={disable}
         endIcon={<ArrowForwardIosTwoTone />}
       >
-        Next Month
+        {width <= 600 ? '' : 'Next Month'}
       </Button>
     </Card>
   )

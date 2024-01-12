@@ -15,7 +15,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 const Copyright = (props) => {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      Made with &#129505; by{' '}
+      Made with <span style={{ fontSize: '18px' }}>🍵</span> by{' '}
       <Link
         target='_blank'
         rel='noopener noreferrer'
@@ -25,7 +25,7 @@ const Copyright = (props) => {
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
-    </Typography >
+    </Typography>
   );
 }
 
@@ -38,7 +38,7 @@ const SignIn = () => {
         <CssBaseline />
         <Grid
           item
-          xs={false}
+          xs={12}
           sm={4}
           md={7}
           sx={{
@@ -72,10 +72,10 @@ const SignIn = () => {
                 fullWidth
                 onClick={signInWithGoogle}
                 variant="contained"
-                sx={{ mt: 3, mb: 5, px: 10 }}
+                sx={{ mt: 3, mb: 5 }}
                 startIcon={<GoogleIcon />}
               >
-                Sign In With Google
+                Sign In
               </Button>
               <Grid container>
                 <Grid item>
