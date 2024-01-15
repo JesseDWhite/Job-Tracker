@@ -525,7 +525,7 @@ const Profile = (props) => {
                     >
                       <MenuList>
                         <MenuItem
-                          onClick={() => ((setResumeUpload(true), setOpen(true)
+                          onClick={() => ((setResumeUpload(true), setOpen(true), popupState.close()
                           ))}
                         >
                           <ListItemIcon>
@@ -541,7 +541,7 @@ const Profile = (props) => {
                         </MenuItem>
                         {currentUser.role === 'Admin' || currentUser.role === 'Advisor' ?
                           <MenuItem
-                            onClick={() => ((setResumeUpload(false), setOpen(true)
+                            onClick={() => ((setResumeUpload(false), setOpen(true), popupState.close()
                             ))}
                           >
                             <ListItemIcon>
@@ -557,7 +557,7 @@ const Profile = (props) => {
                           </MenuItem>
                           : null}
                         <MenuItem
-                          onClick={() => ((setUpdateProfile(true), setOpen(true)
+                          onClick={() => ((setUpdateProfile(true), setOpen(true), popupState.close()
                           ))}>
                           <ListItemIcon>
                             <EditTwoTone />

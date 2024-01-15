@@ -214,10 +214,10 @@ const Header = (props) => {
                     variant={THEME[themeMode].buttonStyle}
                     label={viewProfile ? 'Go Back' : currentUser?.name}
                     clickable
-                    onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0)))}
+                    onClick={() => ((setViewProfile(!viewProfile), window.scrollTo(0, 0), popupState.close()))}
                   />
                 </MenuItem>
-                <MenuItem onClick={() => updatePreferrdTheme(currentUser.id)}>
+                <MenuItem onClick={() => ((updatePreferrdTheme(currentUser.id), popupState.close()))}>
                   <ListItemIcon>
                     {renderThemeMenuButton()}
                     <ListItemText
@@ -230,7 +230,7 @@ const Header = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => notifications ? setNotificationFilter(!notificationFilter) : setNotificationFilter(false)}
+                  onClick={() => notifications ? ((setNotificationFilter(!notificationFilter), popupState.close())) : ((setNotificationFilter(false), popupState.close()))}
 
                 >
                   <ListItemIcon>

@@ -224,7 +224,7 @@ const Details = (props) => {
                   </Grid>
                   <Typography>{jobToView.jobTitle}</Typography>
                   <Typography>{format(new Date(jobToView.dateApplied.replace(/-/g, '/')), 'PPP')}</Typography>
-                  <Typography>{jobToView.jobPosting}</Typography>
+                  <Typography sx={{ wordBreak: 'break-word', wordWrap: 'break-word' }}>{jobToView.jobPosting}</Typography>
                   {jobToView.status === 'Interview' ?
                     !student || Object.values(student).length === 0
                       ?
