@@ -55,8 +55,6 @@ const Main = () => {
 
   const [applicationCount, setApplicationCount] = useState(0);
 
-  const [sort, setSort] = useState(false);
-
   const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState({});
@@ -623,44 +621,30 @@ const Main = () => {
                 />
               </AnimateKeyframes>
             </Grid>
-            : <Grid
-              display='flex'
-            >
-              <Grid
-                item
-                sm={12}
-                container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Grid
-                  sx={{ pt: 10 }}
-                >
-                  <MasterList
-                    loading={loading}
-                    setLoading={setLoading}
-                    themeMode={themeMode}
-                    searchJobs={searchJobs}
-                    setSearchJobs={setSearchJobs}
-                    jobs={jobs}
-                    updateJobApplication={updateJobApplication}
-                    deleteJob={deleteJob}
-                    updateJobStatus={updateJobStatus}
-                    updateInterviewDate={updateInterviewDate}
-                    handleViewComments={handleViewComments}
-                    user={user}
-                    userReference={userReference}
-                    currentUser={currentUser}
-                    setOpen={setOpen}
-                    applicationCount={applicationCount}
-                    subCollection={subCollection}
-                    feedback={feedback}
-                    setFeedback={setFeedback}
-                    setJobs={setJobs}
-                  />
-                </Grid>
-              </Grid>
+            :
+            <Grid>
+              <MasterList
+                loading={loading}
+                setLoading={setLoading}
+                themeMode={themeMode}
+                searchJobs={searchJobs}
+                setSearchJobs={setSearchJobs}
+                jobs={jobs}
+                updateJobApplication={updateJobApplication}
+                deleteJob={deleteJob}
+                updateJobStatus={updateJobStatus}
+                updateInterviewDate={updateInterviewDate}
+                handleViewComments={handleViewComments}
+                user={user}
+                userReference={userReference}
+                currentUser={currentUser}
+                setOpen={setOpen}
+                applicationCount={applicationCount}
+                subCollection={subCollection}
+                feedback={feedback}
+                setFeedback={setFeedback}
+                setJobs={setJobs}
+              />
             </Grid>
         }
         {user?.email && <Header

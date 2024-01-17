@@ -1023,7 +1023,8 @@ const Profile = (props) => {
                 }}>
                 <Box
                   sx={{
-                    pb: 3
+                    pb: 3,
+                    position: 'relative'
                   }}
                 >
                   <MasterList

@@ -292,7 +292,7 @@ const Header = (props) => {
                   fontSize: '2rem',
                   transition: 'color .5s, background .5s',
                   color: THEME[themeMode].textColor,
-                  mx: 1
+                  ml: 2
                 }}>
                 My Profile
               </Typography>

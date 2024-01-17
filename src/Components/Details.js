@@ -179,6 +179,7 @@ const Details = (props) => {
               px: width < 600 ? 2 : 5,
               height: '100%',
             }}
+            id='details'
           >
             <Grid
               container
@@ -319,6 +320,7 @@ const Details = (props) => {
               px: width < 600 ? 2 : 5,
               height: '100%',
             }}
+            id='interview-prep'
           >
             <Grid
               container
@@ -444,6 +446,7 @@ const Details = (props) => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
+              width: width < 600 ? '75%' : null
             }}
             disabled={aiLoading}
             onClick={() => handleGetInterviewHelp()}
@@ -458,6 +461,8 @@ const Details = (props) => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
+            width: width < 600 ? '75%' : null,
+            textAlign: 'center'
           }}
         >
           A Job Description and Resume / Cover Letter are required for this service.
@@ -465,7 +470,6 @@ const Details = (props) => {
       }
     }
   }
-
   return renderMessage();
 }
 

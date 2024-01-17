@@ -12,6 +12,7 @@ import {
   ListItemText,
   Avatar,
   Badge,
+  Grid
 } from '@mui/material';
 import { AnimateKeyframes } from 'react-simple-animate';
 import { THEME } from '../Layout/Theme';
@@ -326,7 +327,7 @@ const MasterList = (props) => {
             >
               <MenuList>
                 <MenuItem
-                  onClick={() => updateJobStatus(job.id, 'Active')}
+                  onClick={() => ((updateJobStatus(job.id, 'Active'), popupState.close()))}
                 >
                   <ListItemIcon>
                     <CheckCircleTwoTone color='success' />
@@ -340,7 +341,7 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => updateJobStatus(job.id, 'Interview')}
+                  onClick={() => ((updateJobStatus(job.id, 'Interview'), popupState.close()))}
                 >
                   <ListItemIcon>
                     <AccessTimeTwoTone color='secondary' />
@@ -354,7 +355,7 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => updateJobStatus(job.id, 'Other')}
+                  onClick={() => ((updateJobStatus(job.id, 'Other'), popupState.close()))}
 
                 >
                   <ListItemIcon>
@@ -369,7 +370,7 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => updateJobStatus(job.id, 'Closed')}
+                  onClick={() => ((updateJobStatus(job.id, 'Closed'), popupState.close()))}
                 >
                   <ListItemIcon>
                     <DoNotDisturbOnTwoTone color='error' />
@@ -523,160 +524,195 @@ const MasterList = (props) => {
   ];
 
   return (
-    <Paper
-      id='dataGrid'
-      className='modal'
-      sx={{
-        overflowY: viewInterviewPrep || viewDetails ? 'auto' : 'none',
-        borderRadius: 5,
-        border: THEME[themeMode].border,
-        background: THEME[themeMode].card,
-        transition: 'color .5s, background .5s',
-        height: '85vh',
-        width: !student ? '97vw' : '100%',
-        position: !student ? 'absolute' : 'relative',
-        top: !student ? '50%' : null,
-        left: !student ? '50%' : null,
-        transform: !student ? height < 700 ? 'translate(-50%, -43%)' : 'translate(-50%, -45%)' : null,
-      }}>
-      {viewInterviewPrep || viewDetails ?
-        <AnimateKeyframes
-          play
-          iterationCount={1}
-          keyframes={[
-            "opacity: 0",
-            "opacity: 1",
-          ]}
+    <AnimateKeyframes
+      play
+      iterationCount={1}
+      keyframes={[
+        "opacity: 0",
+        "opacity: 1",
+      ]}
+    >
+      <Grid
+        display='flex'
+        sx={{
+          ml: !student ? width <= 600 ? 1 : 3 : null,
+          mr: !student ? width <= 600 ? 1 : 3 : null,
+          pt: !student ? 12 : null,
+        }}>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignItems="center"
+          spacing={4}
+
         >
-          <IconButton
-            onClick={() => handleClose()}
+          <Grid xs={12} item
             sx={{
-              position: 'absolute',
-              top: width < 600 ? 5 : 10,
-              left: width < 600 ? 5 : 10
+              "& ::-webkit-scrollbar": {
+                display: 'none'
+              }
             }}
           >
-            <CloseRounded />
-          </IconButton>
-          <Details
-            updateJobStatus={updateJobStatus}
-            viewDetails={viewDetails}
-            themeMode={themeMode}
-            jobToView={jobToView}
-            currentUser={currentUser}
-            searchJobs={searchJobs}
-            setSearchJobs={setSearchJobs}
-            feedback={feedback}
-            setFeedback={setFeedback}
-            subCollection={subCollection}
-            setJobs={setJobs}
-            updateInterviewDate={updateInterviewDate}
-            viewInterviewPrep={viewInterviewPrep}
-            student={student}
-            renderStatus={renderStatus}
-            loading={loading}
-            setLoading={setLoading}
-            width={width}
-          />
-        </AnimateKeyframes>
-        :
-        <AnimateKeyframes
-          play
-          iterationCount={1}
-          keyframes={[
-            "opacity: 0",
-            "opacity: 1",
-          ]}
-        >
-          {student ?
-            <Chip
+            <Paper
+              id='dataGrid'
               sx={{
-                zIndex: 10,
-                position: 'absolute',
-                top: 20,
-                left: 20
-              }}
-              variant={THEME[themeMode].buttonStyle}
-              onDelete={() => handleViewStudentClose()}
-              label={student.name}
-              avatar={<Avatar src={student.profilePhoto} />}
-            />
-            : <>
-              <Chip
-                sx={{
-                  zIndex: 10,
-                  position: 'absolute',
-                  top: 20,
-                  left: 20
-                }}
-                color='primary'
-                variant={THEME[themeMode].buttonStyle}
-                onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
-                label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
-                avatar={<Avatar>{applicationCount}</Avatar>}
-              />
-              <Chip
-                sx={{
-                  zIndex: 10,
-                  position: 'absolute',
-                  top: 20,
-                  right: 20
-                }}
-                color='success'
-                variant={THEME[themeMode].buttonStyle}
-                onClick={() => setOpen(true)}
-                label='ADD NEW'
-                icon={<AddCircleTwoToneIcon />}
-              />
-            </>
-          }
-          <Box
-            sx={{
-              borderRadius: 5,
-              transition: 'color .5s, background .5s',
-              height: '75vh',
-              width: !student ? '97vw' : '100%',
-              background: THEME[themeMode].card,
-              pt: 8
-            }}
-            id='test'
-          >
-            <DataGrid
-              sx={{
+                overflowY: viewInterviewPrep || viewDetails ? 'auto' : 'none',
+                borderRadius: 5,
+                border: THEME[themeMode].border,
+                background: THEME[themeMode].card,
                 transition: 'color .5s, background .5s',
-                color: THEME[themeMode].textColor,
-                borderLeft: 'none',
-                borderRight: 'none',
-                borderBottom: 'none',
-                "& ::-webkit-scrollbar": {
-                  backgroundColor: 'rgba(0, 0, 0, 0)',
-                  width: '0.5em',
-                  height: '0.5em'
-                },
-                "& ::-webkit-scrollbar-thumb": {
-                  backgroundColor: 'rgb(169, 169, 169)',
-                  borderRadius: '1em',
-                },
-                "& ::-webkit-scrollbar-corner": {
-                  backgroundColor: 'rgba(0, 0, 0, 0)'
-                }
+                height: '85vh',
+                width: '100%',
               }}
-              initialState={{
-                sorting: {
-                  sortModel: [{ field: 'dateApplied', sort: 'desc' }],
-                },
-              }}
-              rows={searchJobs}
-              columns={columns}
-              pageSize={20}
-              rowsPerPageOptions={[20]}
-              disableRowSelectionOnClick
-              loading={loading}
-            />
-          </Box>
-        </AnimateKeyframes>
-      }
-    </Paper >
+              elevation={3}
+            >
+              {viewInterviewPrep || viewDetails ?
+                <AnimateKeyframes
+                  play
+                  iterationCount={1}
+                  keyframes={[
+                    "opacity: 0",
+                    "opacity: 1",
+                  ]}
+                >
+                  <Box sx={{ position: 'relative' }}>
+                    <IconButton
+                      onClick={() => handleClose()}
+                      sx={{
+                        position: 'absolute',
+                        top: width < 600 ? 5 : 10,
+                        left: width < 600 ? 5 : 10
+                      }}
+                    >
+                      <CloseRounded />
+                    </IconButton>
+                  </Box>
+                  <Details
+                    updateJobStatus={updateJobStatus}
+                    viewDetails={viewDetails}
+                    themeMode={themeMode}
+                    jobToView={jobToView}
+                    currentUser={currentUser}
+                    searchJobs={searchJobs}
+                    setSearchJobs={setSearchJobs}
+                    feedback={feedback}
+                    setFeedback={setFeedback}
+                    subCollection={subCollection}
+                    setJobs={setJobs}
+                    updateInterviewDate={updateInterviewDate}
+                    viewInterviewPrep={viewInterviewPrep}
+                    student={student}
+                    renderStatus={renderStatus}
+                    loading={loading}
+                    setLoading={setLoading}
+                    width={width}
+                  />
+                </AnimateKeyframes>
+                :
+                <AnimateKeyframes
+                  play
+                  iterationCount={1}
+                  keyframes={[
+                    "opacity: 0",
+                    "opacity: 1",
+                  ]}
+                >
+                  {student ?
+                    <Box sx={{ position: 'relative' }}>
+                      <Chip
+                        sx={{
+                          zIndex: 10,
+                          position: 'absolute',
+                          top: 20,
+                          left: 20
+                        }}
+                        variant={THEME[themeMode].buttonStyle}
+                        onDelete={() => handleViewStudentClose()}
+                        label={student.name}
+                        avatar={<Avatar src={student.profilePhoto} />}
+                      />
+                    </Box>
+                    :
+                    <Box sx={{ position: 'relative' }}>
+                      <Chip
+                        sx={{
+                          zIndex: 10,
+                          position: 'absolute',
+                          top: 20,
+                          left: 20
+                        }}
+                        color='primary'
+                        variant={THEME[themeMode].buttonStyle}
+                        onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
+                        label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+                        avatar={<Avatar>{applicationCount}</Avatar>}
+                      />
+                      <Chip
+                        sx={{
+                          zIndex: 10,
+                          position: 'absolute',
+                          top: 20,
+                          right: 20
+                        }}
+                        color='success'
+                        variant={THEME[themeMode].buttonStyle}
+                        onClick={() => setOpen(true)}
+                        label='ADD NEW'
+                        icon={<AddCircleTwoToneIcon />}
+                      />
+                    </Box>
+                  }
+                  <Box
+                    sx={{
+                      borderRadius: 5,
+                      transition: 'color .5s, background .5s',
+                      height: '75vh',
+                      width: '100%',
+                      background: THEME[themeMode].card,
+                      pt: 8
+                    }}
+                  >
+                    <DataGrid
+                      sx={{
+                        transition: 'color .5s, background .5s',
+                        color: THEME[themeMode].textColor,
+                        borderLeft: 'none',
+                        borderRight: 'none',
+                        borderBottom: 'none',
+                        "& ::-webkit-scrollbar": {
+                          backgroundColor: 'rgba(0, 0, 0, 0)',
+                          width: '0.5em',
+                          height: '0.5em'
+                        },
+                        "& ::-webkit-scrollbar-thumb": {
+                          backgroundColor: 'rgb(169, 169, 169)',
+                          borderRadius: '1em',
+                        },
+                        "& ::-webkit-scrollbar-corner": {
+                          backgroundColor: 'rgba(0, 0, 0, 0)'
+                        }
+                      }}
+                      initialState={{
+                        sorting: {
+                          sortModel: [{ field: 'dateApplied', sort: 'desc' }],
+                        },
+                      }}
+                      rows={searchJobs}
+                      columns={columns}
+                      pageSize={20}
+                      rowsPerPageOptions={[20]}
+                      disableRowSelectionOnClick
+                      loading={loading}
+                    />
+                  </Box>
+                </AnimateKeyframes>
+              }
+            </Paper>
+          </Grid>
+        </Grid>
+      </Grid>
+    </AnimateKeyframes>
   )
 };
 
