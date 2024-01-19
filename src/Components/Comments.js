@@ -30,6 +30,7 @@ const Comments = (props) => {
     userReference,
     handleShowMoreComments,
     setJobToEdit,
+    width
   } = props;
 
   const initialValues = {
@@ -96,7 +97,9 @@ const Comments = (props) => {
       <Box
         container
         sx={{
-          position: 'relative'
+          position: 'relative',
+          px: width <= 600 ? 4 : 0,
+          pb: width <= 600 ? 4 : 0
         }}
       >
         <Typography
@@ -177,7 +180,9 @@ const Comments = (props) => {
                         color: comment.userId === user.uid ? 'white' : 'black',
                         backgroundColor: comment.userId === user.uid ? 'rgb(33, 150, 243)' : 'rgb(207, 216, 220)',
                         borderRadius: 3,
-                        cursor: 'default'
+                        cursor: 'default',
+                        wordBreak: 'break-word',
+                        wordWrap: 'break-word'
                       }}
                     >
                       {comment.response}
@@ -219,7 +224,7 @@ const Comments = (props) => {
                 disabled={formValues.response.length > 0 ? false : true}
                 sx={{
                   mt: 2,
-                  ml: 4
+                  ml: width <= 600 ? 2 : 4
                 }}
               >
                 <SendRounded />

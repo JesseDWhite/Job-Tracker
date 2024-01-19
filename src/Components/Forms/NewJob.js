@@ -19,8 +19,9 @@ import {
   ToggleButton,
   CircularProgress,
   InputAdornment,
+  IconButton
 } from '@mui/material';
-import { Check, Close, Http } from '@mui/icons-material';
+import { Check, Close, Http, CancelRounded } from '@mui/icons-material';
 import {
   updateDoc,
   addDoc,
@@ -50,7 +51,7 @@ const NewJob = (props) => {
     setFeedback,
     themeMode,
     currentUser,
-    width
+    width,
   } = props;
 
   const modalStyle = {
@@ -58,13 +59,13 @@ const NewJob = (props) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: width < 600 ? '80%' : 400,
+    width: width < 600 ? '95%' : 400,
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
     borderRadius: 5,
     boxShadow: 24,
-    p: 4,
+    p: width <= 600 ? 0 : 4,
     overflowY: 'auto',
     border: THEME[themeMode].border
   };
@@ -416,31 +417,52 @@ const NewJob = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
-            <Typography variant='h6' component='h2'>
-              {jobPostingKeywords.length === 0
-                ? 'No Keywords Found'
-                : `We Found ${jobPostingKeywords.length} Keywords For You`
-              }
-            </Typography>
-            <Typography component='h3'>
-              {jobPostingKeywords.length !== 0 &&
-                <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been addressed so far.</em>
-              }
-            </Typography>
-            <Typography sx={{ mt: 2 }}>
-              {jobPostingKeywords.length === 0
-                ? 'Try adding the entire job description.'
-                : jobPostingKeywords.map((keyword, idx) => {
-                  return (
-                    <List dense={true} disablePadding>
-                      {coverLetterKeywords.includes(keyword) || resumeKeywords.includes(keyword)
-                        ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
-                        : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
-                      }
-                    </List>
-                  )
-                })}
-            </Typography>
+            {width <= 600 &&
+              <IconButton
+                component='span'
+                onClick={() => handleClose()}
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  left: 0,
+                  display: 'inline-block'
+                }}
+              >
+                <CancelRounded />
+              </IconButton>
+            }
+            <Box
+              sx={{
+                px: width <= 600 ? 4 : 0,
+                pb: width <= 600 ? 4 : 0
+              }}
+            >
+              <Typography variant='h6' component='h2'>
+                {jobPostingKeywords.length === 0
+                  ? 'No Keywords Found'
+                  : `We Found ${jobPostingKeywords.length} Keywords For You`
+                }
+              </Typography>
+              <Typography component='h3'>
+                {jobPostingKeywords.length !== 0 &&
+                  <em>{getScore(formValues.coverLetter, formValues.resume, formValues.jobDescription)}% of them have been addressed so far.</em>
+                }
+              </Typography>
+              <Typography sx={{ mt: 2 }}>
+                {jobPostingKeywords.length === 0
+                  ? 'Try adding the entire job description.'
+                  : jobPostingKeywords.map((keyword, idx) => {
+                    return (
+                      <List dense={true} disablePadding>
+                        {coverLetterKeywords.includes(keyword) || resumeKeywords.includes(keyword)
+                          ? <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Check color='success' /></ListItemIcon><ListItemText primary={keyword[0].toUpperCase() + keyword.slice(1)} /></ListItem>
+                          : <ListItem key={keyword.concat(idx)} disablePadding><ListItemIcon><Close color='error' /></ListItemIcon><ListItemText sx={{ color: 'red' }} primary={<strong>{keyword[0].toUpperCase() + keyword.slice(1)}</strong>} /></ListItem>
+                        }
+                      </List>
+                    )
+                  })}
+              </Typography>
+            </Box>
           </Box>
         </Fade>
       </Modal>
@@ -454,6 +476,9 @@ const NewJob = (props) => {
             justifyContent="center"
             alignItems="start"
             spacing={2}
+            sx={{
+              px: width <= 600 ? 4 : 0
+            }}
           >
             <Grid xl={6} item>
               <Typography variant='h4' sx={{ textAlign: 'center' }}>Application Info</Typography>
@@ -733,7 +758,9 @@ const NewJob = (props) => {
             container
             spacing={2}
             sx={{
-              mt: 2
+              mt: 2,
+              px: width <= 600 ? 4 : 0,
+              pb: width <= 600 ? 4 : 0
             }}
           >
             <Grid

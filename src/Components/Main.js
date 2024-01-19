@@ -21,12 +21,13 @@ import {
   Fade,
   Backdrop,
   Box,
-
+  IconButton,
   Snackbar,
   Alert,
   Slide,
   AlertTitle,
 } from '@mui/material';
+import { CancelRounded } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { signOut, onAuthStateChanged, } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -145,14 +146,14 @@ const Main = () => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    minWidth: width < 600 ? '80%' : 525,
-    maxWidth: viewComments ? 525 : null,
+    minWidth: width <= 600 ? '95%' : 525,
+    maxWidth: viewComments && width > 600 ? 525 : '95%',
     maxHeight: '85%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
     borderRadius: 5,
     boxShadow: 24,
-    p: 4,
+    p: width <= 600 ? 0 : 4,
     overflowY: 'auto',
     border: THEME[themeMode].border
   };
@@ -686,6 +687,21 @@ const Main = () => {
       >
         <Fade in={open}>
           <Box container sx={modalStyle} className='modal'>
+            {width <= 600 &&
+              <IconButton
+                component='span'
+                onClick={() => handleModalClose()}
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  right: 0,
+                  display: 'inline-block',
+                  zIndex: 10
+                }}
+              >
+                <CancelRounded />
+              </IconButton>
+            }
             {viewComments
               ? <Comments
                 comments={comments}
@@ -695,6 +711,7 @@ const Main = () => {
                 userReference={userReference}
                 handleShowMoreComments={handleShowMoreComments}
                 setJobToEdit={setJobToEdit}
+                width={width}
               />
               : <NewJob
                 themeMode={themeMode}

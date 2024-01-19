@@ -28,6 +28,7 @@ import {
   HelpTwoTone,
   AutoAwesomeTwoTone,
   CloseRounded,
+  CancelRounded,
   VisibilityTwoTone,
   ForumTwoTone,
   MenuRounded,
@@ -183,7 +184,7 @@ const MasterList = (props) => {
             >
               <MenuList>
                 <MenuItem
-                  onClick={() => handleViewDetails(job.id)}
+                  onClick={() => ((handleViewDetails(job.id), popupState.close()))}
                 >
                   <ListItemIcon>
                     <VisibilityTwoTone />
@@ -198,7 +199,7 @@ const MasterList = (props) => {
                 </MenuItem>
                 {'Personal' !== currentUser.organization &&
                   <MenuItem
-                    onClick={() => handleViewInterviewPrep(job.id)}
+                    onClick={() => ((handleViewInterviewPrep(job.id), popupState.close()))}
                   >
                     <ListItemIcon>
                       <AutoAwesomeTwoTone />
@@ -218,8 +219,8 @@ const MasterList = (props) => {
                     && job.unreadMessages > 0 ?
                     <MenuItem
                       onClick={() => !student || Object.values(student).length === 0
-                        ? handleViewComments(user.uid, job)
-                        : handleViewComments(student.id, job)
+                        ? ((handleViewComments(user.uid, job), popupState.close()))
+                        : ((handleViewComments(student.id, job), popupState.close()))
                       }>
                       <ListItemIcon>
                         <Badge color='error' variant='dot'>
@@ -236,8 +237,8 @@ const MasterList = (props) => {
                     </MenuItem>
                     : <MenuItem
                       onClick={() => !student || Object.values(student).length === 0
-                        ? handleViewComments(user.uid, job)
-                        : handleViewComments(student.id, job)
+                        ? ((handleViewComments(user.uid, job), popupState.close()))
+                        : ((handleViewComments(student.id, job), popupState.close()))
                       }>
                       <ListItemIcon>
                         <ForumTwoTone />
@@ -253,7 +254,7 @@ const MasterList = (props) => {
                   : null
                 }
                 <MenuItem
-                  onClick={() => handleEditJob(job.id)}
+                  onClick={() => ((handleEditJob(job.id), popupState.close()))}
                   disabled={student ? true : false}
                 >
                   <ListItemIcon>
@@ -268,7 +269,7 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => deleteJob(job.id, job.company)}
+                  onClick={() => ((deleteJob(job.id, job.company), popupState.close()))}
                   disabled={student ? true : false}
                 >
                   <ListItemIcon>
@@ -535,9 +536,9 @@ const MasterList = (props) => {
       <Grid
         display='flex'
         sx={{
-          ml: !student ? width <= 600 ? 1 : 3 : null,
-          mr: !student ? width <= 600 ? 1 : 3 : null,
-          pt: !student ? 12 : null,
+          ml: !student ? width <= 600 ? 1 : 3 : 0,
+          mr: !student ? width <= 600 ? 1 : 3 : 0,
+          pt: !student ? 12 : 0,
         }}>
         <Grid
           container
@@ -562,7 +563,7 @@ const MasterList = (props) => {
                 border: THEME[themeMode].border,
                 background: THEME[themeMode].card,
                 transition: 'color .5s, background .5s',
-                height: '85vh',
+                height: width <= 1200 ? '79vh' : '85vh',
                 width: '100%',
               }}
               elevation={3}
@@ -585,9 +586,10 @@ const MasterList = (props) => {
                         left: width < 600 ? 5 : 10
                       }}
                     >
-                      <CloseRounded />
+                      <CancelRounded />
                     </IconButton>
                   </Box>
+
                   <Details
                     updateJobStatus={updateJobStatus}
                     viewDetails={viewDetails}
@@ -667,7 +669,7 @@ const MasterList = (props) => {
                     sx={{
                       borderRadius: 5,
                       transition: 'color .5s, background .5s',
-                      height: '75vh',
+                      height: width <= 1200 ? '69vh' : '75vh',
                       width: '100%',
                       background: THEME[themeMode].card,
                       pt: 8
