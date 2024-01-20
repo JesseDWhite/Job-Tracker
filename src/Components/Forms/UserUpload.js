@@ -253,8 +253,37 @@ const UserUpload = (props) => {
     }
   }
 
+  const getWindowDimensions = () => {
+    const { innerWidth: width } = window;
+    return {
+      width,
+    };
+  }
+
+  const useWindowDimensions = () => {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+  }
+
+  const { width } = useWindowDimensions();
+
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box
+      sx={{
+        px: width <= 600 ? 4 : 0,
+        pb: width <= 600 ? 4 : 0
+      }}
+    >
       <Grid>
         <Typography variant='h4' sx={{ mb: 3, textAlign: 'center' }}>
           Manage Users Assigned To {organization.name}

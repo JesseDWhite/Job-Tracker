@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   TextField,
   Button,
@@ -23,6 +23,30 @@ const ResumeUpload = (props) => {
     getJobs,
     themeMode
   } = props;
+
+  const getWindowDimensions = () => {
+    const { innerWidth: width } = window;
+    return {
+      width,
+    };
+  }
+
+  const useWindowDimensions = () => {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+  }
+
+  const { width } = useWindowDimensions();
 
   const handleInputChange = (e) => {
     const { value } = e.target;
@@ -61,8 +85,9 @@ const ResumeUpload = (props) => {
   return (
     <Box
       sx={{
-        width: '100%',
-        height: '100%'
+        height: '100%',
+        px: width <= 600 ? 4 : 0,
+        pb: width <= 600 ? 4 : 0
       }}
     >
       <form method='POST' action='#' onSubmit={(e) => validateFormFields(e)}>

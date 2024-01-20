@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -131,11 +131,36 @@ const UpdateProfile = (props) => {
 
   }
 
+  const getWindowDimensions = () => {
+    const { innerWidth: width } = window;
+    return {
+      width,
+    };
+  }
+
+  const useWindowDimensions = () => {
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return windowDimensions;
+  }
+
+  const { width } = useWindowDimensions();
+
   return (
     <Box
       sx={{
-        width: '100%',
-        height: '100%'
+        height: '100%',
+        px: width <= 600 ? 4 : 0,
+        pb: width <= 600 ? 4 : 0
       }}
     >
       <Typography variant='h4' sx={{ mb: 3, textAlign: 'center' }}>

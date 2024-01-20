@@ -33,7 +33,7 @@ import {
   KeyTwoTone,
   HighlightOffTwoTone,
   PersonAddAltTwoTone,
-  CancelTwoTone,
+  CancelRounded,
   LogoutTwoTone,
   MoreVert,
   UploadFileTwoTone,
@@ -104,14 +104,16 @@ const Profile = (props) => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: width < 600 ? '80%' : 750,
+    width: width <= 600 ? '95%' : 750,
     maxHeight: '85%',
     minHeight: '10%',
     bgcolor: THEME[themeMode].card,
     color: THEME[themeMode].textColor,
     borderRadius: 5,
     boxShadow: 24,
-    p: 4,
+    pt: width <= 600 ? 0 : 4,
+    px: width <= 600 ? 0 : 4,
+    pb: width <= 600 ? 0 : 4,
     overflowY: 'auto',
     border: THEME[themeMode].border
   };
@@ -467,6 +469,21 @@ const Profile = (props) => {
       >
         <Fade in={open}>
           <Box sx={modalStyle} className='modal'>
+            {width <= 600 &&
+              <IconButton
+                component='span'
+                onClick={() => handleClose()}
+                sx={{
+                  position: 'sticky',
+                  top: 0,
+                  left: 0,
+                  display: 'inline-block',
+                  zIndex: 10
+                }}
+              >
+                <CancelRounded />
+              </IconButton>
+            }
             {determineModelContents()}
           </Box>
         </Fade>
@@ -915,9 +932,9 @@ const Profile = (props) => {
                     sx={{ width: '30%' }}
                     size='small'
                   >
-                    <InputLabel>Cohort To View</InputLabel>
+                    <InputLabel>{width <= 600 ? 'Cohort' : 'Cohort To View'}</InputLabel>
                     <Select
-                      label='Cohort To View'
+                      label={width <= 600 ? 'Cohort' : 'Cohort To View'}
                       value={currentCohort.cohort}
                       onChange={handleSelectChange}
                     >
@@ -940,7 +957,7 @@ const Profile = (props) => {
                   </FormControl>
                   <ToggleButtonGroup
                     color='info'
-                    sx={{ position: 'absolute', top: 14, right: 16 }}
+                    sx={{ position: 'absolute', top: 16, right: 16 }}
                     value={viewType}
                     exclusive
                     onChange={handleToggleChange}
