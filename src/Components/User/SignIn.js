@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { signInWithGoogle } from '../../firebase';
 import GoogleIcon from '@mui/icons-material/Google';
+import signInPage from '../../assets/img/signInPage.jpg';
 
 const Copyright = (props) => {
   return (
@@ -42,7 +43,7 @@ const SignIn = () => {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: 'url(https://source.unsplash.com/1900x900/?coding)',
+            backgroundImage: `url(${signInPage})`,
             backgroundRepeat: 'no-repeat',
             backgroundColor: 'grey',
             backgroundSize: 'cover',
