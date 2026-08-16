@@ -39,7 +39,9 @@ import {
   UploadFileTwoTone,
   ForumTwoTone,
   EditTwoTone,
-  DeleteTwoTone
+  DeleteTwoTone,
+  SaveAltTwoTone,
+  DeleteForeverTwoTone
 } from '@mui/icons-material';
 import {
   collection,
@@ -57,6 +59,8 @@ import DoughnutChart from '../Charts/DoughnutChart';
 import UserUpload from '../Forms/UserUpload';
 import ResumeUpload from '../Forms/ResumeUpload';
 import UpdateProfile from '../Forms/UpdateProfile';
+import ExportData from '../Forms/ExportData';
+import DeleteAccount from '../Forms/DeleteAccount';
 import { eachMonthOfInterval, format, subMonths } from 'date-fns'
 import { styled } from '@mui/material/styles';
 import MasterList from '../MasterList';
@@ -74,6 +78,7 @@ const Profile = (props) => {
     setOrganization,
     organizationReference,
     userReference,
+    jobsReference,
     getUserData,
     setFeedback,
     feedback,
@@ -186,6 +191,10 @@ const Profile = (props) => {
   const [resumeUpload, setResumeUpload] = useState(false);
 
   const [updateProfile, setUpdateProfile] = useState(false);
+
+  const [exportData, setExportData] = useState(false);
+
+  const [deleteAccount, setDeleteAccount] = useState(false);
 
   const [addToken, setAddToken] = useState(false);
 
@@ -381,6 +390,8 @@ const Profile = (props) => {
     setTimeout(() => {
       setResumeUpload(false);
       setUpdateProfile(false);
+      setExportData(false);
+      setDeleteAccount(false);
       setViewStudent([]);
     }, 500);
   }
@@ -438,6 +449,29 @@ const Profile = (props) => {
         getJobs={getJobs}
         jobs={jobs}
         subCollection={subCollection}
+        themeMode={themeMode}
+      />
+    } else if (exportData) {
+      return <ExportData
+        user={user}
+        currentUser={currentUser}
+        jobs={jobs}
+        userReference={userReference}
+        jobsReference={jobsReference}
+        feedback={feedback}
+        setFeedback={setFeedback}
+        handleClose={handleClose}
+        themeMode={themeMode}
+      />
+    } else if (deleteAccount) {
+      return <DeleteAccount
+        user={user}
+        currentUser={currentUser}
+        userReference={userReference}
+        jobsReference={jobsReference}
+        organizationReference={organizationReference}
+        feedback={feedback}
+        setFeedback={setFeedback}
         themeMode={themeMode}
       />
     } else {
@@ -538,7 +572,7 @@ const Profile = (props) => {
                       {...bindMenu(popupState)}
                       TransitionComponent={Fade}
                       TransitionProps={{ timeout: 500 }}
-                      onClose={() => ((popupState.close(), setResumeUpload(false), setUpdateProfile(false)))}
+                      onClose={() => ((popupState.close(), setResumeUpload(false), setUpdateProfile(false), setExportData(false), setDeleteAccount(false)))}
                     >
                       <MenuList>
                         <MenuItem
@@ -584,6 +618,34 @@ const Profile = (props) => {
                               }}
                             >
                               Edit Profile
+                            </ListItemText>
+                          </ListItemIcon>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => ((setExportData(true), setOpen(true), popupState.close()
+                          ))}>
+                          <ListItemIcon>
+                            <SaveAltTwoTone />
+                            <ListItemText
+                              sx={{
+                                pl: 2
+                              }}
+                            >
+                              Export My Data
+                            </ListItemText>
+                          </ListItemIcon>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => ((setDeleteAccount(true), setOpen(true), popupState.close()
+                          ))}>
+                          <ListItemIcon>
+                            <DeleteForeverTwoTone />
+                            <ListItemText
+                              sx={{
+                                pl: 2
+                              }}
+                            >
+                              Delete Account
                             </ListItemText>
                           </ListItemIcon>
                         </MenuItem>

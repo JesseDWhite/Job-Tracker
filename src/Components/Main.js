@@ -606,6 +606,7 @@ const Main = () => {
                   setFeedback={setFeedback}
                   getUserData={getUserData}
                   userReference={userReference}
+                  jobsReference={jobsReference}
                   organization={organization}
                   organizationReference={organizationReference}
                   setOrganization={setOrganization}
