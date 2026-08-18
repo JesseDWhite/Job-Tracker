@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Chip,
   Paper,
@@ -12,12 +12,12 @@ import {
   ListItemText,
   Avatar,
   Badge,
-  Grid
-} from '@mui/material';
-import { AnimateKeyframes } from 'react-simple-animate';
-import { THEME } from '../Layout/Theme';
-import { DataGrid } from '@mui/x-data-grid';
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+  Grid,
+} from "@mui/material";
+import { AnimateKeyframes } from "react-simple-animate";
+import { THEME } from "../Layout/Theme";
+import { DataGrid } from "@mui/x-data-grid";
+import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
 import {
   WorkTwoTone,
   DescriptionTwoTone,
@@ -33,15 +33,14 @@ import {
   ForumTwoTone,
   MenuRounded,
   AccessTimeTwoTone,
-} from '@mui/icons-material';
-import format from 'date-fns/format';
-import { storage } from '../firebase';
-import { ref, getDownloadURL } from 'firebase/storage';
-import Details from './Details';
-import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
+} from "@mui/icons-material";
+import format from "date-fns/format";
+import { storage } from "../firebase";
+import { ref, getDownloadURL } from "firebase/storage";
+import Details from "./Details";
+import AddCircleTwoToneIcon from "@mui/icons-material/AddCircleTwoTone";
 
 const MasterList = (props) => {
-
   const {
     searchJobs,
     jobs,
@@ -63,7 +62,7 @@ const MasterList = (props) => {
     setFeedback,
     setJobs,
     updateInterviewDate,
-    handleViewStudentClose
+    handleViewStudentClose,
   } = props;
 
   const [viewInterviewPrep, setViewInterviewPrep] = useState(false);
@@ -77,74 +76,78 @@ const MasterList = (props) => {
   const downloadFile = (doc) => {
     const file = getDownloadURL(ref(storage, doc));
     return file;
-  }
+  };
 
   const getWindowDimensions = () => {
     const { innerWidth: width, innerHeight: height } = window;
     return {
       width,
-      height
+      height,
     };
-  }
+  };
 
   const useWindowDimensions = () => {
-    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+    const [windowDimensions, setWindowDimensions] = useState(
+      getWindowDimensions(),
+    );
 
     useEffect(() => {
       const handleResize = () => {
         setWindowDimensions(getWindowDimensions());
-      }
+      };
 
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     return windowDimensions;
-  }
+  };
 
   const { height, width } = useWindowDimensions();
 
   const getStatus = (status) => {
-    if (status === 'Active') {
-      return 'success';
-    } else if (status === 'Interview') {
-      return 'secondary';
-    } else if (status === 'Closed') {
-      return 'error';
-    } else if (status === 'Other') {
-      return 'warning';
+    if (status === "Active") {
+      return "success";
+    } else if (status === "Interview") {
+      return "secondary";
+    } else if (status === "Closed") {
+      return "error";
+    } else if (status === "Other") {
+      return "warning";
     }
   };
 
   const handleViewInterviewPrep = (jobId) => {
     setViewInterviewPrep(true);
-    const jobToView = searchJobs.filter(job => job.id.includes(jobId));
+    const jobToView = searchJobs.filter((job) => job.id.includes(jobId));
     setJobToView(jobToView[0]);
-  }
+  };
 
   const handleViewDetails = (jobId) => {
     setViewDetails(true);
-    const jobToView = searchJobs.filter(job => job.id.includes(jobId));
+    const jobToView = searchJobs.filter((job) => job.id.includes(jobId));
     setJobToView(jobToView[0]);
-  }
+  };
 
   const handleEditJob = (jobId) => {
-    const jobToEdit = searchJobs.filter(job => job.id.includes(jobId));
-    updateJobApplication(jobToEdit[0])
-  }
+    const jobToEdit = searchJobs.filter((job) => job.id.includes(jobId));
+    updateJobApplication(jobToEdit[0]);
+  };
 
   const handleClose = () => {
     setViewInterviewPrep(false);
     setViewDetails(false);
     setJobToView({});
-  }
+  };
 
   //Only show job apps that have been added today.
   useEffect(() => {
     const newJobs = [...jobs];
     if (dailyFilter) {
-      const todaysDate = format(new Date(), 'yyyy-MM-dd');
-      const todaysJobs = newJobs.filter(job => job.dateApplied === todaysDate);
+      const todaysDate = format(new Date(), "yyyy-MM-dd");
+      const todaysJobs = newJobs.filter(
+        (job) => job.dateApplied === todaysDate,
+      );
       setSearchJobs(todaysJobs);
     } else {
       setSearchJobs(newJobs);
@@ -157,25 +160,26 @@ const MasterList = (props) => {
         {(popupState) => (
           <Box>
             <IconButton
-              id='options-button'
-              aria-label='options'
+              id="options-button"
+              aria-label="options"
               {...bindTrigger(popupState)}
             >
-              {'Personal' !== currentUser.organization
-                && job.lastResponseFrom
-                && job.lastResponseFrom !== user.uid
-                && job.unreadMessages > 0
-                ? <Badge color='error' variant='dot'>
+              {"Personal" !== currentUser.organization &&
+              job.lastResponseFrom &&
+              job.lastResponseFrom !== user.uid &&
+              job.unreadMessages > 0 ? (
+                <Badge color="error" variant="dot">
                   <MenuRounded />
                 </Badge>
-                : <MenuRounded />
-              }
+              ) : (
+                <MenuRounded />
+              )}
             </IconButton>
             <Menu
-              id='options-menu'
-              anchorEl='options-button'
+              id="options-menu"
+              anchorEl="options-button"
               MenuListProps={{
-                'aria-labelledby': 'options-button'
+                "aria-labelledby": "options-button",
               }}
               {...bindMenu(popupState)}
               TransitionComponent={Fade}
@@ -184,7 +188,10 @@ const MasterList = (props) => {
             >
               <MenuList>
                 <MenuItem
-                  onClick={() => ((handleViewDetails(job.id), popupState.close()))}
+                  onClick={() => (
+                    handleViewDetails(job.id),
+                    popupState.close()
+                  )}
                 >
                   <ListItemIcon>
                     <VisibilityTwoTone />
@@ -197,9 +204,12 @@ const MasterList = (props) => {
                     </ListItemText>
                   </ListItemIcon>
                 </MenuItem>
-                {'Personal' !== currentUser.organization &&
+                {"Personal" !== currentUser.organization && (
                   <MenuItem
-                    onClick={() => ((handleViewInterviewPrep(job.id), popupState.close()))}
+                    onClick={() => (
+                      handleViewInterviewPrep(job.id),
+                      popupState.close()
+                    )}
                   >
                     <ListItemIcon>
                       <AutoAwesomeTwoTone />
@@ -212,18 +222,22 @@ const MasterList = (props) => {
                       </ListItemText>
                     </ListItemIcon>
                   </MenuItem>
-                }
-                {'Personal' !== currentUser.organization
-                  ? job.lastResponseFrom
-                    && job.lastResponseFrom !== user.uid
-                    && job.unreadMessages > 0 ?
+                )}
+                {"Personal" !== currentUser.organization ? (
+                  job.lastResponseFrom &&
+                  job.lastResponseFrom !== user.uid &&
+                  job.unreadMessages > 0 ? (
                     <MenuItem
-                      onClick={() => !student || Object.values(student).length === 0
-                        ? ((handleViewComments(user.uid, job), popupState.close()))
-                        : ((handleViewComments(student.id, job), popupState.close()))
-                      }>
+                      onClick={() =>
+                        !student || Object.values(student).length === 0
+                          ? (handleViewComments(user.uid, job),
+                            popupState.close())
+                          : (handleViewComments(student.id, job),
+                            popupState.close())
+                      }
+                    >
                       <ListItemIcon>
-                        <Badge color='error' variant='dot'>
+                        <Badge color="error" variant="dot">
                           <ForumTwoTone />
                         </Badge>
                         <ListItemText
@@ -235,11 +249,16 @@ const MasterList = (props) => {
                         </ListItemText>
                       </ListItemIcon>
                     </MenuItem>
-                    : <MenuItem
-                      onClick={() => !student || Object.values(student).length === 0
-                        ? ((handleViewComments(user.uid, job), popupState.close()))
-                        : ((handleViewComments(student.id, job), popupState.close()))
-                      }>
+                  ) : (
+                    <MenuItem
+                      onClick={() =>
+                        !student || Object.values(student).length === 0
+                          ? (handleViewComments(user.uid, job),
+                            popupState.close())
+                          : (handleViewComments(student.id, job),
+                            popupState.close())
+                      }
+                    >
                       <ListItemIcon>
                         <ForumTwoTone />
                         <ListItemText
@@ -251,10 +270,10 @@ const MasterList = (props) => {
                         </ListItemText>
                       </ListItemIcon>
                     </MenuItem>
-                  : null
-                }
+                  )
+                ) : null}
                 <MenuItem
-                  onClick={() => ((handleEditJob(job.id), popupState.close()))}
+                  onClick={() => (handleEditJob(job.id), popupState.close())}
                   disabled={student ? true : false}
                 >
                   <ListItemIcon>
@@ -269,7 +288,10 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => ((deleteJob(job.id, job.company), popupState.close()))}
+                  onClick={() => (
+                    deleteJob(job.id, job.company),
+                    popupState.close()
+                  )}
                   disabled={student ? true : false}
                 >
                   <ListItemIcon>
@@ -286,19 +308,18 @@ const MasterList = (props) => {
               </MenuList>
             </Menu>
           </Box>
-        )
-        }
+        )}
       </PopupState>
-    )
+    );
   };
 
   const getStatusIcon = (status) => {
-    let icon = <CheckCircleTwoTone color='success' />;
-    if (status === 'Closed') icon = <DoNotDisturbOnTwoTone color='error' />;
-    if (status === 'Other') icon = <HelpTwoTone color='warning' />;
-    if (status === 'Interview') icon = <AccessTimeTwoTone color='secondary' />;
+    let icon = <CheckCircleTwoTone color="success" />;
+    if (status === "Closed") icon = <DoNotDisturbOnTwoTone color="error" />;
+    if (status === "Other") icon = <HelpTwoTone color="warning" />;
+    if (status === "Interview") icon = <AccessTimeTwoTone color="secondary" />;
     return icon;
-  }
+  };
 
   const renderStatus = (job) => {
     return (
@@ -306,8 +327,8 @@ const MasterList = (props) => {
         {(popupState) => (
           <Box>
             <Chip
-              id='status-button'
-              aria-label='options'
+              id="status-button"
+              aria-label="options"
               {...bindTrigger(popupState)}
               label={job.status}
               variant={THEME[themeMode].buttonStyle}
@@ -316,10 +337,10 @@ const MasterList = (props) => {
               icon={getStatusIcon(job.status)}
             />
             <Menu
-              id='status-menu'
-              anchorEl='options-button'
+              id="status-menu"
+              anchorEl="options-button"
               MenuListProps={{
-                'aria-labelledby': 'status-button'
+                "aria-labelledby": "status-button",
               }}
               {...bindMenu(popupState)}
               TransitionComponent={Fade}
@@ -328,10 +349,13 @@ const MasterList = (props) => {
             >
               <MenuList>
                 <MenuItem
-                  onClick={() => ((updateJobStatus(job.id, 'Active'), popupState.close()))}
+                  onClick={() => (
+                    updateJobStatus(job.id, "Active"),
+                    popupState.close()
+                  )}
                 >
                   <ListItemIcon>
-                    <CheckCircleTwoTone color='success' />
+                    <CheckCircleTwoTone color="success" />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -342,10 +366,13 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => ((updateJobStatus(job.id, 'Interview'), popupState.close()))}
+                  onClick={() => (
+                    updateJobStatus(job.id, "Interview"),
+                    popupState.close()
+                  )}
                 >
                   <ListItemIcon>
-                    <AccessTimeTwoTone color='secondary' />
+                    <AccessTimeTwoTone color="secondary" />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -356,11 +383,13 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => ((updateJobStatus(job.id, 'Other'), popupState.close()))}
-
+                  onClick={() => (
+                    updateJobStatus(job.id, "Other"),
+                    popupState.close()
+                  )}
                 >
                   <ListItemIcon>
-                    <HelpTwoTone color='warning' />
+                    <HelpTwoTone color="warning" />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -371,10 +400,13 @@ const MasterList = (props) => {
                   </ListItemIcon>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => ((updateJobStatus(job.id, 'Closed'), popupState.close()))}
+                  onClick={() => (
+                    updateJobStatus(job.id, "Closed"),
+                    popupState.close()
+                  )}
                 >
                   <ListItemIcon>
-                    <DoNotDisturbOnTwoTone color='error' />
+                    <DoNotDisturbOnTwoTone color="error" />
                     <ListItemText
                       sx={{
                         pl: 2,
@@ -389,138 +421,146 @@ const MasterList = (props) => {
           </Box>
         )}
       </PopupState>
-    )
+    );
   };
 
   const columns = [
     {
-      field: 'actions',
-      headerName: 'Actions',
-      headerAlign: 'center',
+      field: "actions",
+      headerName: "Actions",
+      headerAlign: "center",
       width: 100,
-      align: 'center',
+      align: "center",
       filterable: false,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => {
-        return renderActions(params.row)
-      }
+        return renderActions(params.row);
+      },
     },
     {
-      field: 'company',
-      headerName: 'Company',
-      headerAlign: 'left',
+      field: "company",
+      headerName: "Company",
+      headerAlign: "left",
       width: 300,
-      align: 'left',
+      align: "left",
       filterable: false,
       sortable: true,
     },
     {
-      field: 'jobTitle',
-      headerName: 'Job Title',
-      headerAlign: 'left',
+      field: "jobTitle",
+      headerName: "Job Title",
+      headerAlign: "left",
       width: 300,
     },
     {
-      field:
-        'status',
-      headerName:
-        'Status',
-      headerAlign: 'center',
-      align: 'center',
+      field: "status",
+      headerName: "Status",
+      headerAlign: "center",
+      align: "center",
       width: 115,
       renderCell: (params) => {
-        return !student ? renderStatus(params.row) : <Chip
-          label={params.row.status}
-          variant={THEME[themeMode].buttonStyle}
-          color={getStatus(params.row.status)}
-          icon={getStatusIcon(params.row.status)}
-        />
-      }
+        return !student ? (
+          renderStatus(params.row)
+        ) : (
+          <Chip
+            label={params.row.status}
+            variant={THEME[themeMode].buttonStyle}
+            color={getStatus(params.row.status)}
+            icon={getStatusIcon(params.row.status)}
+          />
+        );
+      },
     },
     {
-      field: 'dateApplied',
-      headerName: 'Date Applied',
-      headerAlign: 'center',
+      field: "dateApplied",
+      headerName: "Date Applied",
+      headerAlign: "center",
       width: 150,
-      align: 'center',
+      align: "center",
       filterable: true,
       sortable: true,
       renderCell: (params) => {
-        return format(new Date(params.value.replace(/-/g, '/')), 'PP')
-      }
+        return format(new Date(params.value.replace(/-/g, "/")), "PP");
+      },
     },
     {
-      field: 'score',
-      headerName: 'Score',
-      headerAlign: 'center',
+      field: "score",
+      headerName: "Score",
+      headerAlign: "center",
       width: 115,
-      align: 'center',
+      align: "center",
       filterable: true,
       sortable: true,
     },
     {
-      field: 'jobPosting',
-      headerName: 'Job Posting',
-      headerAlign: 'center',
+      field: "jobPosting",
+      headerName: "Job Posting",
+      headerAlign: "center",
       width: 150,
-      align: 'center',
+      align: "center",
       filterable: false,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => {
-        return <IconButton
-          target='_blank'
-          rel='noopener noreferrer'
-          component='a'
-          href={params.row.jobPosting}
-          disabled={!params.row.jobPosting ? true : false}
-        >
-          <WorkTwoTone />
-        </IconButton>
-      }
+        return (
+          <IconButton
+            target="_blank"
+            rel="noopener noreferrer"
+            component="a"
+            href={params.row.jobPosting}
+            disabled={!params.row.jobPosting ? true : false}
+          >
+            <WorkTwoTone />
+          </IconButton>
+        );
+      },
     },
     {
-      field: 'resumeLink',
-      headerName: 'Resume',
-      headerAlign: 'center',
+      field: "resumeLink",
+      headerName: "Resume",
+      headerAlign: "center",
       width: 150,
-      align: 'center',
+      align: "center",
       filterable: false,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => {
-        return <IconButton
-          target='_blank'
-          rel='noopener noreferrer'
-          component='a'
-          href={params.row.resumeLink}
-          disabled={!params.row.resumeLink ? true : false}
-        >
-          <DescriptionTwoTone />
-        </IconButton>
-      }
+        return (
+          <IconButton
+            target="_blank"
+            rel="noopener noreferrer"
+            component="a"
+            href={params.row.resumeLink}
+            disabled={!params.row.resumeLink ? true : false}
+          >
+            <DescriptionTwoTone />
+          </IconButton>
+        );
+      },
     },
     {
-      field: 'coverLetterLink',
-      headerName: 'Cover Letter',
-      headerAlign: 'center',
+      field: "coverLetterLink",
+      headerName: "Cover Letter",
+      headerAlign: "center",
       width: 150,
-      align: 'center',
+      align: "center",
       filterable: false,
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params) => {
-        return <IconButton
-          target='_blank'
-          rel='noopener noreferrer'
-          component='a'
-          href={params.row.coverLetterLink}
-          disabled={!params.row.coverLetterLink ? true : false}
-        >
-          <DescriptionTwoTone />
-        </IconButton>
-      }
+        return (
+          <IconButton
+            target="_blank"
+            rel="noopener noreferrer"
+            component="a"
+            href={params.row.coverLetterLink}
+            disabled={!params.row.coverLetterLink ? true : false}
+          >
+            <DescriptionTwoTone />
+          </IconButton>
+        );
+      },
     },
   ];
 
@@ -528,62 +568,58 @@ const MasterList = (props) => {
     <AnimateKeyframes
       play
       iterationCount={1}
-      keyframes={[
-        "opacity: 0",
-        "opacity: 1",
-      ]}
+      keyframes={["opacity: 0", "opacity: 1"]}
     >
       <Grid
-        display='flex'
+        display="flex"
         sx={{
-          ml: !student ? width <= 600 ? 1 : 3 : 0,
-          mr: !student ? width <= 600 ? 1 : 3 : 0,
+          ml: !student ? (width <= 600 ? 1 : 3) : 0,
+          mr: !student ? (width <= 600 ? 1 : 3) : 0,
           pt: !student ? 12 : 0,
-        }}>
+        }}
+      >
         <Grid
           container
           direction="row"
           justifyContent="center"
           alignItems="center"
           spacing={4}
-
         >
-          <Grid xs={12} item
+          <Grid
+            xs={12}
+            item
             sx={{
               "& ::-webkit-scrollbar": {
-                display: 'none'
-              }
+                display: "none",
+              },
             }}
           >
             <Paper
-              id='dataGrid'
+              id="dataGrid"
               sx={{
-                overflowY: viewInterviewPrep || viewDetails ? 'auto' : 'none',
+                overflowY: viewInterviewPrep || viewDetails ? "auto" : "none",
                 borderRadius: 5,
                 border: THEME[themeMode].border,
                 background: THEME[themeMode].card,
-                transition: 'color .5s, background .5s',
-                height: width <= 1200 ? '79vh' : '85vh',
-                width: '100%',
+                transition: "color .5s, background .5s",
+                height: width <= 1200 ? "79vh" : "85vh",
+                width: "100%",
               }}
               elevation={3}
             >
-              {viewInterviewPrep || viewDetails ?
+              {viewInterviewPrep || viewDetails ? (
                 <AnimateKeyframes
                   play
                   iterationCount={1}
-                  keyframes={[
-                    "opacity: 0",
-                    "opacity: 1",
-                  ]}
+                  keyframes={["opacity: 0", "opacity: 1"]}
                 >
-                  <Box sx={{ position: 'relative' }}>
+                  <Box sx={{ position: "relative" }}>
                     <IconButton
                       onClick={() => handleClose()}
                       sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: width < 600 ? 5 : 10,
-                        left: width < 600 ? 5 : 10
+                        left: width < 600 ? 5 : 10,
                       }}
                     >
                       <CancelRounded />
@@ -611,23 +647,20 @@ const MasterList = (props) => {
                     width={width}
                   />
                 </AnimateKeyframes>
-                :
+              ) : (
                 <AnimateKeyframes
                   play
                   iterationCount={1}
-                  keyframes={[
-                    "opacity: 0",
-                    "opacity: 1",
-                  ]}
+                  keyframes={["opacity: 0", "opacity: 1"]}
                 >
-                  {student ?
-                    <Box sx={{ position: 'relative' }}>
+                  {student ? (
+                    <Box sx={{ position: "relative" }}>
                       <Chip
                         sx={{
                           zIndex: 10,
-                          position: 'absolute',
+                          position: "absolute",
                           top: 20,
-                          left: 20
+                          left: 20,
                         }}
                         variant={THEME[themeMode].buttonStyle}
                         onDelete={() => handleViewStudentClose()}
@@ -635,69 +668,79 @@ const MasterList = (props) => {
                         avatar={<Avatar src={student.profilePhoto} />}
                       />
                     </Box>
-                    :
-                    <Box sx={{ position: 'relative' }}>
+                  ) : (
+                    <Box sx={{ position: "relative" }}>
                       <Chip
                         sx={{
                           zIndex: 10,
-                          position: 'absolute',
+                          position: "absolute",
                           top: 20,
-                          left: 20
+                          left: 20,
                         }}
-                        color='primary'
+                        color="primary"
                         variant={THEME[themeMode].buttonStyle}
-                        onClick={() => applicationCount >= 1 ? setDailyFilter(!dailyFilter) : setDailyFilter(false)}
-                        label={dailyFilter ? 'GO BACK' : applicationCount === 1 ? 'APPLICATION TODAY' : 'APPLICATIONS TODAY'}
+                        onClick={() =>
+                          applicationCount >= 1
+                            ? setDailyFilter(!dailyFilter)
+                            : setDailyFilter(false)
+                        }
+                        label={
+                          dailyFilter
+                            ? "GO BACK"
+                            : applicationCount === 1
+                              ? "APPLICATION TODAY"
+                              : "APPLICATIONS TODAY"
+                        }
                         avatar={<Avatar>{applicationCount}</Avatar>}
                       />
                       <Chip
                         sx={{
                           zIndex: 10,
-                          position: 'absolute',
+                          position: "absolute",
                           top: 20,
-                          right: 20
+                          right: 20,
                         }}
-                        color='success'
+                        color="success"
                         variant={THEME[themeMode].buttonStyle}
                         onClick={() => setOpen(true)}
-                        label='ADD NEW'
+                        label="ADD NEW"
                         icon={<AddCircleTwoToneIcon />}
                       />
                     </Box>
-                  }
+                  )}
                   <Box
                     sx={{
                       borderRadius: 5,
-                      transition: 'color .5s, background .5s',
-                      height: width <= 1200 ? '69vh' : '75vh',
-                      width: '100%',
+                      transition: "color .5s, background .5s",
+                      height: width <= 1200 ? "69vh" : "75vh",
+                      width: "100%",
                       background: THEME[themeMode].card,
-                      pt: 8
+                      pt: 8,
                     }}
                   >
                     <DataGrid
                       sx={{
-                        transition: 'color .5s, background .5s',
+                        transition: "color .5s, background .5s",
                         color: THEME[themeMode].textColor,
-                        borderLeft: 'none',
-                        borderRight: 'none',
-                        borderBottom: 'none',
+                        borderLeft: "none",
+                        borderRight: "none",
+                        borderBottom: "none",
                         "& ::-webkit-scrollbar": {
-                          backgroundColor: 'rgba(0, 0, 0, 0)',
-                          width: '0.5em',
-                          height: '0.5em'
+                          backgroundColor: "rgba(0, 0, 0, 0)",
+                          width: "0.5em",
+                          height: "0.5em",
                         },
                         "& ::-webkit-scrollbar-thumb": {
-                          backgroundColor: 'rgb(169, 169, 169)',
-                          borderRadius: '1em',
+                          backgroundColor: "rgb(169, 169, 169)",
+                          borderRadius: "1em",
                         },
                         "& ::-webkit-scrollbar-corner": {
-                          backgroundColor: 'rgba(0, 0, 0, 0)'
-                        }
+                          backgroundColor: "rgba(0, 0, 0, 0)",
+                        },
                       }}
                       initialState={{
                         sorting: {
-                          sortModel: [{ field: 'dateApplied', sort: 'desc' }],
+                          sortModel: [{ field: "dateApplied", sort: "desc" }],
                         },
                       }}
                       rows={searchJobs}
@@ -705,17 +748,20 @@ const MasterList = (props) => {
                       pageSize={20}
                       rowsPerPageOptions={[20]}
                       disableRowSelectionOnClick
+                      onRowDoubleClick={(params) =>
+                        handleViewDetails(params.row.id)
+                      }
                       loading={loading}
                     />
                   </Box>
                 </AnimateKeyframes>
-              }
+              )}
             </Paper>
           </Grid>
         </Grid>
       </Grid>
     </AnimateKeyframes>
-  )
+  );
 };
 
 export default MasterList;
